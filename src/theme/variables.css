@@ -1,0 +1,322 @@
+/* ====================================================
+   ManteniApp - Tema Neomórfico (Blanco/Azul/Verde)
+   ==================================================== */
+
+:root {
+  /* Colores principales */
+  --ion-color-primary: #2D7FF9;
+  --ion-color-primary-rgb: 45, 127, 249;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2670db;
+  --ion-color-primary-tint: #428cfa;
+
+  --ion-color-secondary: #18D9A0;
+  --ion-color-secondary-rgb: 24, 217, 160;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #15bf8d;
+  --ion-color-secondary-tint: #2fddaa;
+
+  --ion-color-tertiary: #6C5CE7;
+  --ion-color-tertiary-rgb: 108, 92, 231;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #5f51cb;
+  --ion-color-tertiary-tint: #7b6ce9;
+
+  --ion-color-success: #00D68F;
+  --ion-color-success-rgb: 0, 214, 143;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #00bc7e;
+  --ion-color-success-tint: #1ada9a;
+
+  --ion-color-warning: #FFA726;
+  --ion-color-warning-rgb: 255, 167, 38;
+  --ion-color-warning-contrast: #000000;
+  --ion-color-warning-contrast-rgb: 0, 0, 0;
+  --ion-color-warning-shade: #e09321;
+  --ion-color-warning-tint: #ffb03c;
+
+  --ion-color-danger: #FF5A7E;
+  --ion-color-danger-rgb: 255, 90, 126;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #e04f6f;
+  --ion-color-danger-tint: #ff6b8b;
+
+  --ion-color-medium: #92949C;
+  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #808289;
+  --ion-color-medium-tint: #9d9fa6;
+
+  --ion-color-light: #F0F3F8;
+  --ion-color-light-rgb: 240, 243, 248;
+  --ion-color-light-contrast: #1a1a2e;
+  --ion-color-light-contrast-rgb: 26, 26, 46;
+  --ion-color-light-shade: #d3d6db;
+  --ion-color-light-tint: #f2f5f9;
+
+  /* Fondo neomórfico */
+  --neo-bg: #E8EDF5;
+  --neo-shadow-light: #ffffff;
+  --neo-shadow-dark: #c8ccd4;
+  --neo-text-primary: #1a1a2e;
+  --neo-text-secondary: #6b7280;
+  --neo-accent-blue: #2D7FF9;
+  --neo-accent-green: #00D68F;
+  --neo-gradient-blue: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --neo-gradient-green: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  --neo-radius: 16px;
+  --neo-radius-sm: 12px;
+
+  /* Override del fondo de la app */
+  --ion-background-color: #E8EDF5;
+  --ion-toolbar-background: transparent;
+  --ion-item-background: transparent;
+  --ion-card-background: #E8EDF5;
+
+  /* Tipografía */
+  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ====================================================
+   ESTILOS NEOMÓRFICOS GLOBALES
+   ==================================================== */
+
+ion-content {
+  --background: #E8EDF5;
+}
+
+/* Header personalizado */
+.neo-header ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+}
+
+.neo-header::after {
+  display: none;
+}
+
+/* Tarjetas neomórficas */
+.neo-card {
+  background: #E8EDF5;
+  border-radius: var(--neo-radius);
+  box-shadow: 8px 8px 16px var(--neo-shadow-dark),
+              -8px -8px 16px var(--neo-shadow-light);
+  padding: 20px;
+  margin: 12px 16px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.neo-card:active {
+  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
+              inset -4px -4px 8px var(--neo-shadow-light);
+}
+
+/* Campos de input neomórficos */
+.neo-input {
+  background: #E8EDF5;
+  border-radius: var(--neo-radius-sm);
+  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
+              inset -4px -4px 8px var(--neo-shadow-light);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border: none;
+  font-size: 15px;
+  color: var(--neo-text-primary);
+  width: 100%;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.neo-input:focus {
+  box-shadow: inset 3px 3px 6px var(--neo-shadow-dark),
+              inset -3px -3px 6px var(--neo-shadow-light),
+              0 0 0 2px rgba(45, 127, 249, 0.3);
+}
+
+.neo-input::placeholder {
+  color: #aab0bb;
+}
+
+.neo-textarea {
+  background: #E8EDF5;
+  border-radius: var(--neo-radius-sm);
+  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
+              inset -4px -4px 8px var(--neo-shadow-light);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border: none;
+  font-size: 15px;
+  color: var(--neo-text-primary);
+  width: 100%;
+  min-height: 80px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: box-shadow 0.3s ease;
+}
+
+.neo-textarea:focus {
+  box-shadow: inset 3px 3px 6px var(--neo-shadow-dark),
+              inset -3px -3px 6px var(--neo-shadow-light),
+              0 0 0 2px rgba(45, 127, 249, 0.3);
+}
+
+/* Botones neomórficos */
+.neo-btn {
+  background: #E8EDF5;
+  border-radius: var(--neo-radius-sm);
+  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
+              -6px -6px 12px var(--neo-shadow-light);
+  border: none;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--neo-text-primary);
+}
+
+.neo-btn:active {
+  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
+              inset -4px -4px 8px var(--neo-shadow-light);
+  transform: scale(0.98);
+}
+
+.neo-btn-primary {
+  background: var(--neo-gradient-blue);
+  color: #fff;
+  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
+              -6px -6px 12px var(--neo-shadow-light),
+              inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.neo-btn-green {
+  background: var(--neo-gradient-green);
+  color: #fff;
+  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
+              -6px -6px 12px var(--neo-shadow-light),
+              inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.neo-btn-danger {
+  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  color: #fff;
+  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
+              -6px -6px 12px var(--neo-shadow-light);
+}
+
+/* Badges neomórficos */
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.neo-badge-blue {
+  background: rgba(45, 127, 249, 0.15);
+  color: #2D7FF9;
+}
+
+.neo-badge-orange {
+  background: rgba(255, 167, 38, 0.15);
+  color: #E69100;
+}
+
+.neo-badge-green {
+  background: rgba(0, 214, 143, 0.15);
+  color: #00B377;
+}
+
+/* Buscador neomórfico */
+.neo-searchbar {
+  --background: #E8EDF5;
+  --box-shadow: inset 4px 4px 8px var(--neo-shadow-dark), inset -4px -4px 8px var(--neo-shadow-light);
+  --border-radius: var(--neo-radius);
+  --placeholder-color: #aab0bb;
+  --icon-color: #2D7FF9;
+  padding: 12px 16px 4px 16px;
+}
+
+/* FAB neomórfico */
+.neo-fab ion-fab-button {
+  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
+  --border-radius: 18px;
+  width: 60px;
+  height: 60px;
+}
+
+/* Foto thumbnail neomórfico */
+.neo-photo {
+  border-radius: var(--neo-radius-sm);
+  box-shadow: 4px 4px 8px var(--neo-shadow-dark),
+              -4px -4px 8px var(--neo-shadow-light);
+  overflow: hidden;
+}
+
+/* Animación de entrada */
+@keyframes neoFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.neo-animate {
+  animation: neoFadeIn 0.4s ease-out;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c8ccd4;
+  border-radius: 3px;
+}
+
+/* Label de campo */
+.neo-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neo-text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.neo-label .required {
+  color: #FF5A7E;
+}
+
+/* Error de validación */
+.neo-error {
+  font-size: 12px;
+  color: #FF5A7E;
+  margin-top: -10px;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}

@@ -1,0 +1,193 @@
+/* ======================================================
+   FormularioMantenimiento.css — Estilos neomórficos
+   ====================================================== */
+
+/* ====== HEADER DEL FORMULARIO ====== */
+.form-header ion-toolbar {
+  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --color: #fff;
+  --border-width: 0;
+}
+
+.form-header ion-back-button {
+  --color: #fff;
+}
+
+/* ====== CONTENEDOR GENERAL ====== */
+.form-container {
+  padding: 20px 16px;
+}
+
+/* ====== GRUPO DE CAMPO ====== */
+.form-field {
+  margin-bottom: 16px;
+}
+
+.form-field__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-field__required {
+  color: #FF5A7E;
+}
+
+.form-field__error {
+  font-size: 12px;
+  color: #FF5A7E;
+  margin-top: 4px;
+  padding-left: 4px;
+}
+
+/* ====== SECCIÓN DE FOTOS ====== */
+.form-photos {
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: #E8EDF5;
+  box-shadow: inset 4px 4px 8px #c8ccd4, inset -4px -4px 8px #ffffff;
+}
+
+.form-photos__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.form-photos__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.form-photos__empty {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 12px 0;
+}
+
+/* Cuadrícula de fotos */
+.form-photos__grid {
+  display: flex;
+  gap: 10px;
+}
+
+.form-photos__item {
+  position: relative;
+  flex: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #E8EDF5;
+  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+}
+
+.form-photos__img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+}
+
+.form-photos__delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+.form-photos__caption {
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+  padding: 4px 0;
+  background: rgba(232, 237, 245, 0.9);
+  font-weight: 600;
+}
+
+/* ====== BOTÓN GUARDAR ====== */
+.form-save-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  color: #fff;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff,
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.form-save-btn:active {
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
+  transform: scale(0.98);
+}
+
+.form-save-btn ion-icon {
+  font-size: 22px;
+}
+
+/* ====== TEXTO DE AYUDA ====== */
+.form-help-text {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 12px;
+  margin: 0 0 24px 0;
+}
+
+/* ====== BOTÓN TOMAR FOTO ====== */
+.form-camera-btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.form-camera-btn:active {
+  transform: scale(0.96);
+}
+
+.form-camera-btn:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.form-camera-btn ion-icon {
+  font-size: 18px;
+}
