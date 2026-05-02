@@ -1,0 +1,153 @@
+/* ======================================================
+   GestionUbicaciones.css — Estilos neomórficos
+   ====================================================== */
+
+.ubicaciones-header ion-toolbar {
+  --background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  --color: #fff;
+  --border-width: 0;
+}
+
+.ubicaciones-header ion-back-button {
+  --color: #fff;
+}
+
+.ubicaciones-container {
+  padding: 20px 16px;
+}
+
+/* ====== INFO AGENCIA ====== */
+.ubicaciones-agencia-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #E8EDF5;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  margin-bottom: 16px;
+}
+
+.ubicaciones-agencia-info__codigo {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  padding: 6px 12px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+}
+
+.ubicaciones-agencia-info__nombre {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* ====== BOTÓN AGREGAR ====== */
+.ubicaciones-add-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  color: #fff;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.ubicaciones-add-btn:active {
+  transform: scale(0.97);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ubicaciones-add-btn ion-icon {
+  font-size: 22px;
+}
+
+/* ====== ESTADO VACÍO ====== */
+.ubicaciones-empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.ubicaciones-empty p {
+  color: #6b7280;
+  font-size: 15px;
+  margin: 0;
+}
+
+.ubicaciones-empty__hint {
+  color: #9ca3af !important;
+  font-size: 13px !important;
+  margin-top: 8px !important;
+}
+
+/* ====== LISTA ====== */
+.ubicaciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ====== TARJETA UBICACIÓN ====== */
+.ubicacion-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #E8EDF5;
+  box-shadow: 5px 5px 10px #c8ccd4, -5px -5px 10px #ffffff;
+}
+
+.ubicacion-card__nombre {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* ====== BOTONES ACCIÓN ====== */
+.ubicacion-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.ubicacion-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+}
+
+.ubicacion-btn:active {
+  transform: scale(0.92);
+}
+
+.ubicacion-btn ion-icon {
+  font-size: 16px;
+}
+
+.ubicacion-btn--edit {
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  color: #fff;
+}
+
+.ubicacion-btn--delete {
+  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  color: #fff;
+}

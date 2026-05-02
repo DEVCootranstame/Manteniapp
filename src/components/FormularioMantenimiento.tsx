@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -16,21 +16,9 @@ import { camera, close, save } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
+import { Mantenimiento, Agencia, STORAGE_KEY, AGENCIAS_STORAGE_KEY } from '../types';
+import { useIonViewWillEnter } from '@ionic/react';
 import './FormularioMantenimiento.css';
-
-interface Mantenimiento {
-  id: string;
-  nombreEquipo: string;
-  proveedor: string;
-  mantenimientoRealizado: string;
-  observaciones: string;
-  fecha: string;
-  hora: string;
-  fotos: string[];
-  sincronizado: boolean;
-}
-
-const STORAGE_KEY = 'mantenimientos_registros';
 
 function generarId(): string {
   return crypto.randomUUID();
@@ -55,6 +43,10 @@ function obtenerFechaHora(): { fecha: string; hora: string } {
 const FormularioMantenimiento: React.FC = () => {
   const history = useHistory();
 
+  const [agencias, setAgencias] = useState<Agencia[]>([]);
+  const [agenciaId, setAgenciaId] = useState('');
+  const [ubicacionId, setUbicacionId] = useState('');
+
   const [nombreEquipo, setNombreEquipo] = useState('');
   const [proveedor, setProveedor] = useState('');
   const [mantenimientoRealizado, setMantenimientoRealizado] = useState('');
@@ -69,6 +61,20 @@ const FormularioMantenimiento: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const cargarAgencias = useCallback(async () => {
+    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
+    if (value) {
+      setAgencias(JSON.parse(value));
+    }
+  }, []);
+
+  useIonViewWillEnter(() => {
+    cargarAgencias();
+  });
+
+  const agenciaSeleccionada = agencias.find((a) => a.id === agenciaId);
+  const ubicacionesDisponibles = agenciaSeleccionada?.ubicaciones || [];
 
   const marcarTocado = (campo: string) => {
     setTouched((prev) => ({ ...prev, [campo]: true }));
@@ -116,6 +122,8 @@ const FormularioMantenimiento: React.FC = () => {
 
   const formularioValido = (): boolean => {
     return (
+      agenciaId.length > 0 &&
+      ubicacionId.length > 0 &&
       nombreEquipo.trim().length > 0 &&
       proveedor.trim().length > 0 &&
       mantenimientoRealizado.trim().length > 0 &&
@@ -124,6 +132,8 @@ const FormularioMantenimiento: React.FC = () => {
   };
 
   const limpiarFormulario = () => {
+    setAgenciaId('');
+    setUbicacionId('');
     setNombreEquipo('');
     setProveedor('');
     setMantenimientoRealizado('');
@@ -135,6 +145,8 @@ const FormularioMantenimiento: React.FC = () => {
   const guardarRegistro = async () => {
     if (!formularioValido()) {
       setTouched({
+        agenciaId: true,
+        ubicacionId: true,
         nombreEquipo: true,
         proveedor: true,
         mantenimientoRealizado: true,
@@ -162,6 +174,8 @@ const FormularioMantenimiento: React.FC = () => {
         hora,
         fotos: [...fotos],
         sincronizado: false,
+        agenciaId,
+        ubicacionId,
       };
 
       const { value } = await Preferences.get({ key: STORAGE_KEY });
@@ -205,6 +219,58 @@ const FormularioMantenimiento: React.FC = () => {
 
       <IonContent fullscreen>
         <div className="form-container">
+          {/* Campo: Agencia */}
+          <div className="form-field">
+            <label className="form-field__label">
+              Agencia <span className="form-field__required">*</span>
+            </label>
+            <select
+              className="neo-select"
+              value={agenciaId}
+              onChange={(e) => {
+                setAgenciaId(e.target.value);
+                setUbicacionId('');
+              }}
+              onBlur={() => marcarTocado('agenciaId')}
+            >
+              <option value="">-- Selecciona una agencia --</option>
+              {agencias.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.codigo} - {a.nombre}
+                </option>
+              ))}
+            </select>
+            {touched.agenciaId && agenciaId === '' && (
+              <div className="form-field__error">Selecciona una agencia</div>
+            )}
+          </div>
+
+          {/* Campo: Ubicación */}
+          <div className="form-field">
+            <label className="form-field__label">
+              Ubicación <span className="form-field__required">*</span>
+            </label>
+            <select
+              className="neo-select"
+              value={ubicacionId}
+              onChange={(e) => setUbicacionId(e.target.value)}
+              onBlur={() => marcarTocado('ubicacionId')}
+              disabled={!agenciaId}
+            >
+              <option value="">
+                {agenciaId ? '-- Selecciona ubicación --' : '-- Primero selecciona agencia --'}
+              </option>
+              {ubicacionesDisponibles.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.nombre}
+                </option>
+              ))}
+            </select>
+            {touched.ubicacionId && ubicacionId === '' && agenciaId !== '' && (
+              <div className="form-field__error">Selecciona una ubicación</div>
+            )}
+          </div>
+
           {/* Campo: Nombre del equipo */}
           <div className="form-field">
             <label className="form-field__label">

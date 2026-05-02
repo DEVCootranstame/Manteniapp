@@ -1,0 +1,140 @@
+/* ======================================================
+   GestionAgencias.css — Estilos neomórficos
+   ====================================================== */
+
+.agencias-header ion-toolbar {
+  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --color: #fff;
+  --border-width: 0;
+}
+
+.agencias-header ion-back-button {
+  --color: #fff;
+}
+
+.agencias-container {
+  padding: 20px 16px;
+}
+
+/* ====== BOTÓN AGREGAR ====== */
+.agencias-add-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.agencias-add-btn:active {
+  transform: scale(0.97);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.agencias-add-btn ion-icon {
+  font-size: 22px;
+}
+
+/* ====== ESTADO VACÍO ====== */
+.agencias-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* ====== LISTA ====== */
+.agencias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ====== TARJETA AGENCIA ====== */
+.agencia-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #E8EDF5;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+}
+
+.agencia-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agencia-card__codigo {
+  font-size: 12px;
+  font-weight: 800;
+  color: #2D7FF9;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.agencia-card__nombre {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.agencia-card__ubicaciones {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* ====== BOTONES ACCIÓN ====== */
+.agencia-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.agencia-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+}
+
+.agencia-btn:active {
+  transform: scale(0.92);
+}
+
+.agencia-btn ion-icon {
+  font-size: 18px;
+}
+
+.agencia-btn--ubicaciones {
+  background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  color: #fff;
+}
+
+.agencia-btn--edit {
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  color: #fff;
+}
+
+.agencia-btn--delete {
+  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  color: #fff;
+}

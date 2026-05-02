@@ -16,34 +16,23 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, refreshOutline } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, refreshOutline, businessOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { supabase } from '../supabaseClient';
 import { useHistory } from 'react-router-dom';
 import { decode } from 'base64-arraybuffer';
+import { Mantenimiento, Agencia, STORAGE_KEY, AGENCIAS_STORAGE_KEY } from '../types';
 import './Home.css';
-
-interface Mantenimiento {
-  id: string;
-  nombreEquipo: string;
-  proveedor: string;
-  mantenimientoRealizado: string;
-  observaciones: string;
-  fecha: string;
-  hora: string;
-  fotos: string[];
-  sincronizado: boolean;
-}
-
-const STORAGE_KEY = 'mantenimientos_registros';
 
 const Home: React.FC = () => {
   const history = useHistory();
   const [registros, setRegistros] = useState<Mantenimiento[]>([]);
   const [filteredRegistros, setFilteredRegistros] = useState<Mantenimiento[]>([]);
   const [searchText, setSearchText] = useState<string>('');
+  const [agencias, setAgencias] = useState<Agencia[]>([]);
+  const [filtroAgencia, setFiltroAgencia] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -51,6 +40,13 @@ const Home: React.FC = () => {
   const [alertHeader, setAlertHeader] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
+
+  const cargarAgencias = useCallback(async () => {
+    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
+    if (value) {
+      setAgencias(JSON.parse(value));
+    }
+  }, []);
 
   const cargarRegistros = useCallback(async () => {
     try {
@@ -72,18 +68,26 @@ const Home: React.FC = () => {
 
   useIonViewWillEnter(() => {
     cargarRegistros();
+    cargarAgencias();
   });
 
   useEffect(() => {
     cargarRegistros();
-  }, [cargarRegistros]);
+    cargarAgencias();
+  }, [cargarRegistros, cargarAgencias]);
 
   useEffect(() => {
-    if (searchText.trim() === '') {
-      setFilteredRegistros(registros);
-    } else {
+    let resultado = registros;
+
+    // Filtro por agencia
+    if (filtroAgencia) {
+      resultado = resultado.filter((r) => r.agenciaId === filtroAgencia);
+    }
+
+    // Filtro por texto
+    if (searchText.trim() !== '') {
       const query = searchText.toLowerCase();
-      const filtered = registros.filter(
+      resultado = resultado.filter(
         (r) =>
           r.nombreEquipo.toLowerCase().includes(query) ||
           r.proveedor.toLowerCase().includes(query) ||
@@ -91,9 +95,10 @@ const Home: React.FC = () => {
           r.observaciones.toLowerCase().includes(query) ||
           r.fecha.toLowerCase().includes(query)
       );
-      setFilteredRegistros(filtered);
     }
-  }, [searchText, registros]);
+
+    setFilteredRegistros(resultado);
+  }, [searchText, registros, filtroAgencia]);
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
     await cargarRegistros();
@@ -164,6 +169,9 @@ const Home: React.FC = () => {
           urlsFotos.push(publicUrlData.publicUrl);
         }
 
+        const agencia = agencias.find((a) => a.id === registro.agenciaId);
+        const ubicacion = agencia?.ubicaciones.find((u) => u.id === registro.ubicacionId);
+
         const insertPayload: Record<string, string | null> = {
           nombre_equipo: registro.nombreEquipo,
           proveedor: registro.proveedor,
@@ -174,6 +182,9 @@ const Home: React.FC = () => {
           foto_1_url: urlsFotos[0] && urlsFotos[0] !== '' ? urlsFotos[0] : null,
           foto_2_url: urlsFotos[1] && urlsFotos[1] !== '' ? urlsFotos[1] : null,
           foto_3_url: urlsFotos[2] && urlsFotos[2] !== '' ? urlsFotos[2] : null,
+          agencia_codigo: agencia?.codigo || null,
+          agencia_nombre: agencia?.nombre || null,
+          ubicacion_nombre: ubicacion?.nombre || null,
         };
 
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -327,6 +338,28 @@ const Home: React.FC = () => {
           animated
           className="neo-searchbar"
         />
+
+        {/* Filtro por agencia + acceso a gestión */}
+        <div className="home-agencia-bar">
+          <select
+            className="neo-select-sm"
+            value={filtroAgencia}
+            onChange={(e) => setFiltroAgencia(e.target.value)}
+          >
+            <option value="">Todas las agencias</option>
+            {agencias.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.codigo} - {a.nombre}
+              </option>
+            ))}
+          </select>
+          <button
+            className="agencia-config-btn"
+            onClick={() => history.push('/agencias')}
+          >
+            <IonIcon icon={businessOutline} />
+          </button>
+        </div>
 
         {/* Stats + acciones */}
         <div className="neo-card neo-animate">

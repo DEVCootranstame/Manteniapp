@@ -90,6 +90,60 @@
 }
 
 /* ====== ESTADO VACÍO ====== */
+/* ====== BARRA FILTRO AGENCIA ====== */
+.home-agencia-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px 12px 16px;
+}
+
+.neo-select-sm {
+  flex: 1;
+  background: #E8EDF5;
+  border-radius: 12px;
+  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
+  padding: 12px 36px 12px 14px;
+  border: none;
+  font-size: 14px;
+  color: #1a1a2e;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.neo-select-sm:focus {
+  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff,
+              0 0 0 2px rgba(45, 127, 249, 0.3);
+}
+
+.agencia-config-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6C5CE7 0%, #2D7FF9 100%);
+  color: #fff;
+  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.agencia-config-btn:active {
+  transform: scale(0.92);
+}
+
+.agencia-config-btn ion-icon {
+  font-size: 20px;
+}
+
+/* ====== ESTADO VACÍO ====== */
 .home-empty {
   text-align: center;
   padding: 50px 20px;
