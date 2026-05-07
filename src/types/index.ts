@@ -10,6 +10,11 @@ export interface Agencia {
   ubicaciones: Ubicacion[];
 }
 
+export interface TipoMantenimiento {
+  id: string;
+  nombre: string;
+}
+
 export interface Mantenimiento {
   id: string;
   nombreEquipo: string;
@@ -22,10 +27,12 @@ export interface Mantenimiento {
   sincronizado: boolean;
   agenciaId?: string;
   ubicacionId?: string;
+  tipoMantenimientoId?: string;
 }
 
 export const STORAGE_KEY = 'mantenimientos_registros';
 export const AGENCIAS_STORAGE_KEY = 'agencias_registros';
+export const TIPOS_MANTENIMIENTO_STORAGE_KEY = 'tipos_mantenimiento';
 
 /**
  * Sanitiza texto de entrada eliminando caracteres potencialmente peligrosos (XSS).

@@ -16,7 +16,7 @@ import { camera, close, save } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
-import { Mantenimiento, Agencia, STORAGE_KEY, AGENCIAS_STORAGE_KEY } from '../types';
+import { Mantenimiento, Agencia, TipoMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY } from '../types';
 import { useIonViewWillEnter } from '@ionic/react';
 import './FormularioMantenimiento.css';
 
@@ -44,8 +44,10 @@ const FormularioMantenimiento: React.FC = () => {
   const history = useHistory();
 
   const [agencias, setAgencias] = useState<Agencia[]>([]);
+  const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
   const [agenciaId, setAgenciaId] = useState('');
   const [ubicacionId, setUbicacionId] = useState('');
+  const [tipoMantenimientoId, setTipoMantenimientoId] = useState('');
 
   const [nombreEquipo, setNombreEquipo] = useState('');
   const [proveedor, setProveedor] = useState('');
@@ -69,8 +71,16 @@ const FormularioMantenimiento: React.FC = () => {
     }
   }, []);
 
+  const cargarTiposMantenimiento = useCallback(async () => {
+    const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });
+    if (value) {
+      setTiposMantenimiento(JSON.parse(value));
+    }
+  }, []);
+
   useIonViewWillEnter(() => {
     cargarAgencias();
+    cargarTiposMantenimiento();
   });
 
   const agenciaSeleccionada = agencias.find((a) => a.id === agenciaId);
@@ -124,16 +134,31 @@ const FormularioMantenimiento: React.FC = () => {
     return (
       agenciaId.length > 0 &&
       ubicacionId.length > 0 &&
+      tipoMantenimientoId.length > 0 &&
       nombreEquipo.trim().length > 0 &&
       proveedor.trim().length > 0 &&
-      mantenimientoRealizado.trim().length > 0 &&
-      observaciones.trim().length > 0
+      mantenimientoRealizado.trim().length > 0
     );
+  };
+
+  const PATRON_EQUIPO = /^[A-Z]{2}-\d{2}-\d{4}$/;
+
+  const validarPatronEquipo = (): boolean => {
+    return PATRON_EQUIPO.test(nombreEquipo.trim());
+  };
+
+  const validarCodigoAgencia = (): boolean => {
+    const agencia = agencias.find((a) => a.id === agenciaId);
+    if (!agencia) return false;
+    const codigo = agencia.codigo.toUpperCase();
+    const inicioEquipo = nombreEquipo.trim().substring(0, codigo.length).toUpperCase();
+    return inicioEquipo === codigo;
   };
 
   const limpiarFormulario = () => {
     setAgenciaId('');
     setUbicacionId('');
+    setTipoMantenimientoId('');
     setNombreEquipo('');
     setProveedor('');
     setMantenimientoRealizado('');
@@ -147,13 +172,47 @@ const FormularioMantenimiento: React.FC = () => {
       setTouched({
         agenciaId: true,
         ubicacionId: true,
+        tipoMantenimientoId: true,
         nombreEquipo: true,
         proveedor: true,
         mantenimientoRealizado: true,
-        observaciones: true,
       });
       setAlertHeader('Campos incompletos');
       setAlertMessage('Por favor completa todos los campos obligatorios antes de guardar.');
+      setShowAlert(true);
+      return;
+    }
+
+    if (!validarPatronEquipo()) {
+      setAlertHeader('Formato inválido');
+      setAlertMessage(
+        'El nombre del equipo debe seguir el patrón: XX-00-0000 (dos letras, guion, dos números, guion, cuatro números). Ejemplo: AR-01-0001'
+      );
+      setShowAlert(true);
+      return;
+    }
+
+    if (!validarCodigoAgencia()) {
+      const agencia = agencias.find((a) => a.id === agenciaId);
+      setAlertHeader('Código no corresponde');
+      setAlertMessage(
+        `El nombre del equipo debe iniciar con el código de la agencia "${agencia?.codigo}". Ejemplo: ${agencia?.codigo}-01-0001`
+      );
+      setShowAlert(true);
+      return;
+    }
+
+    // Verificar duplicados
+    const { value: registrosGuardados } = await Preferences.get({ key: STORAGE_KEY });
+    const registrosExistentes: Mantenimiento[] = registrosGuardados ? JSON.parse(registrosGuardados) : [];
+    const duplicado = registrosExistentes.find(
+      (r) => r.nombreEquipo.toUpperCase() === nombreEquipo.trim().toUpperCase()
+    );
+    if (duplicado) {
+      setAlertHeader('Equipo duplicado');
+      setAlertMessage(
+        `Ya existe un registro con el nombre de equipo "${nombreEquipo.trim()}". Registrado el ${duplicado.fecha} a las ${duplicado.hora}. Usa un nombre diferente.`
+      );
       setShowAlert(true);
       return;
     }
@@ -176,10 +235,9 @@ const FormularioMantenimiento: React.FC = () => {
         sincronizado: false,
         agenciaId,
         ubicacionId,
+        tipoMantenimientoId,
       };
 
-      const { value } = await Preferences.get({ key: STORAGE_KEY });
-      const registrosExistentes: Mantenimiento[] = value ? JSON.parse(value) : [];
       registrosExistentes.unshift(nuevoRegistro);
 
       await Preferences.set({
@@ -271,20 +329,46 @@ const FormularioMantenimiento: React.FC = () => {
             )}
           </div>
 
+          {/* Campo: Tipo de Mantenimiento */}
+          <div className="form-field">
+            <label className="form-field__label">
+              Tipo de Mantenimiento <span className="form-field__required">*</span>
+            </label>
+            <select
+              className="neo-select"
+              value={tipoMantenimientoId}
+              onChange={(e) => setTipoMantenimientoId(e.target.value)}
+              onBlur={() => marcarTocado('tipoMantenimientoId')}
+            >
+              <option value="">-- Selecciona un tipo --</option>
+              {tiposMantenimiento.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.nombre}
+                </option>
+              ))}
+            </select>
+            {touched.tipoMantenimientoId && tipoMantenimientoId === '' && (
+              <div className="form-field__error">Selecciona un tipo de mantenimiento</div>
+            )}
+          </div>
+
           {/* Campo: Nombre del equipo */}
           <div className="form-field">
             <label className="form-field__label">
               Nombre del Equipo <span className="form-field__required">*</span>
             </label>
             <input
-              className="neo-input"
+              className="neo-input neo-input-uppercase"
               value={nombreEquipo}
-              onChange={(e) => setNombreEquipo(e.target.value)}
+              onChange={(e) => setNombreEquipo(e.target.value.toUpperCase())}
               onBlur={() => marcarTocado('nombreEquipo')}
-              placeholder="Ej: PC-Escritorio-001, Laptop HP ProBook..."
+              placeholder={agenciaId ? `Ej: ${agencias.find(a => a.id === agenciaId)?.codigo || ''}-01-0001` : 'Primero selecciona una agencia'}
             />
             {touched.nombreEquipo && nombreEquipo.trim() === '' && (
               <div className="form-field__error">Este campo es obligatorio</div>
+            )}
+            {touched.nombreEquipo && nombreEquipo.trim() !== '' && !PATRON_EQUIPO.test(nombreEquipo.trim()) && (
+              <div className="form-field__error">Formato inválido. Usa: XX-00-0000 (ej: AR-01-0001)</div>
             )}
           </div>
 
@@ -323,22 +407,18 @@ const FormularioMantenimiento: React.FC = () => {
             )}
           </div>
 
-          {/* Campo: Observaciones */}
+          {/* Campo: Observaciones (opcional) */}
           <div className="form-field">
             <label className="form-field__label">
-              Observaciones <span className="form-field__required">*</span>
+              Observaciones
             </label>
             <textarea
               className="neo-textarea"
               value={observaciones}
               onChange={(e) => setObservaciones(e.target.value)}
-              onBlur={() => marcarTocado('observaciones')}
               placeholder="Daños encontrados, piezas faltantes, recomendaciones..."
               rows={3}
             />
-            {touched.observaciones && observaciones.trim() === '' && (
-              <div className="form-field__error">Este campo es obligatorio</div>
-            )}
           </div>
 
           {/* Sección de fotos */}

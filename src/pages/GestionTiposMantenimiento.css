@@ -1,0 +1,121 @@
+/* ======================================================
+   GestionTiposMantenimiento.css — Estilos neomórficos
+   ====================================================== */
+
+.tipos-header ion-toolbar {
+  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --color: #fff;
+  --border-width: 0;
+}
+
+.tipos-header ion-back-button {
+  --color: #fff;
+}
+
+.tipos-container {
+  padding: 20px 16px;
+}
+
+/* ====== BOTÓN AGREGAR ====== */
+.tipos-add-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.tipos-add-btn:active {
+  transform: scale(0.97);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tipos-add-btn ion-icon {
+  font-size: 22px;
+}
+
+/* ====== ESTADO VACÍO ====== */
+.tipos-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #9ca3af;
+  font-size: 15px;
+}
+
+/* ====== LISTA ====== */
+.tipos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ====== TARJETA TIPO ====== */
+.tipo-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #E8EDF5;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+}
+
+.tipo-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tipo-card__nombre {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* ====== BOTONES ACCIÓN ====== */
+.tipo-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tipo-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+}
+
+.tipo-btn:active {
+  transform: scale(0.92);
+}
+
+.tipo-btn ion-icon {
+  font-size: 18px;
+}
+
+.tipo-btn--edit {
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  color: #fff;
+}
+
+.tipo-btn--delete {
+  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  color: #fff;
+}

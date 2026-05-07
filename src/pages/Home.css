@@ -6,7 +6,7 @@
 .home-header-content {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 8px 16px 0 16px;
 }
 
@@ -17,6 +17,29 @@
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.5px;
+}
+
+.home-config-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: linear-gradient(135deg, #6C5CE7 0%, #2D7FF9 100%);
+  color: #fff;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.home-config-btn:active {
+  transform: scale(0.92);
+}
+
+.home-config-btn ion-icon {
+  font-size: 20px;
 }
 
 /* ====== RESUMEN (stats card) ====== */
@@ -56,6 +79,11 @@
   background: linear-gradient(180deg, transparent, #c8ccd4, transparent);
 }
 
+/* ====== STATS CARD ====== */
+.home-stats-card {
+  margin-top: 12px;
+}
+
 /* ====== BOTONES DE ACCIÓN ====== */
 .home-actions {
   display: flex;
@@ -72,55 +100,26 @@
   font-size: 18px;
 }
 
-.home-btn-clean {
-  width: 100%;
-  margin-top: 10px;
-  font-size: 12px;
-  padding: 10px;
-  color: #6b7280;
-}
-
-.home-btn-clean ion-icon {
-  font-size: 16px;
-}
-
 .home-btn-disabled {
   opacity: 0.5;
   pointer-events: none;
 }
 
-/* ====== ESTADO VACÍO ====== */
-/* ====== BARRA FILTRO AGENCIA ====== */
-.home-agencia-bar {
+/* ====== BARRA BÚSQUEDA + FILTRO ====== */
+.home-search-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 16px 12px 16px;
+  gap: 8px;
+  padding: 0 16px 8px 4px;
 }
 
-.neo-select-sm {
+.home-searchbar-inline {
   flex: 1;
-  background: #E8EDF5;
-  border-radius: 12px;
-  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
-  padding: 12px 36px 12px 14px;
-  border: none;
-  font-size: 14px;
-  color: #1a1a2e;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
+  --border-radius: 12px;
+  padding: 0;
 }
 
-.neo-select-sm:focus {
-  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff,
-              0 0 0 2px rgba(45, 127, 249, 0.3);
-}
-
-.agencia-config-btn {
+.home-filter-btn {
   width: 44px;
   height: 44px;
   border: none;
@@ -129,18 +128,70 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: linear-gradient(135deg, #6C5CE7 0%, #2D7FF9 100%);
-  color: #fff;
+  background: #E8EDF5;
+  color: #6b7280;
   box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
-.agencia-config-btn:active {
+.home-filter-btn:active {
   transform: scale(0.92);
 }
 
-.agencia-config-btn ion-icon {
-  font-size: 20px;
+.home-filter-btn--active {
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+}
+
+.home-filter-btn ion-icon {
+  font-size: 22px;
+}
+
+/* ====== PANEL DE FILTROS ====== */
+.home-filtros-panel {
+  margin: 0 16px 12px 16px;
+  padding: 16px;
+}
+
+.home-filtros-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-filtro-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.home-filtro-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6b7280;
+}
+
+.home-filtros-clear {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #E8EDF5;
+  color: #6b7280;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.home-filtros-clear:active {
+  transform: scale(0.97);
+  box-shadow: inset 2px 2px 4px #c8ccd4, inset -2px -2px 4px #ffffff;
 }
 
 /* ====== ESTADO VACÍO ====== */
@@ -260,4 +311,27 @@
 /* ====== ESPACIADOR INFERIOR ====== */
 .home-spacer {
   height: 90px;
+}
+
+/* ====== SELECT PEQUEÑO (filtros) ====== */
+.neo-select-sm {
+  width: 100%;
+  background: #E8EDF5;
+  border-radius: 10px;
+  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
+  padding: 10px 36px 10px 12px;
+  border: none;
+  font-size: 14px;
+  color: #1a1a2e;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.neo-select-sm:focus {
+  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff,
+              0 0 0 2px rgba(45, 127, 249, 0.3);
 }

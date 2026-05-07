@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import FormularioMantenimiento from './components/FormularioMantenimiento';
 import GestionAgencias from './pages/GestionAgencias';
 import GestionUbicaciones from './pages/GestionUbicaciones';
+import GestionTiposMantenimiento from './pages/GestionTiposMantenimiento';
+import Configuracion from './pages/Configuracion';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -46,6 +48,8 @@ const App: React.FC = () => (
         <Route exact path="/formulario" component={FormularioMantenimiento} />
         <Route exact path="/agencias" component={GestionAgencias} />
         <Route exact path="/agencias/:agenciaId/ubicaciones" component={GestionUbicaciones} />
+        <Route exact path="/tipos-mantenimiento" component={GestionTiposMantenimiento} />
+        <Route exact path="/configuracion" component={Configuracion} />
         <Route exact path="/">
           <Redirect to="/home" />
         </Route>

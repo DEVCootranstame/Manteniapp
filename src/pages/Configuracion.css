@@ -1,0 +1,98 @@
+/* ======================================================
+   Configuracion.css — Estilos neomórficos
+   ====================================================== */
+
+.config-header ion-toolbar {
+  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  --color: #fff;
+  --border-width: 0;
+}
+
+.config-header ion-back-button {
+  --color: #fff;
+}
+
+.config-container {
+  padding: 20px 16px;
+}
+
+.config-subtitle {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+/* ====== LISTA DE OPCIONES ====== */
+.config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  background: #E8EDF5;
+  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.config-item:active {
+  transform: scale(0.98);
+  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
+}
+
+.config-item__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.config-item__icon ion-icon {
+  font-size: 22px;
+  color: #fff;
+}
+
+.config-item__icon--blue {
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+}
+
+.config-item__icon--purple {
+  background: linear-gradient(135deg, #6C5CE7 0%, #A855F7 100%);
+}
+
+.config-item__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.config-item__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.config-item__desc {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.config-item__arrow {
+  font-size: 20px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}

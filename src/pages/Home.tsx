@@ -16,14 +16,14 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, refreshOutline, businessOutline } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, settingsOutline, filterOutline, closeOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { supabase } from '../supabaseClient';
 import { useHistory } from 'react-router-dom';
 import { decode } from 'base64-arraybuffer';
-import { Mantenimiento, Agencia, STORAGE_KEY, AGENCIAS_STORAGE_KEY } from '../types';
+import { Mantenimiento, Agencia, TipoMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY } from '../types';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -32,7 +32,11 @@ const Home: React.FC = () => {
   const [filteredRegistros, setFilteredRegistros] = useState<Mantenimiento[]>([]);
   const [searchText, setSearchText] = useState<string>('');
   const [agencias, setAgencias] = useState<Agencia[]>([]);
+  const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
   const [filtroAgencia, setFiltroAgencia] = useState<string>('');
+  const [filtroTipo, setFiltroTipo] = useState<string>('');
+  const [filtroEstado, setFiltroEstado] = useState<string>('pendientes');
+  const [showFiltros, setShowFiltros] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -45,6 +49,13 @@ const Home: React.FC = () => {
     const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
     if (value) {
       setAgencias(JSON.parse(value));
+    }
+  }, []);
+
+  const cargarTiposMantenimiento = useCallback(async () => {
+    const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });
+    if (value) {
+      setTiposMantenimiento(JSON.parse(value));
     }
   }, []);
 
@@ -69,19 +80,33 @@ const Home: React.FC = () => {
   useIonViewWillEnter(() => {
     cargarRegistros();
     cargarAgencias();
+    cargarTiposMantenimiento();
   });
 
   useEffect(() => {
     cargarRegistros();
     cargarAgencias();
+    cargarTiposMantenimiento();
   }, [cargarRegistros, cargarAgencias]);
 
   useEffect(() => {
     let resultado = registros;
 
+    // Filtro por estado (por defecto solo pendientes)
+    if (filtroEstado === 'pendientes') {
+      resultado = resultado.filter((r) => !r.sincronizado);
+    } else if (filtroEstado === 'sincronizados') {
+      resultado = resultado.filter((r) => r.sincronizado);
+    }
+
     // Filtro por agencia
     if (filtroAgencia) {
       resultado = resultado.filter((r) => r.agenciaId === filtroAgencia);
+    }
+
+    // Filtro por tipo de mantenimiento
+    if (filtroTipo) {
+      resultado = resultado.filter((r) => r.tipoMantenimientoId === filtroTipo);
     }
 
     // Filtro por texto
@@ -98,7 +123,7 @@ const Home: React.FC = () => {
     }
 
     setFilteredRegistros(resultado);
-  }, [searchText, registros, filtroAgencia]);
+  }, [searchText, registros, filtroAgencia, filtroTipo, filtroEstado]);
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
     await cargarRegistros();
@@ -171,6 +196,7 @@ const Home: React.FC = () => {
 
         const agencia = agencias.find((a) => a.id === registro.agenciaId);
         const ubicacion = agencia?.ubicaciones.find((u) => u.id === registro.ubicacionId);
+        const tipoMant = tiposMantenimiento.find((t) => t.id === registro.tipoMantenimientoId);
 
         const insertPayload: Record<string, string | null> = {
           nombre_equipo: registro.nombreEquipo,
@@ -185,6 +211,7 @@ const Home: React.FC = () => {
           agencia_codigo: agencia?.codigo || null,
           agencia_nombre: agencia?.nombre || null,
           ubicacion_nombre: ubicacion?.nombre || null,
+          tipo_mantenimiento: tipoMant?.nombre || null,
         };
 
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -298,18 +325,6 @@ const Home: React.FC = () => {
     }
   };
 
-  /* ======================== LIMPIAR SINCRONIZADOS ======================== */
-  const limpiarSincronizados = async () => {
-    const pendientes = registros.filter((r) => !r.sincronizado);
-    await Preferences.set({
-      key: STORAGE_KEY,
-      value: JSON.stringify(pendientes),
-    });
-    setRegistros(pendientes);
-    setFilteredRegistros(pendientes);
-    mostrarToast(`Se eliminaron ${registros.length - pendientes.length} registros sincronizados`);
-  };
-
   const totalRegistros = registros.length;
   const pendientesSinc = registros.filter((r) => !r.sincronizado).length;
   const sincronizados = registros.filter((r) => r.sincronizado).length;
@@ -321,6 +336,12 @@ const Home: React.FC = () => {
         <IonToolbar>
           <div className="home-header-content">
             <div className="home-logo-text">ManteniApp</div>
+            <button
+              className="home-config-btn"
+              onClick={() => history.push('/configuracion')}
+            >
+              <IonIcon icon={settingsOutline} />
+            </button>
           </div>
         </IonToolbar>
       </IonHeader>
@@ -330,39 +351,8 @@ const Home: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
 
-        <IonSearchbar
-          value={searchText}
-          onIonInput={(e) => setSearchText(e.detail.value || '')}
-          placeholder="Buscar equipo, proveedor, fecha..."
-          debounce={300}
-          animated
-          className="neo-searchbar"
-        />
-
-        {/* Filtro por agencia + acceso a gestión */}
-        <div className="home-agencia-bar">
-          <select
-            className="neo-select-sm"
-            value={filtroAgencia}
-            onChange={(e) => setFiltroAgencia(e.target.value)}
-          >
-            <option value="">Todas las agencias</option>
-            {agencias.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.codigo} - {a.nombre}
-              </option>
-            ))}
-          </select>
-          <button
-            className="agencia-config-btn"
-            onClick={() => history.push('/agencias')}
-          >
-            <IonIcon icon={businessOutline} />
-          </button>
-        </div>
-
         {/* Stats + acciones */}
-        <div className="neo-card neo-animate">
+        <div className="neo-card neo-animate home-stats-card">
           <div className="home-stats-row">
             <div className="home-stat">
               <div className="home-stat__number home-stat__number--blue">{totalRegistros}</div>
@@ -398,21 +388,99 @@ const Home: React.FC = () => {
               Exportar CSV
             </button>
           </div>
-
-          {sincronizados > 0 && (
-            <button className="neo-btn home-btn-clean" onClick={limpiarSincronizados}>
-              <IonIcon icon={refreshOutline} />
-              Limpiar {sincronizados} sincronizados
-            </button>
-          )}
         </div>
+
+        {/* Barra de búsqueda + botón filtro */}
+        <div className="home-search-bar">
+          <IonSearchbar
+            value={searchText}
+            onIonInput={(e) => setSearchText(e.detail.value || '')}
+            placeholder="Buscar equipo, proveedor, fecha..."
+            debounce={300}
+            animated
+            className="neo-searchbar home-searchbar-inline"
+          />
+          <button
+            className={`home-filter-btn ${(filtroAgencia || filtroTipo || filtroEstado !== 'pendientes') ? 'home-filter-btn--active' : ''}`}
+            onClick={() => setShowFiltros(!showFiltros)}
+          >
+            <IonIcon icon={showFiltros ? closeOutline : filterOutline} />
+          </button>
+        </div>
+
+        {/* Panel de filtros */}
+        {showFiltros && (
+          <div className="home-filtros-panel neo-card neo-animate">
+            <div className="home-filtros-grid">
+              <div className="home-filtro-field">
+                <label className="home-filtro-label">Estado</label>
+                <select
+                  className="neo-select-sm"
+                  value={filtroEstado}
+                  onChange={(e) => setFiltroEstado(e.target.value)}
+                >
+                  <option value="pendientes">Pendientes</option>
+                  <option value="sincronizados">Sincronizados</option>
+                  <option value="todos">Todos</option>
+                </select>
+              </div>
+
+              <div className="home-filtro-field">
+                <label className="home-filtro-label">Agencia</label>
+                <select
+                  className="neo-select-sm"
+                  value={filtroAgencia}
+                  onChange={(e) => setFiltroAgencia(e.target.value)}
+                >
+                  <option value="">Todas</option>
+                  {agencias.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.codigo} - {a.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="home-filtro-field">
+                <label className="home-filtro-label">Tipo</label>
+                <select
+                  className="neo-select-sm"
+                  value={filtroTipo}
+                  onChange={(e) => setFiltroTipo(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {tiposMantenimiento.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <button
+              className="home-filtros-clear"
+              onClick={() => {
+                setFiltroAgencia('');
+                setFiltroTipo('');
+                setFiltroEstado('pendientes');
+              }}
+            >
+              Limpiar filtros
+            </button>
+          </div>
+        )}
 
         {/* Lista de registros */}
         {filteredRegistros.length === 0 ? (
           <div className="home-empty">
             <div className="home-empty__icon">📋</div>
             <h3 className="home-empty__title">No hay registros</h3>
-            <p className="home-empty__subtitle">Presiona + para agregar un mantenimiento</p>
+            <p className="home-empty__subtitle">
+              {filtroEstado === 'pendientes'
+                ? 'No hay mantenimientos pendientes. Presiona + para agregar uno.'
+                : 'No se encontraron registros con los filtros aplicados.'}
+            </p>
           </div>
         ) : (
           filteredRegistros.map((registro, idx) => (
