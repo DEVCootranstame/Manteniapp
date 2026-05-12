@@ -73,6 +73,10 @@
   background: linear-gradient(135deg, #6C5CE7 0%, #A855F7 100%);
 }
 
+.config-item__icon--amber {
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+}
+
 .config-item__content {
   display: flex;
   flex-direction: column;

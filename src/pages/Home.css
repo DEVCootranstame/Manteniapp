@@ -3,10 +3,20 @@
    ============================================== */
 
 /* ====== HEADER ====== */
+.neo-header {
+  --background: #E8EDF5;
+  --border-color: transparent;
+}
+
+.neo-header ion-toolbar {
+  --background: #E8EDF5;
+  --border-color: transparent;
+}
+
 .home-header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 8px 16px 0 16px;
 }
 
@@ -17,29 +27,6 @@
   font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.5px;
-}
-
-.home-config-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: linear-gradient(135deg, #6C5CE7 0%, #2D7FF9 100%);
-  color: #fff;
-  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
-  transition: all 0.2s ease;
-}
-
-.home-config-btn:active {
-  transform: scale(0.92);
-}
-
-.home-config-btn ion-icon {
-  font-size: 20px;
 }
 
 /* ====== RESUMEN (stats card) ====== */
@@ -233,6 +220,24 @@
   margin-bottom: 12px;
 }
 
+.home-card-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.neo-badge-tipo {
+  background: linear-gradient(135deg, #6C5CE7 0%, #a78bfa 100%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
 .home-card-title {
   font-size: 17px;
   font-weight: 700;
@@ -295,10 +300,36 @@
   margin-top: 12px;
 }
 
+.home-card-photos--categorized {
+  justify-content: flex-start;
+}
+
 .home-card-photo {
   width: 72px;
   height: 72px;
   flex-shrink: 0;
+}
+
+.home-card-photo--labeled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+}
+
+.home-card-photo--labeled img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.home-card-photo__label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6b7280;
+  margin-top: 3px;
+  text-align: center;
 }
 
 .home-card-photo img {
@@ -334,4 +365,149 @@
 .neo-select-sm:focus {
   box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff,
               0 0 0 2px rgba(45, 127, 249, 0.3);
+}
+
+/* ====== FAB OVERLAY ====== */
+.fab-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ====== FAB SPEED DIAL (Nequi style) ====== */
+.fab-speed-dial {
+  position: fixed;
+  bottom: 24px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.fab-speed-dial__main {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(45, 127, 249, 0.4);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s ease;
+}
+
+.fab-speed-dial__main:active {
+  transform: scale(0.92);
+}
+
+.fab-speed-dial__main--open {
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+}
+
+.fab-speed-dial__main--open:active {
+  transform: rotate(45deg) scale(0.92);
+}
+
+.fab-speed-dial__main ion-icon {
+  font-size: 26px;
+  transition: transform 0.3s ease;
+}
+
+.fab-speed-dial__options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+  animation: fabSlideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fabSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.fab-speed-dial__option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  animation: fabOptionIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.fab-speed-dial__option:nth-child(1) {
+  animation-delay: 0.08s;
+}
+
+.fab-speed-dial__option:nth-child(2) {
+  animation-delay: 0.02s;
+}
+
+@keyframes fabOptionIn {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.fab-speed-dial__label {
+  background: #fff;
+  color: #1a1a2e;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.fab-speed-dial__icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.fab-speed-dial__icon-btn ion-icon {
+  font-size: 20px;
+}
+
+.fab-speed-dial__icon-btn--create {
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+}
+
+.fab-speed-dial__icon-btn--config {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
 }

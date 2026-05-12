@@ -15,6 +15,12 @@ export interface TipoMantenimiento {
   nombre: string;
 }
 
+export interface FotosCategorized {
+  antes: string | null;
+  durante: string | null;
+  despues: string | null;
+}
+
 export interface Mantenimiento {
   id: string;
   nombreEquipo: string;
@@ -24,15 +30,23 @@ export interface Mantenimiento {
   fecha: string;
   hora: string;
   fotos: string[];
+  fotosCategorized?: FotosCategorized;
   sincronizado: boolean;
   agenciaId?: string;
   ubicacionId?: string;
   tipoMantenimientoId?: string;
 }
 
+export interface SugerenciaMantenimiento {
+  id: string;
+  tipoMantenimiento: string; // nombre del tipo: 'Preventivo', 'Correctivo', 'Predictivo', etc.
+  texto: string;
+}
+
 export const STORAGE_KEY = 'mantenimientos_registros';
 export const AGENCIAS_STORAGE_KEY = 'agencias_registros';
 export const TIPOS_MANTENIMIENTO_STORAGE_KEY = 'tipos_mantenimiento';
+export const SUGERENCIAS_STORAGE_KEY = 'sugerencias_mantenimiento';
 
 /**
  * Sanitiza texto de entrada eliminando caracteres potencialmente peligrosos (XSS).

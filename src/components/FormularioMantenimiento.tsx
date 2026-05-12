@@ -12,11 +12,11 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/react';
-import { camera, close, save } from 'ionicons/icons';
+import { camera, close, save, bulb } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
-import { Mantenimiento, Agencia, TipoMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY } from '../types';
+import { Mantenimiento, Agencia, TipoMantenimiento, FotosCategorized, SugerenciaMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY, SUGERENCIAS_STORAGE_KEY } from '../types';
 import { useIonViewWillEnter } from '@ionic/react';
 import './FormularioMantenimiento.css';
 
@@ -53,7 +53,7 @@ const FormularioMantenimiento: React.FC = () => {
   const [proveedor, setProveedor] = useState('');
   const [mantenimientoRealizado, setMantenimientoRealizado] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  const [fotos, setFotos] = useState<string[]>([]);
+  const [fotosCat, setFotosCat] = useState<FotosCategorized>({ antes: null, durante: null, despues: null });
 
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
@@ -63,6 +63,8 @@ const FormularioMantenimiento: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [sugerencias, setSugerencias] = useState<SugerenciaMantenimiento[]>([]);
+  const [showSugerencias, setShowSugerencias] = useState(false);
 
   const cargarAgencias = useCallback(async () => {
     const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
@@ -78,22 +80,44 @@ const FormularioMantenimiento: React.FC = () => {
     }
   }, []);
 
+  const cargarSugerencias = useCallback(async () => {
+    const { value } = await Preferences.get({ key: SUGERENCIAS_STORAGE_KEY });
+    if (value) {
+      setSugerencias(JSON.parse(value));
+    }
+  }, []);
+
   useIonViewWillEnter(() => {
     cargarAgencias();
     cargarTiposMantenimiento();
+    cargarSugerencias();
   });
 
   const agenciaSeleccionada = agencias.find((a) => a.id === agenciaId);
   const ubicacionesDisponibles = agenciaSeleccionada?.ubicaciones || [];
+  const tipoSeleccionado = tiposMantenimiento.find((t) => t.id === tipoMantenimientoId);
+  const sugerenciasFiltradas = tipoSeleccionado
+    ? sugerencias.filter((s) => s.tipoMantenimiento.toLowerCase() === tipoSeleccionado.nombre.toLowerCase())
+    : [];
+
+  const aplicarSugerencia = (texto: string) => {
+    setMantenimientoRealizado((prev) => {
+      if (prev.trim()) {
+        return prev.trim() + '\n' + texto;
+      }
+      return texto;
+    });
+    setShowSugerencias(false);
+  };
 
   const marcarTocado = (campo: string) => {
     setTouched((prev) => ({ ...prev, [campo]: true }));
   };
 
-  const tomarFoto = async () => {
-    if (fotos.length >= 3) {
-      setAlertHeader('Límite alcanzado');
-      setAlertMessage('Solo puedes tomar hasta 3 fotos por equipo. Elimina una para tomar otra.');
+  const tomarFoto = async (categoria: keyof FotosCategorized) => {
+    if (fotosCat[categoria]) {
+      setAlertHeader('Foto existente');
+      setAlertMessage('Ya hay una foto en esta categoría. Elimínala primero para tomar otra.');
       setShowAlert(true);
       return;
     }
@@ -110,8 +134,9 @@ const FormularioMantenimiento: React.FC = () => {
       });
 
       if (image.base64String) {
-        setFotos((prev) => [...prev, image.base64String!]);
-        setToastMessage(`Foto ${fotos.length + 1} capturada`);
+        setFotosCat((prev) => ({ ...prev, [categoria]: image.base64String! }));
+        const label = categoria === 'antes' ? 'Antes' : categoria === 'durante' ? 'Durante' : 'Después';
+        setToastMessage(`Foto "${label}" capturada`);
         setShowToast(true);
       }
     } catch (error: any) {
@@ -124,8 +149,8 @@ const FormularioMantenimiento: React.FC = () => {
     }
   };
 
-  const eliminarFoto = (index: number) => {
-    setFotos((prev) => prev.filter((_, i) => i !== index));
+  const eliminarFoto = (categoria: keyof FotosCategorized) => {
+    setFotosCat((prev) => ({ ...prev, [categoria]: null }));
     setToastMessage('Foto eliminada');
     setShowToast(true);
   };
@@ -163,7 +188,7 @@ const FormularioMantenimiento: React.FC = () => {
     setProveedor('');
     setMantenimientoRealizado('');
     setObservaciones('');
-    setFotos([]);
+    setFotosCat({ antes: null, durante: null, despues: null });
     setTouched({});
   };
 
@@ -223,6 +248,12 @@ const FormularioMantenimiento: React.FC = () => {
     try {
       const { fecha, hora } = obtenerFechaHora();
 
+      // Construir array de fotos para compatibilidad y objeto categorizado
+      const fotosArray: string[] = [];
+      if (fotosCat.antes) fotosArray.push(fotosCat.antes);
+      if (fotosCat.durante) fotosArray.push(fotosCat.durante);
+      if (fotosCat.despues) fotosArray.push(fotosCat.despues);
+
       const nuevoRegistro: Mantenimiento = {
         id: generarId(),
         nombreEquipo: nombreEquipo.trim(),
@@ -231,7 +262,8 @@ const FormularioMantenimiento: React.FC = () => {
         observaciones: observaciones.trim(),
         fecha,
         hora,
-        fotos: [...fotos],
+        fotos: fotosArray,
+        fotosCategorized: { ...fotosCat },
         sincronizado: false,
         agenciaId,
         ubicacionId,
@@ -391,9 +423,31 @@ const FormularioMantenimiento: React.FC = () => {
 
           {/* Campo: Mantenimiento Realizado */}
           <div className="form-field">
-            <label className="form-field__label">
-              Mantenimiento Realizado <span className="form-field__required">*</span>
-            </label>
+            <div className="form-field__label-row">
+              <label className="form-field__label">
+                Mantenimiento Realizado <span className="form-field__required">*</span>
+              </label>
+              <button
+                className="form-field__suggest-btn"
+                onClick={() => {
+                  if (!tipoMantenimientoId) {
+                    setAlertHeader('Selecciona un tipo');
+                    setAlertMessage('Primero selecciona el tipo de mantenimiento para ver las sugerencias correspondientes.');
+                    setShowAlert(true);
+                    return;
+                  }
+                  if (sugerenciasFiltradas.length === 0) {
+                    setToastMessage(`No hay sugerencias para "${tipoSeleccionado?.nombre}". Agrega en Configuración.`);
+                    setShowToast(true);
+                    return;
+                  }
+                  setShowSugerencias(true);
+                }}
+                title="Sugerencias"
+              >
+                <IonIcon icon={bulb} />
+              </button>
+            </div>
             <textarea
               className="neo-textarea"
               value={mantenimientoRealizado}
@@ -406,6 +460,32 @@ const FormularioMantenimiento: React.FC = () => {
               <div className="form-field__error">Este campo es obligatorio</div>
             )}
           </div>
+
+          {/* Modal de sugerencias */}
+          {showSugerencias && (
+            <div className="sugerencias-overlay" onClick={() => setShowSugerencias(false)}>
+              <div className="sugerencias-modal" onClick={(e) => e.stopPropagation()}>
+                <div className="sugerencias-modal__header">
+                  <h3>💡 Sugerencias — {tipoSeleccionado?.nombre}</h3>
+                  <button className="sugerencias-modal__close" onClick={() => setShowSugerencias(false)}>
+                    <IonIcon icon={close} />
+                  </button>
+                </div>
+                <p className="sugerencias-modal__hint">Toca una sugerencia para agregarla al campo</p>
+                <div className="sugerencias-modal__list">
+                  {sugerenciasFiltradas.map((sug) => (
+                    <button
+                      key={sug.id}
+                      className="sugerencias-modal__item"
+                      onClick={() => aplicarSugerencia(sug.texto)}
+                    >
+                      {sug.texto}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Campo: Observaciones (opcional) */}
           <div className="form-field">
@@ -421,44 +501,49 @@ const FormularioMantenimiento: React.FC = () => {
             />
           </div>
 
-          {/* Sección de fotos */}
+          {/* Sección de fotos categorizadas */}
           <div className="form-photos">
             <div className="form-photos__header">
-              <h3 className="form-photos__title">📷 Fotos ({fotos.length}/3)</h3>
-              <button
-                className="form-camera-btn"
-                onClick={tomarFoto}
-                disabled={fotos.length >= 3}
-              >
-                <IonIcon icon={camera} />
-                Tomar Foto
-              </button>
+              <h3 className="form-photos__title">📷 Evidencia fotográfica</h3>
             </div>
 
-            {fotos.length === 0 ? (
-              <p className="form-photos__empty">
-                Aún no has tomado fotos. Presiona "Tomar Foto" para agregar.
-              </p>
-            ) : (
-              <div className="form-photos__grid">
-                {fotos.map((foto, index) => (
-                  <div key={index} className="form-photos__item">
-                    <img
-                      className="form-photos__img"
-                      src={`data:image/jpeg;base64,${foto}`}
-                      alt={`Foto ${index + 1}`}
-                    />
-                    <button
-                      className="form-photos__delete-btn"
-                      onClick={() => eliminarFoto(index)}
-                    >
-                      <IonIcon icon={close} />
-                    </button>
-                    <div className="form-photos__caption">Foto {index + 1}</div>
+            <div className="form-photos__categorized">
+              {(['antes', 'durante', 'despues'] as const).map((cat) => {
+                const labels = { antes: 'Antes', durante: 'Durante', despues: 'Después' };
+                const icons = { antes: '🔴', durante: '🟡', despues: '🟢' };
+                const foto = fotosCat[cat];
+                return (
+                  <div key={cat} className={`form-photos__slot form-photos__slot--${cat}`}>
+                    <div className="form-photos__slot-label">
+                      {icons[cat]} {labels[cat]}
+                    </div>
+                    {foto ? (
+                      <div className="form-photos__item">
+                        <img
+                          className="form-photos__img"
+                          src={`data:image/jpeg;base64,${foto}`}
+                          alt={`Foto ${labels[cat]}`}
+                        />
+                        <button
+                          className="form-photos__delete-btn"
+                          onClick={() => eliminarFoto(cat)}
+                        >
+                          <IonIcon icon={close} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="form-photos__add-btn"
+                        onClick={() => tomarFoto(cat)}
+                      >
+                        <IonIcon icon={camera} />
+                        <span>Tomar</span>
+                      </button>
+                    )}
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
 
           {/* Botón guardar */}

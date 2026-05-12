@@ -44,6 +44,142 @@
   padding-left: 4px;
 }
 
+/* ====== LABEL CON BOTÓN SUGERENCIA ====== */
+.form-field__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.form-field__label-row .form-field__label {
+  margin-bottom: 0;
+}
+
+.form-field__suggest-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.form-field__suggest-btn:active {
+  transform: scale(0.92);
+}
+
+.form-field__suggest-btn ion-icon {
+  font-size: 20px;
+}
+
+/* ====== MODAL SUGERENCIAS ====== */
+.sugerencias-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.sugerencias-modal {
+  width: 100%;
+  max-height: 70vh;
+  background: #E8EDF5;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.sugerencias-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.sugerencias-modal__header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.sugerencias-modal__close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #dce1e9;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.sugerencias-modal__hint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 12px 0;
+}
+
+.sugerencias-modal__list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 20px;
+}
+
+.sugerencias-modal__item {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 14px;
+  background: #f0f3f8;
+  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sugerencias-modal__item:active {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  color: #fff;
+  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.15);
+}
+
 /* ====== SECCIÓN DE FOTOS ====== */
 .form-photos {
   border-radius: 16px;
@@ -74,15 +210,60 @@
   margin: 12px 0;
 }
 
-/* Cuadrícula de fotos */
-.form-photos__grid {
+/* Cuadrícula de fotos categorizadas */
+.form-photos__categorized {
   display: flex;
   gap: 10px;
 }
 
+.form-photos__slot {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-photos__slot-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-photos__add-btn {
+  width: 100%;
+  height: 110px;
+  border-radius: 12px;
+  border: 2px dashed #b0b8c9;
+  background: rgba(232, 237, 245, 0.5);
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-photos__add-btn:active {
+  transform: scale(0.96);
+  border-color: #2D7FF9;
+  color: #2D7FF9;
+}
+
+.form-photos__add-btn ion-icon {
+  font-size: 28px;
+}
+
 .form-photos__item {
   position: relative;
-  flex: 1;
+  width: 100%;
   border-radius: 12px;
   overflow: hidden;
   background: #E8EDF5;
@@ -113,15 +294,6 @@
   cursor: pointer;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 10;
-}
-
-.form-photos__caption {
-  text-align: center;
-  font-size: 11px;
-  color: #6b7280;
-  padding: 4px 0;
-  background: rgba(232, 237, 245, 0.9);
-  font-weight: 600;
 }
 
 /* ====== BOTÓN GUARDAR ====== */

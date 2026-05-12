@@ -5,8 +5,6 @@ import {
   IonToolbar,
   IonContent,
   IonSearchbar,
-  IonFab,
-  IonFabButton,
   IonIcon,
   IonLoading,
   IonAlert,
@@ -16,7 +14,7 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, settingsOutline, filterOutline, closeOutline } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, settingsOutline, construct } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -44,6 +42,7 @@ const Home: React.FC = () => {
   const [alertHeader, setAlertHeader] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [fabOpen, setFabOpen] = useState<boolean>(false);
 
   const cargarAgencias = useCallback(async () => {
     const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
@@ -162,36 +161,70 @@ const Home: React.FC = () => {
           `Subiendo: ${registro.nombreEquipo} (${exitosos + fallidos + 1}/${pendientes.length})`
         );
 
-        const urlsFotos: string[] = [];
+        const urlsFotos: Record<string, string> = {};
+        const categorias = ['antes', 'durante', 'despues'] as const;
 
-        for (let i = 0; i < registro.fotos.length; i++) {
-          const base64Data = registro.fotos[i];
-          const pureBase64 = base64Data.includes(',')
-            ? base64Data.split(',')[1]
-            : base64Data;
+        if (registro.fotosCategorized) {
+          for (const cat of categorias) {
+            const base64Data = registro.fotosCategorized[cat];
+            if (!base64Data) continue;
 
-          const fileName = `${registro.id}_foto_${i + 1}_${Date.now()}.jpg`;
-          const filePath = `mantenimientos/${fileName}`;
-          const arrayBuffer = decode(pureBase64);
+            const pureBase64 = base64Data.includes(',')
+              ? base64Data.split(',')[1]
+              : base64Data;
 
-          const { error: uploadError } = await supabase.storage
-            .from('fotos-mantenimiento')
-            .upload(filePath, arrayBuffer, {
-              contentType: 'image/jpeg',
-              upsert: false,
-            });
+            const fileName = `${registro.id}_foto_${cat}_${Date.now()}.jpg`;
+            const filePath = `mantenimientos/${fileName}`;
+            const arrayBuffer = decode(pureBase64);
 
-          if (uploadError) {
-            console.error(`Error subiendo foto ${i + 1}:`, uploadError);
-            urlsFotos.push('');
-            continue;
+            const { error: uploadError } = await supabase.storage
+              .from('fotos-mantenimiento')
+              .upload(filePath, arrayBuffer, {
+                contentType: 'image/jpeg',
+                upsert: false,
+              });
+
+            if (uploadError) {
+              console.error(`Error subiendo foto ${cat}:`, uploadError);
+              continue;
+            }
+
+            const { data: publicUrlData } = supabase.storage
+              .from('fotos-mantenimiento')
+              .getPublicUrl(filePath);
+
+            urlsFotos[cat] = publicUrlData.publicUrl;
           }
+        } else {
+          // Compatibilidad con registros antiguos sin categorización
+          for (let i = 0; i < registro.fotos.length; i++) {
+            const base64Data = registro.fotos[i];
+            const pureBase64 = base64Data.includes(',')
+              ? base64Data.split(',')[1]
+              : base64Data;
 
-          const { data: publicUrlData } = supabase.storage
-            .from('fotos-mantenimiento')
-            .getPublicUrl(filePath);
+            const fileName = `${registro.id}_foto_${i + 1}_${Date.now()}.jpg`;
+            const filePath = `mantenimientos/${fileName}`;
+            const arrayBuffer = decode(pureBase64);
 
-          urlsFotos.push(publicUrlData.publicUrl);
+            const { error: uploadError } = await supabase.storage
+              .from('fotos-mantenimiento')
+              .upload(filePath, arrayBuffer, {
+                contentType: 'image/jpeg',
+                upsert: false,
+              });
+
+            if (uploadError) {
+              console.error(`Error subiendo foto ${i + 1}:`, uploadError);
+              continue;
+            }
+
+            const { data: publicUrlData } = supabase.storage
+              .from('fotos-mantenimiento')
+              .getPublicUrl(filePath);
+
+            urlsFotos[categorias[i]] = publicUrlData.publicUrl;
+          }
         }
 
         const agencia = agencias.find((a) => a.id === registro.agenciaId);
@@ -205,9 +238,9 @@ const Home: React.FC = () => {
           observaciones: registro.observaciones,
           fecha: registro.fecha,
           hora: registro.hora,
-          foto_1_url: urlsFotos[0] && urlsFotos[0] !== '' ? urlsFotos[0] : null,
-          foto_2_url: urlsFotos[1] && urlsFotos[1] !== '' ? urlsFotos[1] : null,
-          foto_3_url: urlsFotos[2] && urlsFotos[2] !== '' ? urlsFotos[2] : null,
+          foto_1_url: urlsFotos.antes || null,
+          foto_2_url: urlsFotos.durante || null,
+          foto_3_url: urlsFotos.despues || null,
           agencia_codigo: agencia?.codigo || null,
           agencia_nombre: agencia?.nombre || null,
           ubicacion_nombre: ubicacion?.nombre || null,
@@ -266,7 +299,7 @@ const Home: React.FC = () => {
     try {
       const headers = [
         'ID', 'Nombre_Equipo', 'Proveedor', 'Mantenimiento_Realizado',
-        'Observaciones', 'Fecha', 'Hora', 'Foto_1', 'Foto_2', 'Foto_3', 'Sincronizado',
+        'Observaciones', 'Fecha', 'Hora', 'Foto_Antes', 'Foto_Durante', 'Foto_Despues', 'Sincronizado',
       ];
 
       const escapeCsv = (value: string) => {
@@ -277,8 +310,9 @@ const Home: React.FC = () => {
       };
 
       const rows = registros.map((r) => {
-        const fotoLabel = (idx: number) => {
-          if (!r.fotos[idx]) return 'Sin foto';
+        const fotoLabel = (cat: 'antes' | 'durante' | 'despues', fallbackIdx: number) => {
+          const tiene = r.fotosCategorized ? !!r.fotosCategorized[cat] : !!r.fotos[fallbackIdx];
+          if (!tiene) return 'Sin foto';
           return r.sincronizado ? 'Sincronizada en Supabase' : 'Pendiente de sincronizar';
         };
 
@@ -286,7 +320,7 @@ const Home: React.FC = () => {
           escapeCsv(r.id), escapeCsv(r.nombreEquipo), escapeCsv(r.proveedor),
           escapeCsv(r.mantenimientoRealizado), escapeCsv(r.observaciones),
           escapeCsv(r.fecha), escapeCsv(r.hora),
-          fotoLabel(0), fotoLabel(1), fotoLabel(2),
+          fotoLabel('antes', 0), fotoLabel('durante', 1), fotoLabel('despues', 2),
           r.sincronizado ? 'Sí' : 'No',
         ];
       });
@@ -336,12 +370,6 @@ const Home: React.FC = () => {
         <IonToolbar>
           <div className="home-header-content">
             <div className="home-logo-text">ManteniApp</div>
-            <button
-              className="home-config-btn"
-              onClick={() => history.push('/configuracion')}
-            >
-              <IonIcon icon={settingsOutline} />
-            </button>
           </div>
         </IonToolbar>
       </IonHeader>
@@ -494,11 +522,19 @@ const Home: React.FC = () => {
                   <div className="home-card-title">{registro.nombreEquipo}</div>
                   <div className="home-card-subtitle">{registro.proveedor}</div>
                 </div>
-                <span
-                  className={`neo-badge ${registro.sincronizado ? 'neo-badge-green' : 'neo-badge-orange'}`}
-                >
-                  {registro.sincronizado ? '✓ Sync' : '⏳ Pendiente'}
-                </span>
+                <div className="home-card-badges">
+                  <span
+                    className={`neo-badge ${registro.sincronizado ? 'neo-badge-green' : 'neo-badge-orange'}`}
+                  >
+                    {registro.sincronizado ? '✓ Sync' : '⏳ Pendiente'}
+                  </span>
+                  {(() => {
+                    const tipo = tiposMantenimiento.find((t) => t.id === registro.tipoMantenimientoId);
+                    return tipo ? (
+                      <span className="neo-badge neo-badge-tipo">{tipo.nombre}</span>
+                    ) : null;
+                  })()}
+                </div>
               </div>
 
               <div className="home-card-divider" />
@@ -523,15 +559,34 @@ const Home: React.FC = () => {
               </div>
 
               {registro.fotos.length > 0 && (
-                <div className="home-card-photos">
-                  {registro.fotos.map((foto, index) => (
-                    <div key={index} className="neo-photo home-card-photo">
-                      <img
-                        src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`}
-                        alt={`Foto ${index + 1}`}
-                      />
-                    </div>
-                  ))}
+                <div className="home-card-photos home-card-photos--categorized">
+                  {registro.fotosCategorized ? (
+                    <>
+                      {(['antes', 'durante', 'despues'] as const).map((cat) => {
+                        const foto = registro.fotosCategorized![cat];
+                        if (!foto) return null;
+                        const labels = { antes: '🔴 Antes', durante: '🟡 Durante', despues: '🟢 Después' };
+                        return (
+                          <div key={cat} className="neo-photo home-card-photo home-card-photo--labeled">
+                            <img
+                              src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`}
+                              alt={labels[cat]}
+                            />
+                            <span className="home-card-photo__label">{labels[cat]}</span>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    registro.fotos.map((foto, index) => (
+                      <div key={index} className="neo-photo home-card-photo">
+                        <img
+                          src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`}
+                          alt={`Foto ${index + 1}`}
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -540,11 +595,42 @@ const Home: React.FC = () => {
 
         <div className="home-spacer" />
 
-        <IonFab vertical="bottom" horizontal="end" slot="fixed" className="neo-fab">
-          <IonFabButton onClick={() => history.push('/formulario')}>
-            <IonIcon icon={add} />
-          </IonFabButton>
-        </IonFab>
+        {/* Overlay para cerrar FAB */}
+        {fabOpen && (
+          <div className="fab-overlay" onClick={() => setFabOpen(false)} />
+        )}
+
+        {/* FAB expandible estilo Nequi */}
+        <div className={`fab-speed-dial ${fabOpen ? 'fab-speed-dial--open' : ''}`}>
+          {fabOpen && (
+            <div className="fab-speed-dial__options">
+              <button
+                className="fab-speed-dial__option"
+                onClick={() => { setFabOpen(false); history.push('/configuracion'); }}
+              >
+                <span className="fab-speed-dial__label">Configuración</span>
+                <div className="fab-speed-dial__icon-btn fab-speed-dial__icon-btn--config">
+                  <IonIcon icon={settingsOutline} />
+                </div>
+              </button>
+              <button
+                className="fab-speed-dial__option"
+                onClick={() => { setFabOpen(false); history.push('/formulario'); }}
+              >
+                <span className="fab-speed-dial__label">Nuevo Mantenimiento</span>
+                <div className="fab-speed-dial__icon-btn fab-speed-dial__icon-btn--create">
+                  <IonIcon icon={construct} />
+                </div>
+              </button>
+            </div>
+          )}
+          <button
+            className={`fab-speed-dial__main ${fabOpen ? 'fab-speed-dial__main--open' : ''}`}
+            onClick={() => setFabOpen(!fabOpen)}
+          >
+            <IonIcon icon={fabOpen ? closeOutline : add} />
+          </button>
+        </div>
 
         <IonLoading isOpen={loading} message={loadingMessage} />
         <IonAlert
