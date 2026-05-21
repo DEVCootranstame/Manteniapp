@@ -1,0 +1,20 @@
+.cambiar-responsable-content { --background: var(--ion-color-light); }
+.paso-container { padding-bottom: 24px; }
+.equipo-resumen { display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 4px; }
+.equipo-resumen h2 { font-size: 22px; font-weight: 700; margin: 0; }
+.equipo-resumen p { color: var(--ion-color-medium); margin: 0; }
+.paso-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ion-color-medium); margin-bottom: 6px; }
+.responsable-actual { margin: 16px 0; }
+.responsable-card { display: flex; flex-direction: column; padding: 10px; background: var(--ion-color-light-shade); border-radius: 8px; }
+.responsable-card strong { font-size: 16px; }
+.responsable-card span { color: var(--ion-color-medium); font-size: 13px; }
+.aviso-texto { font-size: 13px; color: var(--ion-color-medium); margin-top: 16px; padding: 10px; background: var(--ion-color-warning-tint); border-radius: 8px; border-left: 3px solid var(--ion-color-warning); }
+.paso-tabs { display: flex; border-bottom: 1px solid var(--ion-color-light-shade); margin-bottom: 8px; }
+.paso-tabs button { flex: 1; padding: 12px; background: none; border: none; font-size: 14px; color: var(--ion-color-medium); display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border-bottom: 2px solid transparent; }
+.paso-tabs button.active { color: var(--ion-color-primary); border-bottom-color: var(--ion-color-primary); font-weight: 600; }
+.crear-form { padding: 8px 16px; }
+.firmas-container { display: flex; flex-direction: column; gap: 4px; }
+.firmas-container h3 { margin: 8px 0; font-size: 16px; font-weight: 600; }
+.paso-exito { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center; gap: 12px; }
+.paso-exito h2 { font-size: 24px; font-weight: 700; color: var(--ion-color-success); }
+.paso-exito p { color: var(--ion-color-medium); max-width: 300px; }

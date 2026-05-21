@@ -1,0 +1,105 @@
+.detalle-solicitud-content {
+  --background: var(--ion-color-light);
+}
+
+.estado-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+}
+
+.estado-badge {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.fecha-solicitud {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+}
+
+.responsable-cambio {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.resp-item {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.resp-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--ion-color-medium);
+  letter-spacing: 0.5px;
+}
+
+.resp-item strong {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.resp-item small {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+}
+
+.motivo-box {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--ion-color-light-shade);
+  border-radius: 8px;
+}
+
+.motivo-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ion-color-medium);
+  margin: 0 0 4px;
+}
+
+.firmas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.firma-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.firma-preview span {
+  font-size: 11px;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+}
+
+.firma-preview ion-img {
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 6px;
+  height: 80px;
+  object-fit: contain;
+  background: white;
+}
+
+.acciones-supervisor {
+  padding-bottom: 32px;
+}
+
+.botones-accion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}

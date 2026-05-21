@@ -1,0 +1,25 @@
+.alerta-equipos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--ion-color-warning-tint);
+  color: var(--ion-color-warning-shade);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--ion-color-danger-tint);
+  color: var(--ion-color-danger-shade);
+  font-size: 14px;
+}
+
+.sin-responsable {
+  color: var(--ion-color-warning);
+  font-style: italic;
+}
