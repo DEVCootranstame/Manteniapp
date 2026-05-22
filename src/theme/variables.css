@@ -593,6 +593,9 @@ ion-loading ion-spinner {
   z-index: 9999;
   padding: 0 12px calc(env(safe-area-inset-bottom) + 8px);
   pointer-events: none;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .floating-navbar__inner {
@@ -605,6 +608,8 @@ ion-loading ion-spinner {
   padding: 10px 0;
   box-shadow: 0 -2px 16px rgba(27, 58, 107, 0.35), 0 6px 20px rgba(0,0,0,0.25);
   min-height: 50px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* ── Each tab button ──────────────────────────────── */
@@ -620,6 +625,9 @@ ion-loading ion-spinner {
   min-width: 0;
   position: relative;
   height: 38px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 /* ── Bubble (orange circle behind icon) ───────────── */
@@ -627,14 +635,15 @@ ion-loading ion-spinner {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
   width: 38px;
   height: 38px;
   border-radius: 50%;
   background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
   box-shadow: 0 3px 10px rgba(249, 115, 22, 0.45);
-  transition: transform 0.2s ease;
   pointer-events: none;
+  transform: translate3d(-50%, -50%, 0) scale(0);
+  transition: transform 0.18s ease;
+  will-change: transform;
 }
 
 /* ── Icon (always static, centered) ───────────────── */
@@ -644,12 +653,14 @@ ion-loading ion-spinner {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 .nav-tab__icon ion-icon {
   font-size: 22px;
   color: rgba(255, 255, 255, 0.5);
-  transition: color 0.2s ease;
+  transition: color 0.18s ease;
+  pointer-events: none;
 }
 
 /* ── Label (hidden) ───────────────────────────────── */
@@ -659,7 +670,7 @@ ion-loading ion-spinner {
 
 /* ── ACTIVE state ─────────────────────────────────── */
 .nav-tab--active .nav-tab__bubble {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate3d(-50%, -50%, 0) scale(1);
 }
 
 .nav-tab--active .nav-tab__icon ion-icon {
@@ -668,7 +679,7 @@ ion-loading ion-spinner {
 
 /* ── Press feedback ───────────────────────────────── */
 .nav-tab:active .nav-tab__bubble {
-  transform: translate(-50%, -50%) scale(0.88);
+  transform: translate3d(-50%, -50%, 0) scale(0.88);
 }
 
 /* Hide default Ionic tab bar */

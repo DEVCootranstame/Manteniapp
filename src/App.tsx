@@ -3,6 +3,7 @@ import { IonApp, IonRouterOutlet, IonPage, IonIcon, setupIonicReact } from '@ion
 import { IonReactRouter } from '@ionic/react-router';
 import { statsChartOutline, desktopOutline, constructOutline, documentTextOutline, settingsOutline, personOutline } from 'ionicons/icons';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import React from 'react';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -67,7 +68,7 @@ const TAB_CONFIG: TabConfig[] = [
 ];
 
 /* ── Custom Floating Navbar ────────────────────────── */
-const FloatingNavbar: React.FC = () => {
+const FloatingNavbar: React.FC = React.memo(() => {
   const { user } = useAuth();
   const history = useHistory();
   const location = useLocation();
@@ -101,7 +102,7 @@ const FloatingNavbar: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 /* ── Hidden routes (pages without navbar visible) ──── */
 const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario'];
