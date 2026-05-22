@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
 import { useHistory, useLocation } from 'react-router-dom';
+import NotificacionesBell from './components/NotificacionesBell';
 
 import Home from './pages/Home';
 import FormularioMantenimiento from './components/FormularioMantenimiento';
@@ -147,6 +148,7 @@ const AppContent: React.FC = () => {
       </IonRouterOutlet>
 
       {showNavbar && <FloatingNavbar />}
+      {showNavbar && <NotificacionesBell />}
     </>
   );
 };
