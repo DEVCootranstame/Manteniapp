@@ -83,10 +83,6 @@ const ListaSolicitudes: React.FC = () => {
           <span className="chip-header__subtitle">Solicitudes</span>
         </div>
 
-        <div className="sol-header">
-          <p className="sol-title">Solicitudes</p>
-        </div>
-
         <div className="sol-filters">
           {FILTROS.map(f => (
             <button

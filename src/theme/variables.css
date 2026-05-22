@@ -586,16 +586,14 @@ ion-loading ion-spinner {
    ==================================================== */
 
 @keyframes navBubblePop {
-  0%   { transform: translateY(0) scale(1); }
-  40%  { transform: translateY(-28px) scale(1.18); }
-  65%  { transform: translateY(-22px) scale(0.95); }
-  80%  { transform: translateY(-25px) scale(1.05); }
-  100% { transform: translateY(-24px) scale(1); }
+  0%   { transform: translateX(-50%) scale(0.8); }
+  50%  { transform: translateX(-50%) scale(1.1); }
+  100% { transform: translateX(-50%) scale(1); }
 }
 
 @keyframes navBubbleDown {
-  0%   { transform: translateY(-24px) scale(1); }
-  100% { transform: translateY(0) scale(1); }
+  0%   { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(0.8); }
 }
 
 @keyframes navLabelFadeIn {
@@ -632,7 +630,7 @@ ion-loading ion-spinner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
+  gap: 4px;
   background: none;
   border: none;
   cursor: pointer;
@@ -640,24 +638,18 @@ ion-loading ion-spinner {
   flex: 1;
   min-width: 0;
   position: relative;
-  /* Height accommodates the floating bubble */
-  padding-top: 28px;
 }
 
 /* ── Bubble (the orange circle) ───────────────────── */
 .nav-tab__bubble {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%) translateY(0) scale(1);
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
 .nav-tab__bubble ion-icon {
@@ -682,10 +674,8 @@ ion-loading ion-spinner {
 /* ── ACTIVE state ─────────────────────────────────── */
 .nav-tab--active .nav-tab__bubble {
   background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
-  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.55),
-              0 2px 8px rgba(0, 0, 0, 0.25);
-  animation: navBubblePop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  transform: translateX(-50%) translateY(-24px) scale(1);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.5);
+  animation: navBubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 .nav-tab--active .nav-tab__bubble ion-icon {
@@ -700,7 +690,7 @@ ion-loading ion-spinner {
 
 /* ── Press feedback ───────────────────────────────── */
 .nav-tab:active .nav-tab__bubble {
-  transform: translateX(-50%) scale(0.9);
+  transform: scale(0.9);
 }
 
 /* Hide default Ionic tab bar */
