@@ -90,9 +90,9 @@ const CambiarResponsable: React.FC = () => {
     setEnviando(true);
     try {
       await SolicitudesService.createActa({
-        computador_id: equipo.id,
-        responsable_entrega_id: equipo.responsable_info?.id,
-        responsable_recibe_id: responsableSeleccionado.id,
+        computador_id: Number(equipo.id),
+        responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+        responsable_recibe_id: Number(responsableSeleccionado.id),
         firma_entrega: firmaEntrega,
         firma_recibe: firmaRecibe,
         firma_gestor: firmaGestor,
@@ -100,11 +100,11 @@ const CambiarResponsable: React.FC = () => {
       });
       await SolicitudesService.createSolicitud({
         tipo: 'cambio_responsable',
-        computador_id: equipo.id,
-        responsable_anterior_id: equipo.responsable_info?.id,
-        responsable_nuevo_id: responsableSeleccionado.id,
-        agencia_id: equipo.agencia?.id ?? user.agencia_id!,
-        creado_por: user.id,
+        computador_id: Number(equipo.id),
+        responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+        responsable_nuevo_id: Number(responsableSeleccionado.id),
+        agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
+        creado_por: Number(user.id),
         observaciones,
       });
       setPaso(4);
