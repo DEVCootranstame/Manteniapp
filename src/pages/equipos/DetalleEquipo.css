@@ -1,30 +1,201 @@
+/* ======================================================
+   DetalleEquipo.css - Neumorphic Detail View
+   ====================================================== */
+
+.detalle-content {
+  --background: #E8EDF2;
+  --padding-bottom: 100px;
+}
+
+/* == Header Card (replaces IonHeader) == */
+.detalle-header-card {
+  margin: 16px 16px 8px;
+  padding: 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  box-shadow: 6px 6px 18px rgba(27, 58, 107, 0.4), -4px -4px 12px rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.detalle-header-card__back {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.detalle-header-card__back ion-icon { font-size: 20px; }
+
+.detalle-header-card__info { flex: 1; }
+
+.detalle-header-card__code {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.detalle-header-card__estado {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255,255,255,0.15);
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* == Section Cards == */
+.detalle-section {
+  margin: 8px 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #FFFFFF;
+  box-shadow: 4px 4px 12px rgba(163, 177, 198, 0.5), -4px -4px 12px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.detalle-section__title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #2563EB;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detalle-section__title ion-icon { font-size: 16px; }
+
+/* == Info Grid == */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 
-.info-grid div {
+.info-grid__item {
   display: flex;
   flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #EDF1F5;
+  box-shadow: inset 2px 2px 6px rgba(163, 177, 198, 0.4), inset -2px -2px 6px rgba(255,255,255,0.8);
 }
 
-.info-grid span {
-  font-size: 11px;
-  color: var(--ion-color-medium);
+.info-grid__label {
+  font-size: 10px;
+  color: #94A3B8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
 }
 
-.info-grid strong {
-  font-size: 14px;
-  margin-top: 2px;
+.info-grid__value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
 }
+
+/* Full width item */
+.info-grid__item--full {
+  grid-column: 1 / -1;
+}
+
+/* == Estado badge == */
+.detalle-estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.detalle-estado-badge--activo {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.detalle-estado-badge--inactivo {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6B7280;
+}
+
+.detalle-estado-badge--baja {
+  background: rgba(239, 68, 68, 0.12);
+  color: #DC2626;
+}
+
+/* == Responsable == */
+.responsable-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 3px 3px 10px rgba(27, 58, 107, 0.35);
+}
+
+.responsable-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.responsable-info { flex: 1; }
 
 .responsable-nombre {
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1E293B;
+  margin: 0 0 2px;
+}
+
+.responsable-doc {
+  font-size: 12px;
+  color: #5A6A7E;
+  margin: 0;
+}
+
+.responsable-correo {
+  font-size: 12px;
+  color: #2563EB;
+  margin: 2px 0 0;
+}
+
+.responsable-cargo {
+  display: inline-block;
+  font-size: 11px;
   font-weight: 600;
-  margin: 0 0 4px;
+  color: #1B3A6B;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 6px;
 }
 
 .sin-responsable-container {
@@ -32,17 +203,99 @@
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  color: var(--ion-color-medium);
+  gap: 8px;
+  color: #94A3B8;
+  font-size: 14px;
+  text-align: center;
 }
 
 .acciones-responsable {
-  margin-top: 16px;
+  margin-top: 14px;
 }
 
+.detalle-btn-primary {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 4px 4px 12px rgba(27, 58, 107, 0.35);
+}
+
+.detalle-btn-primary ion-icon { font-size: 18px; }
+
+.detalle-btn-outline {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid #2563EB;
+  background: transparent;
+  color: #2563EB;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* == Historial == */
+.historial-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(163, 177, 198, 0.25);
+}
+
+.historial-item:last-child { border-bottom: none; }
+
+.historial-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #10B981;
+  flex-shrink: 0;
+}
+
+.historial-dot--inactivo { background: #94A3B8; }
+
+.historial-info { flex: 1; }
+
+.historial-nombre {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  margin: 0 0 2px;
+}
+
+.historial-meta {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.historial-fecha {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5A6A7E;
+}
+
+/* == Error == */
 .error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px;
-  color: var(--ion-color-medium);
+  padding: 48px 24px;
+  gap: 12px;
+  color: #94A3B8;
+  font-size: 15px;
 }

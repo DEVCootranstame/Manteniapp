@@ -1,15 +1,16 @@
 /* ======================================================
-   Configuracion.css — Estilos neomórficos
+   Configuracion.css — Estilos Dark Moderno
    ====================================================== */
 
 .config-header ion-toolbar {
-  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
-  --color: #fff;
+  --background: var(--app-surface);
+  --color: var(--app-text-primary);
   --border-width: 0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .config-header ion-back-button {
-  --color: #fff;
+  --color: var(--app-text-primary);
 }
 
 .config-container {
@@ -18,7 +19,7 @@
 
 .config-subtitle {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--app-text-secondary);
   margin: 0 0 20px 0;
   text-align: center;
 }
@@ -36,10 +37,9 @@
   gap: 14px;
   width: 100%;
   padding: 16px;
-  border: none;
+  border: 1px solid var(--app-border);
   border-radius: 16px;
-  background: #E8EDF5;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  background: var(--app-surface);
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
@@ -47,7 +47,7 @@
 
 .config-item:active {
   transform: scale(0.98);
-  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
+  background: var(--app-surface-elevated);
 }
 
 .config-item__icon {
@@ -66,15 +66,15 @@
 }
 
 .config-item__icon--blue {
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
 }
 
 .config-item__icon--purple {
-  background: linear-gradient(135deg, #6C5CE7 0%, #A855F7 100%);
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
 }
 
 .config-item__icon--amber {
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
 }
 
 .config-item__content {
@@ -87,16 +87,16 @@
 .config-item__title {
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 .config-item__desc {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--app-text-secondary);
 }
 
 .config-item__arrow {
   font-size: 20px;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   flex-shrink: 0;
 }

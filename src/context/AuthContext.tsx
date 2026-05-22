@@ -23,12 +23,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const init = async () => {
       try {
         const profile = await AuthService.getStoredProfile();
-        if (profile) {
+        if (profile && profile.name && profile.role) {
           setUser(profile);
-          // Refresh profile in background
-          AuthService.getProfile().then(setUser).catch(() => {});
+          // Refresh profile in background — if it fails, clear session
+          AuthService.getProfile()
+            .then((fresh) => {
+              setUser(fresh);
+              StorageService.setProfile(fresh);
+            })
+            .catch(async () => {
+              // Token invalid or API unreachable — keep stored profile
+              // Only clear if we get an auth error (handled by session-expired event)
+            });
+        } else {
+          // Stored profile is incomplete, clear it
+          await StorageService.clearAll();
+          setUser(null);
         }
       } catch {
+        await StorageService.clearAll();
         setUser(null);
       } finally {
         setIsLoading(false);

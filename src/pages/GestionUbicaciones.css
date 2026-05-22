@@ -1,15 +1,16 @@
 /* ======================================================
-   GestionUbicaciones.css — Estilos neomórficos
+   GestionUbicaciones.css — Estilos Dark Moderno
    ====================================================== */
 
 .ubicaciones-header ion-toolbar {
-  --background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
-  --color: #fff;
+  --background: var(--app-surface);
+  --color: var(--app-text-primary);
   --border-width: 0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .ubicaciones-header ion-back-button {
-  --color: #fff;
+  --color: var(--app-text-primary);
 }
 
 .ubicaciones-container {
@@ -23,8 +24,8 @@
   gap: 12px;
   padding: 14px 16px;
   border-radius: 16px;
-  background: #E8EDF5;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
   margin-bottom: 16px;
 }
 
@@ -32,7 +33,7 @@
   font-size: 14px;
   font-weight: 800;
   color: #fff;
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   padding: 6px 12px;
   border-radius: 8px;
   letter-spacing: 1px;
@@ -41,7 +42,7 @@
 .ubicaciones-agencia-info__nombre {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 /* ====== BOTÓN AGREGAR ====== */
@@ -57,16 +58,15 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  background: var(--app-gradient-success);
   color: #fff;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
   transition: all 0.2s ease;
   margin-bottom: 20px;
 }
 
 .ubicaciones-add-btn:active {
   transform: scale(0.97);
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .ubicaciones-add-btn ion-icon {
@@ -80,13 +80,13 @@
 }
 
 .ubicaciones-empty p {
-  color: #6b7280;
+  color: var(--app-text-secondary);
   font-size: 15px;
   margin: 0;
 }
 
 .ubicaciones-empty__hint {
-  color: #9ca3af !important;
+  color: var(--app-text-muted) !important;
   font-size: 13px !important;
   margin-top: 8px !important;
 }
@@ -104,15 +104,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-radius: 14px;
-  background: #E8EDF5;
-  box-shadow: 5px 5px 10px #c8ccd4, -5px -5px 10px #ffffff;
+  border-radius: 16px;
+  background: #E8EDF2;
+  box-shadow: 5px 5px 12px rgba(163, 177, 198, 0.65), -5px -5px 12px rgba(255, 255, 255, 0.9);
+  border: none;
 }
 
 .ubicacion-card__nombre {
   font-size: 15px;
   font-weight: 600;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 /* ====== BOTONES ACCIÓN ====== */
@@ -131,7 +132,6 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
 }
 
 .ubicacion-btn:active {
@@ -143,11 +143,11 @@
 }
 
 .ubicacion-btn--edit {
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  background: var(--app-gradient-warning);
   color: #fff;
 }
 
 .ubicacion-btn--delete {
-  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  background: var(--app-gradient-danger);
   color: #fff;
 }

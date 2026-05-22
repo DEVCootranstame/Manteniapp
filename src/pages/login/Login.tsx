@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       <IonContent fullscreen className="login-content">
         <div className="login-container">
           <div className="login-logo">
-            <h1 className="login-title">ManteniApp</h1>
+            <h1 className="login-title">C.H.I.P</h1>
             <p className="login-subtitle">Sistema de Gestión de Equipos</p>
           </div>
 

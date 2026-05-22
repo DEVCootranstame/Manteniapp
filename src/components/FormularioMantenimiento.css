@@ -1,16 +1,17 @@
 /* ======================================================
-   FormularioMantenimiento.css — Estilos neomórficos
+   FormularioMantenimiento.css — Estilos Dark Moderno
    ====================================================== */
 
 /* ====== HEADER DEL FORMULARIO ====== */
 .form-header ion-toolbar {
-  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
-  --color: #fff;
+  --background: var(--app-surface);
+  --color: var(--app-text-primary);
   --border-width: 0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .form-header ion-back-button {
-  --color: #fff;
+  --color: var(--app-text-primary);
 }
 
 /* ====== CONTENEDOR GENERAL ====== */
@@ -27,19 +28,19 @@
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--app-text-secondary);
   margin-bottom: 6px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .form-field__required {
-  color: #FF5A7E;
+  color: #F87171;
 }
 
 .form-field__error {
   font-size: 12px;
-  color: #FF5A7E;
+  color: #F87171;
   margin-top: 4px;
   padding-left: 4px;
 }
@@ -61,13 +62,13 @@
   height: 36px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
   transition: all 0.2s ease;
 }
 
@@ -86,7 +87,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 9999;
   display: flex;
   align-items: flex-end;
@@ -102,13 +103,14 @@
 .sugerencias-modal {
   width: 100%;
   max-height: 70vh;
-  background: #E8EDF5;
+  background: var(--app-surface);
   border-radius: 20px 20px 0 0;
   padding: 20px 16px;
   display: flex;
   flex-direction: column;
   animation: slideUp 0.3s ease;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4);
+  border-top: 1px solid var(--app-border);
 }
 
 @keyframes slideUp {
@@ -127,7 +129,7 @@
   margin: 0;
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 .sugerencias-modal__close {
@@ -135,8 +137,8 @@
   height: 34px;
   border: none;
   border-radius: 50%;
-  background: #dce1e9;
-  color: #6b7280;
+  background: var(--app-surface-elevated);
+  color: var(--app-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -146,7 +148,7 @@
 
 .sugerencias-modal__hint {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   margin: 0 0 12px 0;
 }
 
@@ -161,11 +163,10 @@
 .sugerencias-modal__item {
   width: 100%;
   padding: 14px 16px;
-  border: none;
+  border: 1px solid var(--app-border);
   border-radius: 14px;
-  background: #f0f3f8;
-  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
-  color: #374151;
+  background: var(--app-surface-elevated);
+  color: var(--app-text-primary);
   font-size: 13px;
   line-height: 1.5;
   text-align: left;
@@ -175,9 +176,9 @@
 
 .sugerencias-modal__item:active {
   transform: scale(0.98);
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   color: #fff;
-  box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.15);
+  border-color: transparent;
 }
 
 /* ====== SECCIÓN DE FOTOS ====== */
@@ -185,8 +186,8 @@
   border-radius: 16px;
   padding: 16px;
   margin-bottom: 20px;
-  background: #E8EDF5;
-  box-shadow: inset 4px 4px 8px #c8ccd4, inset -4px -4px 8px #ffffff;
+  background: var(--app-bg);
+  border: 1px solid var(--app-border);
 }
 
 .form-photos__header {
@@ -200,12 +201,12 @@
   margin: 0;
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 .form-photos__empty {
   text-align: center;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   font-size: 14px;
   margin: 12px 0;
 }
@@ -227,7 +228,7 @@
 .form-photos__slot-label {
   font-size: 12px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 0.3px;
@@ -236,10 +237,11 @@
 .form-photos__add-btn {
   width: 100%;
   height: 110px;
-  border-radius: 12px;
-  border: 2px dashed #b0b8c9;
-  background: rgba(232, 237, 245, 0.5);
-  color: #6b7280;
+  border-radius: 14px;
+  border: none;
+  background: #E8EDF2;
+  box-shadow: inset 4px 4px 10px rgba(163, 177, 198, 0.6), inset -4px -4px 10px rgba(255,255,255,0.9);
+  color: var(--app-text-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -248,13 +250,13 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .form-photos__add-btn:active {
   transform: scale(0.96);
-  border-color: #2D7FF9;
-  color: #2D7FF9;
+  border-color: var(--app-accent);
+  color: var(--app-accent);
 }
 
 .form-photos__add-btn ion-icon {
@@ -266,8 +268,8 @@
   width: 100%;
   border-radius: 12px;
   overflow: hidden;
-  background: #E8EDF5;
-  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
 }
 
 .form-photos__img {
@@ -285,14 +287,14 @@
   height: 26px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  background: linear-gradient(135deg, #F87171 0%, #EF4444 100%);
   color: #fff;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
 
@@ -309,17 +311,16 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
+  background: var(--app-gradient-success);
   color: #fff;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff,
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
   transition: all 0.2s ease;
   margin-bottom: 12px;
 }
 
 .form-save-btn:active {
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
   transform: scale(0.98);
+  box-shadow: 0 3px 10px rgba(52, 211, 153, 0.2);
 }
 
 .form-save-btn ion-icon {
@@ -329,7 +330,7 @@
 /* ====== TEXTO DE AYUDA ====== */
 .form-help-text {
   text-align: center;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   font-size: 12px;
   margin: 0 0 24px 0;
 }
@@ -345,9 +346,9 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   color: #fff;
-  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
+  box-shadow: 0 4px 12px rgba(27, 58, 107, 0.3);
   transition: all 0.2s ease;
 }
 

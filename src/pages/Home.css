@@ -1,16 +1,17 @@
 /* ==============================================
-   Home.css — Estilos neomórficos para Home.tsx
+   Home.css — Soft Neumorphic
    ============================================== */
 
 /* ====== HEADER ====== */
 .neo-header {
-  --background: #E8EDF5;
+  --background: #E8EDF2;
   --border-color: transparent;
 }
 
 .neo-header ion-toolbar {
-  --background: #E8EDF5;
+  --background: #E8EDF2;
   --border-color: transparent;
+  box-shadow: 0 4px 12px rgba(163, 177, 198, 0.5);
 }
 
 .home-header-content {
@@ -21,7 +22,7 @@
 }
 
 .home-logo-text {
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 26px;
@@ -29,7 +30,7 @@
   letter-spacing: -0.5px;
 }
 
-/* ====== RESUMEN (stats card) ====== */
+/* ====== STATS ====== */
 .home-stats-row {
   display: flex;
   justify-content: space-around;
@@ -37,9 +38,7 @@
   margin-bottom: 16px;
 }
 
-.home-stat {
-  text-align: center;
-}
+.home-stat { text-align: center; }
 
 .home-stat__number {
   font-size: 28px;
@@ -47,13 +46,13 @@
   line-height: 1;
 }
 
-.home-stat__number--blue  { color: #2D7FF9; }
-.home-stat__number--orange { color: #FFA726; }
-.home-stat__number--green  { color: #00D68F; }
+.home-stat__number--blue   { color: #2563EB; }
+.home-stat__number--orange { color: #F97316; }
+.home-stat__number--green  { color: #10B981; }
 
 .home-stat__label {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--app-text-secondary);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -63,15 +62,12 @@
 .home-stat-divider {
   width: 1px;
   height: 36px;
-  background: linear-gradient(180deg, transparent, #c8ccd4, transparent);
+  background: linear-gradient(180deg, transparent, rgba(163,177,198,0.5), transparent);
 }
 
-/* ====== STATS CARD ====== */
-.home-stats-card {
-  margin-top: 12px;
-}
+.home-stats-card { margin-top: 12px; }
 
-/* ====== BOTONES DE ACCIÓN ====== */
+/* ====== BOTONES ACCIÓN ====== */
 .home-actions {
   display: flex;
   gap: 10px;
@@ -83,16 +79,14 @@
   padding: 12px;
 }
 
-.home-actions .neo-btn ion-icon {
-  font-size: 18px;
-}
+.home-actions .neo-btn ion-icon { font-size: 18px; }
 
 .home-btn-disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   pointer-events: none;
 }
 
-/* ====== BARRA BÚSQUEDA + FILTRO ====== */
+/* ====== BUSCADOR + FILTRO ====== */
 .home-search-bar {
   display: flex;
   align-items: center;
@@ -102,40 +96,39 @@
 
 .home-searchbar-inline {
   flex: 1;
-  --border-radius: 12px;
+  --border-radius: 16px;
   padding: 0;
 }
 
 .home-filter-btn {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background: #E8EDF5;
-  color: #6b7280;
-  box-shadow: 4px 4px 8px #c8ccd4, -4px -4px 8px #ffffff;
-  transition: all 0.2s ease;
+  background: #E8EDF2;
+  color: var(--app-text-secondary);
+  box-shadow: var(--nm-raised-sm);
+  transition: box-shadow 0.2s ease;
   flex-shrink: 0;
 }
 
 .home-filter-btn:active {
-  transform: scale(0.92);
+  box-shadow: var(--nm-inset-sm);
 }
 
 .home-filter-btn--active {
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   color: #fff;
+  box-shadow: 4px 4px 12px rgba(27, 58, 107, 0.35), -2px -2px 8px rgba(255,255,255,0.5);
 }
 
-.home-filter-btn ion-icon {
-  font-size: 22px;
-}
+.home-filter-btn ion-icon { font-size: 22px; }
 
-/* ====== PANEL DE FILTROS ====== */
+/* ====== PANEL FILTROS ====== */
 .home-filtros-panel {
   margin: 0 16px 12px 16px;
   padding: 16px;
@@ -158,7 +151,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #6b7280;
+  color: var(--app-text-secondary);
 }
 
 .home-filtros-clear {
@@ -166,19 +159,18 @@
   margin-top: 12px;
   padding: 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  background: #E8EDF5;
-  color: #6b7280;
-  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
-  transition: all 0.2s ease;
+  background: #E8EDF2;
+  color: var(--app-text-secondary);
+  box-shadow: var(--nm-raised-sm);
+  transition: box-shadow 0.2s ease;
 }
 
 .home-filtros-clear:active {
-  transform: scale(0.97);
-  box-shadow: inset 2px 2px 4px #c8ccd4, inset -2px -2px 4px #ffffff;
+  box-shadow: var(--nm-inset-sm);
 }
 
 /* ====== ESTADO VACÍO ====== */
@@ -191,8 +183,8 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #E8EDF5;
-  box-shadow: 8px 8px 16px #c8ccd4, -8px -8px 16px #ffffff;
+  background: #E8EDF2;
+  box-shadow: var(--nm-raised);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,16 +195,16 @@
 .home-empty__title {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
   margin-bottom: 6px;
 }
 
 .home-empty__subtitle {
-  color: #6b7280;
+  color: var(--app-text-secondary);
   font-size: 14px;
 }
 
-/* ====== TARJETA DE REGISTRO ====== */
+/* ====== TARJETA REGISTRO ====== */
 .home-card-header {
   display: flex;
   justify-content: space-between;
@@ -228,8 +220,8 @@
 }
 
 .neo-badge-tipo {
-  background: linear-gradient(135deg, #6C5CE7 0%, #a78bfa 100%);
-  color: #fff;
+  background: rgba(27, 58, 107, 0.1);
+  color: #1B3A6B;
   font-size: 10px;
   font-weight: 700;
   padding: 3px 10px;
@@ -241,30 +233,24 @@
 .home-card-title {
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
   margin-bottom: 3px;
 }
 
 .home-card-subtitle {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--app-text-secondary);
   font-weight: 500;
 }
 
 .home-card-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #c8ccd4, transparent);
+  background: rgba(163, 177, 198, 0.4);
   margin: 0 0 12px 0;
 }
 
-/* Sección de detalle */
-.home-card-section {
-  margin-bottom: 6px;
-}
-
-.home-card-section--obs {
-  margin-bottom: 10px;
-}
+.home-card-section { margin-bottom: 6px; }
+.home-card-section--obs { margin-bottom: 10px; }
 
 .home-card-section__label {
   font-size: 11px;
@@ -274,35 +260,31 @@
   margin-bottom: 3px;
 }
 
-.home-card-section__label--blue   { color: #2D7FF9; }
-.home-card-section__label--purple { color: #6C5CE7; }
+.home-card-section__label--blue   { color: #2563EB; }
+.home-card-section__label--purple { color: #7C3AED; }
 
 .home-card-section__text {
   font-size: 14px;
-  color: #374151;
+  color: var(--app-text-primary);
   margin: 0;
   line-height: 1.5;
 }
 
-/* Fecha y hora */
 .home-card-meta {
   display: flex;
   gap: 16px;
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   font-weight: 500;
 }
 
-/* Fotos en la tarjeta */
 .home-card-photos {
   display: flex;
   gap: 8px;
   margin-top: 12px;
 }
 
-.home-card-photos--categorized {
-  justify-content: flex-start;
-}
+.home-card-photos--categorized { justify-content: flex-start; }
 
 .home-card-photo {
   width: 72px;
@@ -321,13 +303,14 @@
   width: 72px;
   height: 72px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: var(--nm-raised-sm);
 }
 
 .home-card-photo__label {
   font-size: 10px;
   font-weight: 700;
-  color: #6b7280;
+  color: var(--app-text-secondary);
   margin-top: 3px;
   text-align: center;
 }
@@ -337,50 +320,24 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 12px;
+  box-shadow: var(--nm-raised-sm);
 }
 
 /* ====== ESPACIADOR INFERIOR ====== */
-.home-spacer {
-  height: 90px;
-}
-
-/* ====== SELECT PEQUEÑO (filtros) ====== */
-.neo-select-sm {
-  width: 100%;
-  background: #E8EDF5;
-  border-radius: 10px;
-  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff;
-  padding: 10px 36px 10px 12px;
-  border: none;
-  font-size: 14px;
-  color: #1a1a2e;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-}
-
-.neo-select-sm:focus {
-  box-shadow: inset 3px 3px 6px #c8ccd4, inset -3px -3px 6px #ffffff,
-              0 0 0 2px rgba(45, 127, 249, 0.3);
-}
+.home-spacer { height: 90px; }
 
 /* ====== FAB OVERLAY ====== */
 .fab-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.35);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(30, 41, 59, 0.25);
   z-index: 999;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
 }
 
-/* ====== FAB SPEED DIAL (Nequi style) ====== */
+/* ====== FAB SPEED DIAL ====== */
 .fab-speed-dial {
   position: fixed;
   bottom: 24px;
@@ -392,30 +349,29 @@
 }
 
 .fab-speed-dial__main {
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   color: #fff;
   font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(45, 127, 249, 0.4);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s ease;
+  box-shadow: 6px 6px 18px rgba(27, 58, 107, 0.45), -4px -4px 12px rgba(255,255,255,0.6);
+  transition: box-shadow 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fab-speed-dial__main:active {
-  transform: scale(0.92);
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.25), inset -2px -2px 6px rgba(255,255,255,0.15);
 }
 
 .fab-speed-dial__main--open {
   transform: rotate(45deg);
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+  background: var(--app-gradient-danger);
+  box-shadow: 6px 6px 18px rgba(239, 68, 68, 0.4), -4px -4px 12px rgba(255,255,255,0.6);
 }
 
 .fab-speed-dial__main--open:active {
@@ -437,14 +393,8 @@
 }
 
 @keyframes fabSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  from { opacity: 0; transform: translateY(20px) scale(0.8); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .fab-speed-dial__option {
@@ -458,56 +408,44 @@
   animation: fabOptionIn 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-.fab-speed-dial__option:nth-child(1) {
-  animation-delay: 0.08s;
-}
-
-.fab-speed-dial__option:nth-child(2) {
-  animation-delay: 0.02s;
-}
+.fab-speed-dial__option:nth-child(1) { animation-delay: 0.08s; }
+.fab-speed-dial__option:nth-child(2) { animation-delay: 0.02s; }
 
 @keyframes fabOptionIn {
-  from {
-    opacity: 0;
-    transform: translateX(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
 
 .fab-speed-dial__label {
-  background: #fff;
-  color: #1a1a2e;
+  background: #E8EDF2;
+  color: var(--app-text-primary);
   font-size: 13px;
   font-weight: 600;
   padding: 8px 14px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  box-shadow: var(--nm-raised-sm);
   white-space: nowrap;
 }
 
 .fab-speed-dial__icon-btn {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 
-.fab-speed-dial__icon-btn ion-icon {
-  font-size: 20px;
-}
-
 .fab-speed-dial__icon-btn--create {
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
+  box-shadow: 4px 4px 12px rgba(27, 58, 107, 0.4), -3px -3px 8px rgba(255,255,255,0.6);
 }
 
 .fab-speed-dial__icon-btn--config {
-  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  background: linear-gradient(135deg, #5A6A7E 0%, #3D4E61 100%);
+  box-shadow: 4px 4px 12px rgba(60, 78, 97, 0.4), -3px -3px 8px rgba(255,255,255,0.6);
 }
+
+.fab-speed-dial__icon-btn ion-icon { font-size: 20px; }

@@ -1,15 +1,16 @@
 /* ======================================================
-   GestionTiposMantenimiento.css — Estilos neomórficos
+   GestionTiposMantenimiento.css — Estilos Dark Moderno
    ====================================================== */
 
 .tipos-header ion-toolbar {
-  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
-  --color: #fff;
+  --background: var(--app-surface);
+  --color: var(--app-text-primary);
   --border-width: 0;
+  border-bottom: 1px solid var(--app-border);
 }
 
 .tipos-header ion-back-button {
-  --color: #fff;
+  --color: var(--app-text-primary);
 }
 
 .tipos-container {
@@ -29,16 +30,15 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
+  background: var(--app-gradient-primary);
   color: #fff;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  box-shadow: 0 6px 20px rgba(27, 58, 107, 0.3);
   transition: all 0.2s ease;
   margin-bottom: 20px;
 }
 
 .tipos-add-btn:active {
   transform: scale(0.97);
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .tipos-add-btn ion-icon {
@@ -49,7 +49,7 @@
 .tipos-empty {
   text-align: center;
   padding: 40px 20px;
-  color: #9ca3af;
+  color: var(--app-text-muted);
   font-size: 15px;
 }
 
@@ -66,9 +66,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  border-radius: 16px;
-  background: #E8EDF5;
-  box-shadow: 6px 6px 12px #c8ccd4, -6px -6px 12px #ffffff;
+  border-radius: 18px;
+  background: #E8EDF2;
+  box-shadow: 6px 6px 14px rgba(163, 177, 198, 0.65), -6px -6px 14px rgba(255, 255, 255, 0.9);
+  border: none;
 }
 
 .tipo-card__info {
@@ -80,7 +81,7 @@
 .tipo-card__nombre {
   font-size: 16px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--app-text-primary);
 }
 
 /* ====== BOTONES ACCIÓN ====== */
@@ -99,7 +100,6 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 3px 3px 6px #c8ccd4, -3px -3px 6px #ffffff;
 }
 
 .tipo-btn:active {
@@ -111,11 +111,11 @@
 }
 
 .tipo-btn--edit {
-  background: linear-gradient(135deg, #FFA726 0%, #FF9800 100%);
+  background: var(--app-gradient-warning);
   color: #fff;
 }
 
 .tipo-btn--delete {
-  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  background: var(--app-gradient-danger);
   color: #fff;
 }

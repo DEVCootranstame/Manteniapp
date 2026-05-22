@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonSearchbar, IonList, IonItem, IonLabel, IonBadge,
-  IonSkeletonText, IonNote, IonRefresher, IonRefresherContent,
-  IonIcon, IonChip, RefresherEventDetail,
+  IonPage, IonContent,
+  IonSearchbar, IonSkeletonText, IonRefresher, IonRefresherContent,
+  IonIcon, RefresherEventDetail,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { desktopOutline, personOutline, alertCircleOutline } from 'ionicons/icons';
+import { desktopOutline, personOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline } from 'ionicons/icons';
 import { EquiposService, ComputadoresListItem } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
 import './ListaEquipos.css';
@@ -47,12 +46,12 @@ const ListaEquipos: React.FC = () => {
     e.detail.complete();
   };
 
-  const getEstadoBadgeColor = (estado: string | null) => {
+  const getEstadoColor = (estado: string | null) => {
     switch (estado?.toLowerCase()) {
-      case 'activo': return 'success';
-      case 'inactivo': return 'medium';
-      case 'baja': return 'danger';
-      default: return 'warning';
+      case 'activo': return '#10B981';
+      case 'inactivo': return '#94A3B8';
+      case 'baja': return '#EF4444';
+      default: return '#F97316';
     }
   };
 
@@ -60,90 +59,96 @@ const ListaEquipos: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Equipos</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
+      <IonContent className="equipos-content" fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
 
-        {sinResponsable > 0 && (
-          <div className="alerta-equipos">
-            <IonIcon icon={alertCircleOutline} color="warning" />
-            <span>{sinResponsable} equipo{sinResponsable > 1 ? 's' : ''} sin responsable</span>
+        <div className="chip-header">
+          <div className="chip-header__left">
+            <IonIcon icon={hardwareChipOutline} className="chip-header__icon" />
+            <span className="chip-header__brand">C.H.I.P</span>
           </div>
-        )}
+          <span className="chip-header__subtitle">Equipos</span>
+        </div>
 
-        <IonSearchbar
-          value={search}
-          onIonInput={handleSearch}
-          placeholder="Buscar por código, responsable, serial..."
-          debounce={400}
-        />
+        <div className="equipos-header-section">
+          <h1 className="equipos-page-title">Equipos</h1>
+          {sinResponsable > 0 && (
+            <div className="equipos-alert-badge">
+              <IonIcon icon={alertCircleOutline} />
+              <span>{sinResponsable} sin responsable</span>
+            </div>
+          )}
+        </div>
+
+        <div className="equipos-search-wrapper">
+          <IonSearchbar
+            value={search}
+            onIonInput={handleSearch}
+            placeholder="Buscar equipo..."
+            debounce={400}
+            className="equipos-searchbar"
+          />
+        </div>
 
         {error && (
-          <div className="error-message">
+          <div className="equipos-error">
             <IonIcon icon={alertCircleOutline} />
             <span>{error}</span>
           </div>
         )}
 
         {loading ? (
-          <IonList>
-            {[1, 2, 3, 4, 5].map(i => (
-              <IonItem key={i}>
-                <IonLabel>
-                  <IonSkeletonText animated style={{ width: '60%' }} />
-                  <IonSkeletonText animated style={{ width: '40%' }} />
-                </IonLabel>
-              </IonItem>
+          <div className="equipos-grid">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="equipo-card equipo-card--skeleton">
+                <IonSkeletonText animated style={{ width: '60%', height: '20px' }} />
+                <IonSkeletonText animated style={{ width: '80%', height: '14px' }} />
+              </div>
             ))}
-          </IonList>
+          </div>
+        ) : equipos.length === 0 ? (
+          <div className="equipos-empty">
+            <IonIcon icon={desktopOutline} />
+            <p>No se encontraron equipos</p>
+          </div>
         ) : (
-          <IonList>
-            {equipos.length === 0 ? (
-              <IonItem lines="none">
-                <IonLabel className="ion-text-center" color="medium">
-                  <IonIcon icon={desktopOutline} size="large" />
-                  <p>No se encontraron equipos</p>
-                </IonLabel>
-              </IonItem>
-            ) : (
-              equipos.map(equipo => (
-                <IonItem
-                  key={equipo.id}
-                  button
-                  detail
-                  onClick={() => history.push(`/equipos/${equipo.id}`)}
-                >
-                  <IonIcon icon={desktopOutline} slot="start" color="primary" />
-                  <IonLabel>
-                    <h2>{equipo.Codigo}</h2>
-                    <p>
-                      {equipo.responsable_nombre ? (
-                        <>
-                          <IonIcon icon={personOutline} /> {equipo.responsable_nombre}
-                          {equipo.responsable_documento && ` • ${equipo.responsable_documento}`}
-                        </>
-                      ) : (
-                        <span className="sin-responsable">Sin responsable asignado</span>
-                      )}
-                    </p>
-                    {equipo.agencia_nombre && (
-                      <IonNote>{equipo.agencia_nombre}{equipo.ubicacion_nombre && ` • ${equipo.ubicacion_nombre}`}</IonNote>
-                    )}
-                  </IonLabel>
-                  <IonBadge slot="end" color={getEstadoBadgeColor(equipo.estado)}>
-                    {equipo.estado || 'Sin estado'}
-                  </IonBadge>
-                </IonItem>
-              ))
-            )}
-          </IonList>
+          <div className="equipos-grid">
+            {equipos.map(equipo => (
+              <div
+                key={equipo.id}
+                className="equipo-card"
+                onClick={() => history.push(`/equipos/${equipo.id}`)}
+              >
+                <div className="equipo-card__header">
+                  <div className="equipo-card__icon">
+                    <IonIcon icon={desktopOutline} />
+                  </div>
+                  <button className="equipo-card__menu">
+                    <IonIcon icon={ellipsisVertical} />
+                  </button>
+                </div>
+                <h3 className="equipo-card__code">{equipo.Codigo}</h3>
+                <p className="equipo-card__responsable">
+                  {equipo.responsable_nombre || 'Sin responsable'}
+                </p>
+                {equipo.agencia_nombre && (
+                  <span className="equipo-card__agencia">{equipo.agencia_nombre}</span>
+                )}
+                <div className="equipo-card__footer">
+                  <span className="equipo-card__estado" style={{ '--estado-color': getEstadoColor(equipo.estado) } as any}>
+                    {equipo.estado || 'Pendiente'}
+                  </span>
+                  <div className="equipo-card__progress">
+                    <div className="equipo-card__progress-bar" style={{ '--bar-width': equipo.estado === 'activo' ? '100%' : equipo.estado === 'inactivo' ? '50%' : '25%', '--bar-color': getEstadoColor(equipo.estado) } as any}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
+
       </IonContent>
     </IonPage>
   );

@@ -1,5 +1,5 @@
 .detalle-solicitud-content {
-  --background: var(--ion-color-light);
+  --background: #E8EDF2;
 }
 
 .estado-header {
@@ -7,8 +7,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: white;
-  border-bottom: 1px solid var(--ion-color-light-shade);
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-border);
 }
 
 .estado-badge {
@@ -18,7 +18,7 @@
 
 .fecha-solicitud {
   font-size: 12px;
-  color: var(--ion-color-medium);
+  color: var(--app-text-secondary);
 }
 
 .responsable-cambio {
@@ -37,32 +37,34 @@
 .resp-label {
   font-size: 11px;
   text-transform: uppercase;
-  color: var(--ion-color-medium);
+  color: var(--app-text-secondary);
   letter-spacing: 0.5px;
 }
 
 .resp-item strong {
   font-size: 14px;
   margin-top: 2px;
+  color: var(--app-text-primary);
 }
 
 .resp-item small {
   font-size: 12px;
-  color: var(--ion-color-medium);
+  color: var(--app-text-secondary);
 }
 
 .motivo-box {
   margin-top: 12px;
   padding: 10px;
-  background: var(--ion-color-light-shade);
+  background: var(--app-surface-elevated);
   border-radius: 8px;
+  border: 1px solid var(--app-border);
 }
 
 .motivo-label {
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--ion-color-medium);
+  color: var(--app-text-secondary);
   margin: 0 0 4px;
 }
 
@@ -81,16 +83,16 @@
 
 .firma-preview span {
   font-size: 11px;
-  color: var(--ion-color-medium);
+  color: var(--app-text-secondary);
   text-transform: uppercase;
 }
 
 .firma-preview ion-img {
-  border: 1px solid var(--ion-color-light-shade);
+  border: 1px solid var(--app-border);
   border-radius: 6px;
   height: 80px;
   object-fit: contain;
-  background: white;
+  background: var(--app-surface);
 }
 
 .acciones-supervisor {

@@ -1,0 +1,187 @@
+/* ── MiPerfil page ───────────────────────────────── */
+.miperfil-content {
+  --background: #E8EDF2;
+}
+
+/* ── C.H.I.P Header ──────────────────────────────── */
+.miperfil-chip-header {
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  padding: 48px 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.miperfil-chip-header__icon {
+  font-size: 42px;
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.miperfil-chip-header__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.miperfil-chip-header__brand {
+  font-size: 28px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+
+.miperfil-chip-header__full {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+}
+
+/* ── Welcome Banner ──────────────────────────────── */
+.miperfil-welcome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 16px 0;
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+}
+
+.miperfil-welcome__emoji {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.miperfil-welcome__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.miperfil-welcome__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.miperfil-welcome__name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.2;
+}
+
+/* ── Profile card ────────────────────────────────── */
+.miperfil-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  margin: 16px 16px 0;
+  padding: 28px 20px 20px;
+  box-shadow: 6px 6px 16px rgba(163, 177, 198, 0.7), -6px -6px 16px rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.miperfil-card__avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  color: #FFFFFF;
+  font-size: 28px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+  margin-bottom: 12px;
+}
+
+.miperfil-card__name {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1E293B;
+  text-align: center;
+}
+
+.miperfil-card__role {
+  font-size: 12px;
+  font-weight: 700;
+  color: #FFFFFF;
+  padding: 4px 14px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.miperfil-card__divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(148, 163, 184, 0.25);
+  margin: 16px 0;
+}
+
+.miperfil-card__details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.miperfil-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.miperfil-detail-row__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #EDF1F5;
+  box-shadow: inset 3px 3px 8px rgba(163, 177, 198, 0.5), inset -3px -3px 8px rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563EB;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Logout button ───────────────────────────────── */
+.miperfil-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: calc(100% - 32px);
+  margin: 16px 16px 24px;
+  padding: 15px 20px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+}
+
+.miperfil-logout ion-icon {
+  font-size: 20px;
+}

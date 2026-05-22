@@ -1,181 +1,206 @@
 /* ====================================================
-   ManteniApp - Tema Neomórfico (Blanco/Azul/Verde)
+   ManteniApp — Soft Neumorphic UI
+   Azul Navy + Verde + Naranja sobre base #E8EDF2
    ==================================================== */
 
 :root {
-  /* Colores principales */
-  --ion-color-primary: #2D7FF9;
-  --ion-color-primary-rgb: 45, 127, 249;
+  /* Colores Ionic */
+  --ion-color-primary: #1B3A6B;
+  --ion-color-primary-rgb: 27, 58, 107;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #2670db;
-  --ion-color-primary-tint: #428cfa;
+  --ion-color-primary-shade: #18335e;
+  --ion-color-primary-tint: #324e7a;
 
-  --ion-color-secondary: #18D9A0;
-  --ion-color-secondary-rgb: 24, 217, 160;
+  --ion-color-secondary: #2563EB;
+  --ion-color-secondary-rgb: 37, 99, 235;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #15bf8d;
-  --ion-color-secondary-tint: #2fddaa;
+  --ion-color-secondary-shade: #2057cf;
+  --ion-color-secondary-tint: #3b73ed;
 
-  --ion-color-tertiary: #6C5CE7;
-  --ion-color-tertiary-rgb: 108, 92, 231;
+  --ion-color-tertiary: #7C3AED;
+  --ion-color-tertiary-rgb: 124, 58, 237;
   --ion-color-tertiary-contrast: #ffffff;
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: #5f51cb;
-  --ion-color-tertiary-tint: #7b6ce9;
+  --ion-color-tertiary-shade: #6d33d1;
+  --ion-color-tertiary-tint: #894eef;
 
-  --ion-color-success: #00D68F;
-  --ion-color-success-rgb: 0, 214, 143;
+  --ion-color-success: #10B981;
+  --ion-color-success-rgb: 16, 185, 129;
   --ion-color-success-contrast: #ffffff;
   --ion-color-success-contrast-rgb: 255, 255, 255;
-  --ion-color-success-shade: #00bc7e;
-  --ion-color-success-tint: #1ada9a;
+  --ion-color-success-shade: #0ea372;
+  --ion-color-success-tint: #28c18e;
 
-  --ion-color-warning: #FFA726;
-  --ion-color-warning-rgb: 255, 167, 38;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #e09321;
-  --ion-color-warning-tint: #ffb03c;
+  --ion-color-warning: #F97316;
+  --ion-color-warning-rgb: 249, 115, 22;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: #db6513;
+  --ion-color-warning-tint: #fa812d;
 
-  --ion-color-danger: #FF5A7E;
-  --ion-color-danger-rgb: 255, 90, 126;
+  --ion-color-danger: #EF4444;
+  --ion-color-danger-rgb: 239, 68, 68;
   --ion-color-danger-contrast: #ffffff;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #e04f6f;
-  --ion-color-danger-tint: #ff6b8b;
+  --ion-color-danger-shade: #d23c3c;
+  --ion-color-danger-tint: #f15757;
 
-  --ion-color-medium: #92949C;
-  --ion-color-medium-rgb: 146, 148, 156;
+  --ion-color-medium: #6B7280;
+  --ion-color-medium-rgb: 107, 114, 128;
   --ion-color-medium-contrast: #ffffff;
   --ion-color-medium-contrast-rgb: 255, 255, 255;
-  --ion-color-medium-shade: #808289;
-  --ion-color-medium-tint: #9d9fa6;
+  --ion-color-medium-shade: #5e6470;
+  --ion-color-medium-tint: #7a808d;
 
-  --ion-color-light: #F0F3F8;
-  --ion-color-light-rgb: 240, 243, 248;
-  --ion-color-light-contrast: #1a1a2e;
-  --ion-color-light-contrast-rgb: 26, 26, 46;
-  --ion-color-light-shade: #d3d6db;
-  --ion-color-light-tint: #f2f5f9;
+  --ion-color-light: #E8EDF2;
+  --ion-color-light-rgb: 232, 237, 242;
+  --ion-color-light-contrast: #1E293B;
+  --ion-color-light-contrast-rgb: 30, 41, 59;
+  --ion-color-light-shade: #D1D8E0;
+  --ion-color-light-tint: #F0F4F8;
 
-  /* Fondo neomórfico */
-  --neo-bg: #E8EDF5;
-  --neo-shadow-light: #ffffff;
-  --neo-shadow-dark: #c8ccd4;
-  --neo-text-primary: #1a1a2e;
-  --neo-text-secondary: #6b7280;
-  --neo-accent-blue: #2D7FF9;
-  --neo-accent-green: #00D68F;
-  --neo-gradient-blue: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
-  --neo-gradient-green: linear-gradient(135deg, #00D68F 0%, #18D9A0 100%);
-  --neo-radius: 16px;
-  --neo-radius-sm: 12px;
+  /* ── Neumorphic core ──────────────────────────── */
+  --nm-base: #E8EDF2;            /* fondo base */
+  --nm-shadow-dark: rgba(163, 177, 198, 0.7);
+  --nm-shadow-light: rgba(255, 255, 255, 0.9);
 
-  /* Override del fondo de la app */
-  --ion-background-color: #E8EDF5;
-  --ion-toolbar-background: transparent;
-  --ion-item-background: transparent;
-  --ion-card-background: #E8EDF5;
+  /* Sombras reutilizables */
+  --nm-raised:   6px  6px 16px var(--nm-shadow-dark), -6px -6px 16px var(--nm-shadow-light);
+  --nm-raised-sm:4px  4px 10px var(--nm-shadow-dark), -4px -4px 10px var(--nm-shadow-light);
+  --nm-inset:    inset 4px 4px 10px var(--nm-shadow-dark), inset -4px -4px 10px var(--nm-shadow-light);
+  --nm-inset-sm: inset 2px 2px  6px var(--nm-shadow-dark), inset -2px -2px  6px var(--nm-shadow-light);
 
-  /* Tipografía */
+  /* ── Sistema de colores ───────────────────────── */
+  --app-bg:              #E8EDF2;
+  --app-surface:         #E8EDF2;   /* mismo que bg — el truco neumórfico */
+  --app-surface-elevated:#E8EDF2;
+  --app-border:          rgba(163, 177, 198, 0.3);
+  --app-text-primary:    #1E293B;
+  --app-text-secondary:  #5A6A7E;
+  --app-text-muted:      #94A3B8;
+  --app-accent:          #1B3A6B;
+  --app-accent-blue:     #2563EB;
+  --app-accent-green:    #10B981;
+  --app-accent-orange:   #F97316;
+
+  --app-gradient-primary: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  --app-gradient-success: linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --app-gradient-warning: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
+  --app-gradient-danger:  linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+
+  --app-radius:    22px;
+  --app-radius-sm: 16px;
+  --app-radius-xs: 12px;
+
+  /* legacy aliases */
+  --app-shadow:    var(--nm-raised);
+  --app-shadow-sm: var(--nm-raised-sm);
+
+  /* Overrides Ionic */
+  --ion-background-color:  #E8EDF2;
+  --ion-toolbar-background:#E8EDF2;
+  --ion-item-background:    transparent;
+  --ion-card-background:    #E8EDF2;
+
   --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* ====================================================
-   ESTILOS NEOMÓRFICOS GLOBALES
+   ESTILOS GLOBALES — SOFT NEUMORPHIC
    ==================================================== */
 
+/* Safe area - respetar barra de notificaciones */
 ion-content {
-  --background: #E8EDF5;
+  --background: #E8EDF2;
+  --padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Header personalizado */
+ion-page {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ── Header ─────────────────────────────────────── */
 .neo-header ion-toolbar {
-  --background: transparent;
+  --background: #E8EDF2;
   --border-width: 0;
   --padding-top: 8px;
   --padding-bottom: 8px;
+  --color: var(--app-text-primary);
+  box-shadow: 0 3px 10px var(--nm-shadow-dark);
 }
 
 .neo-header::after {
   display: none;
 }
 
-/* Tarjetas neomórficas */
+/* ── Tarjetas ────────────────────────────────────── */
 .neo-card {
-  background: #E8EDF5;
-  border-radius: var(--neo-radius);
-  box-shadow: 8px 8px 16px var(--neo-shadow-dark),
-              -8px -8px 16px var(--neo-shadow-light);
+  background: var(--nm-base);
+  border-radius: var(--app-radius);
+  box-shadow: var(--nm-raised);
   padding: 20px;
   margin: 12px 16px;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.25s ease, transform 0.2s ease;
   border: none;
 }
 
 .neo-card:active {
-  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-              inset -4px -4px 8px var(--neo-shadow-light);
+  box-shadow: var(--nm-inset);
+  transform: scale(0.99);
 }
 
-/* Campos de input neomórficos */
+/* ── Inputs ──────────────────────────────────────── */
 .neo-input {
-  background: #E8EDF5;
-  border-radius: var(--neo-radius-sm);
-  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-              inset -4px -4px 8px var(--neo-shadow-light);
+  background: var(--nm-base);
+  border-radius: var(--app-radius-sm);
+  border: none;
+  box-shadow: var(--nm-inset);
   padding: 14px 16px;
   margin-bottom: 14px;
-  border: none;
   font-size: 15px;
-  color: var(--neo-text-primary);
+  color: var(--app-text-primary);
   width: 100%;
   outline: none;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .neo-input:focus {
-  box-shadow: inset 3px 3px 6px var(--neo-shadow-dark),
-              inset -3px -3px 6px var(--neo-shadow-light),
-              0 0 0 2px rgba(45, 127, 249, 0.3);
+  box-shadow: var(--nm-inset), 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
 .neo-input::placeholder {
-  color: #aab0bb;
+  color: var(--app-text-muted);
 }
 
 .neo-input-uppercase {
   text-transform: uppercase;
 }
 
-/* Select neomórfico */
+/* ── Select ──────────────────────────────────────── */
 .neo-select {
-  background: #E8EDF5;
-  border-radius: var(--neo-radius-sm);
-  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-              inset -4px -4px 8px var(--neo-shadow-light);
-  padding: 14px 16px;
-  margin-bottom: 14px;
+  background: var(--nm-base);
+  border-radius: var(--app-radius-sm);
   border: none;
+  box-shadow: var(--nm-inset);
+  padding: 14px 40px 14px 16px;
+  margin-bottom: 14px;
   font-size: 15px;
-  color: var(--neo-text-primary);
+  color: var(--app-text-primary);
   width: 100%;
   outline: none;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.2s ease;
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235A6A7E' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
-  padding-right: 40px;
 }
 
 .neo-select:focus {
-  box-shadow: inset 3px 3px 6px var(--neo-shadow-dark),
-              inset -3px -3px 6px var(--neo-shadow-light),
-              0 0 0 2px rgba(45, 127, 249, 0.3);
+  box-shadow: var(--nm-inset), 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
 .neo-select:disabled {
@@ -183,194 +208,209 @@ ion-content {
   cursor: not-allowed;
 }
 
+/* ── Textarea ────────────────────────────────────── */
 .neo-textarea {
-  background: #E8EDF5;
-  border-radius: var(--neo-radius-sm);
-  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-              inset -4px -4px 8px var(--neo-shadow-light);
+  background: var(--nm-base);
+  border-radius: var(--app-radius-sm);
+  border: none;
+  box-shadow: var(--nm-inset);
   padding: 14px 16px;
   margin-bottom: 14px;
-  border: none;
   font-size: 15px;
-  color: var(--neo-text-primary);
+  color: var(--app-text-primary);
   width: 100%;
   min-height: 80px;
   outline: none;
   resize: vertical;
   font-family: inherit;
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .neo-textarea:focus {
-  box-shadow: inset 3px 3px 6px var(--neo-shadow-dark),
-              inset -3px -3px 6px var(--neo-shadow-light),
-              0 0 0 2px rgba(45, 127, 249, 0.3);
+  box-shadow: var(--nm-inset), 0 0 0 2px rgba(37, 99, 235, 0.3);
 }
 
-/* Botones neomórficos */
+/* ── Botones ─────────────────────────────────────── */
 .neo-btn {
-  background: #E8EDF5;
-  border-radius: var(--neo-radius-sm);
-  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
-              -6px -6px 12px var(--neo-shadow-light);
+  background: var(--nm-base);
+  border-radius: var(--app-radius-sm);
   border: none;
+  box-shadow: var(--nm-raised-sm);
   padding: 14px 24px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: var(--neo-text-primary);
+  color: var(--app-text-primary);
 }
 
 .neo-btn:active {
-  box-shadow: inset 4px 4px 8px var(--neo-shadow-dark),
-              inset -4px -4px 8px var(--neo-shadow-light);
-  transform: scale(0.98);
+  box-shadow: var(--nm-inset-sm);
+  transform: scale(0.97);
 }
 
 .neo-btn-primary {
-  background: var(--neo-gradient-blue);
+  background: var(--app-gradient-primary);
   color: #fff;
-  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
-              -6px -6px 12px var(--neo-shadow-light),
-              inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 4px 4px 14px rgba(27, 58, 107, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
+}
+
+.neo-btn-primary:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
 }
 
 .neo-btn-green {
-  background: var(--neo-gradient-green);
+  background: var(--app-gradient-success);
   color: #fff;
-  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
-              -6px -6px 12px var(--neo-shadow-light),
-              inset 0 1px 0 rgba(255,255,255,0.2);
+  box-shadow: 4px 4px 14px rgba(16, 185, 129, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
+}
+
+.neo-btn-green:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
 }
 
 .neo-btn-danger {
-  background: linear-gradient(135deg, #FF5A7E 0%, #FF2D55 100%);
+  background: var(--app-gradient-danger);
   color: #fff;
-  box-shadow: 6px 6px 12px var(--neo-shadow-dark),
-              -6px -6px 12px var(--neo-shadow-light);
+  box-shadow: 4px 4px 14px rgba(239, 68, 68, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
 }
 
-/* Badges neomórficos */
+.neo-btn-danger:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
+}
+
+/* ── Badges ──────────────────────────────────────── */
 .neo-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.3px;
+  box-shadow: 2px 2px 6px var(--nm-shadow-dark), -2px -2px 6px var(--nm-shadow-light);
 }
 
 .neo-badge-blue {
-  background: rgba(45, 127, 249, 0.15);
-  color: #2D7FF9;
+  background: rgba(37, 99, 235, 0.12);
+  color: #1B3A6B;
 }
 
 .neo-badge-orange {
-  background: rgba(255, 167, 38, 0.15);
-  color: #E69100;
+  background: rgba(249, 115, 22, 0.12);
+  color: #C2410C;
 }
 
 .neo-badge-green {
-  background: rgba(0, 214, 143, 0.15);
-  color: #00B377;
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
 }
 
-/* Buscador neomórfico */
+/* ── Buscador ────────────────────────────────────── */
 .neo-searchbar {
-  --background: #E8EDF5;
-  --box-shadow: inset 4px 4px 8px var(--neo-shadow-dark), inset -4px -4px 8px var(--neo-shadow-light);
-  --border-radius: var(--neo-radius);
-  --placeholder-color: #aab0bb;
-  --icon-color: #2D7FF9;
+  --background: var(--nm-base);
+  --box-shadow: var(--nm-inset-sm);
+  --border-radius: var(--app-radius);
+  --placeholder-color: var(--app-text-muted);
+  --icon-color: #2563EB;
+  --color: var(--app-text-primary);
   padding: 12px 16px 4px 16px;
 }
 
-/* FAB neomórfico */
+/* ── FAB ─────────────────────────────────────────── */
 .neo-fab ion-fab-button {
-  --background: linear-gradient(135deg, #2D7FF9 0%, #6C5CE7 100%);
-  --box-shadow: 8px 8px 16px var(--neo-shadow-dark), -8px -8px 16px var(--neo-shadow-light);
-  --border-radius: 18px;
+  --background: var(--app-gradient-primary);
+  --box-shadow: 6px 6px 18px rgba(27, 58, 107, 0.4), -4px -4px 12px rgba(255,255,255,0.6);
+  --border-radius: 20px;
   width: 60px;
   height: 60px;
 }
 
-/* Foto thumbnail neomórfico */
+/* ── Photo thumbnail ─────────────────────────────── */
 .neo-photo {
-  border-radius: var(--neo-radius-sm);
-  box-shadow: 4px 4px 8px var(--neo-shadow-dark),
-              -4px -4px 8px var(--neo-shadow-light);
+  border-radius: var(--app-radius-sm);
+  box-shadow: var(--nm-raised-sm);
   overflow: hidden;
 }
 
-/* Animación de entrada */
+/* ── Animaciones ─────────────────────────────────── */
 @keyframes neoFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .neo-animate {
   animation: neoFadeIn 0.4s ease-out;
 }
 
-/* Scrollbar personalizada */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-thumb {
-  background: #c8ccd4;
-  border-radius: 3px;
-}
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #B8C3CE; border-radius: 3px; }
 
-/* Label de campo */
+/* ── Labels ──────────────────────────────────────── */
 .neo-label {
   display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--neo-text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--app-text-secondary);
   margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
 }
 
-.neo-label .required {
-  color: #FF5A7E;
-}
+.neo-label .required { color: #EF4444; }
 
-/* Error de validación */
+/* ── Error ───────────────────────────────────────── */
 .neo-error {
   font-size: 12px;
-  color: #FF5A7E;
+  color: #EF4444;
   margin-top: -10px;
   margin-bottom: 8px;
   padding-left: 4px;
 }
 
+/* ── Select pequeño ──────────────────────────────── */
+.neo-select-sm {
+  width: 100%;
+  background: var(--nm-base);
+  border-radius: var(--app-radius-xs);
+  border: none;
+  box-shadow: var(--nm-inset-sm);
+  padding: 10px 36px 10px 12px;
+  font-size: 14px;
+  color: var(--app-text-primary);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235A6A7E' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.neo-select-sm:focus {
+  box-shadow: var(--nm-inset-sm), 0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
 /* ====================================================
-   ALERTAS — Estilo moderno minimalista
+   ALERTAS — Neumorphic style
    ==================================================== */
 
 ion-alert {
-  --backdrop-opacity: 0.5;
+  --backdrop-opacity: 0.35;
   --background: transparent;
 }
 
 ion-alert .alert-wrapper {
-  background: #ffffff !important;
-  border-radius: 16px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  background: #E8EDF2 !important;
+  border-radius: 24px !important;
+  box-shadow: 12px 12px 30px rgba(163, 177, 198, 0.7), -8px -8px 20px rgba(255, 255, 255, 0.9) !important;
   border: none !important;
   overflow: hidden !important;
   max-width: 300px !important;
@@ -384,12 +424,12 @@ ion-alert .alert-head {
 ion-alert .alert-title {
   font-size: 17px !important;
   font-weight: 700 !important;
-  color: #1a1a2e !important;
+  color: #1E293B !important;
 }
 
 ion-alert .alert-message {
   font-size: 14px !important;
-  color: #6b7280 !important;
+  color: #5A6A7E !important;
   padding: 8px 24px 20px 24px !important;
   text-align: center !important;
   line-height: 1.5 !important;
@@ -404,26 +444,25 @@ ion-alert .alert-input-wrapper {
 }
 
 ion-alert input.alert-input {
-  background: #f3f4f6 !important;
-  border-radius: 10px !important;
-  border: 1px solid #e5e7eb !important;
-  box-shadow: none !important;
+  background: #E8EDF2 !important;
+  border-radius: 14px !important;
+  border: none !important;
+  box-shadow: inset 3px 3px 8px rgba(163, 177, 198, 0.6), inset -3px -3px 8px rgba(255,255,255,0.9) !important;
   padding: 12px 14px !important;
   font-size: 14px !important;
-  color: #1a1a2e !important;
+  color: #1E293B !important;
   margin: 4px 0 !important;
 }
 
 ion-alert input.alert-input:focus {
-  border-color: #2D7FF9 !important;
-  box-shadow: 0 0 0 3px rgba(45, 127, 249, 0.1) !important;
+  box-shadow: inset 3px 3px 8px rgba(163, 177, 198, 0.6), inset -3px -3px 8px rgba(255,255,255,0.9), 0 0 0 2px rgba(37, 99, 235, 0.3) !important;
 }
 
 ion-alert .alert-button-group {
   padding: 0 !important;
   display: flex !important;
   flex-direction: row !important;
-  border-top: 1px solid #f0f0f0 !important;
+  border-top: 1px solid rgba(163, 177, 198, 0.3) !important;
 }
 
 ion-alert .alert-button {
@@ -438,54 +477,54 @@ ion-alert .alert-button {
   align-items: center !important;
   justify-content: center !important;
   background: transparent !important;
-  color: #2D7FF9 !important;
+  color: #2563EB !important;
   box-shadow: none !important;
-  border-right: 1px solid #f0f0f0 !important;
+  border-right: 1px solid rgba(163, 177, 198, 0.3) !important;
 }
 
 ion-alert .alert-button:last-child {
   border-right: none !important;
   font-weight: 700 !important;
-  color: #2D7FF9 !important;
+  color: #1B3A6B !important;
 }
 
 ion-alert .alert-button.alert-button-role-cancel,
 ion-alert .alert-button[aria-label="Cancelar"] {
-  color: #9ca3af !important;
+  color: #94A3B8 !important;
   font-weight: 500 !important;
 }
 
 ion-alert .alert-button.alert-button-role-destructive {
-  color: #FF2D55 !important;
+  color: #EF4444 !important;
   font-weight: 700 !important;
 }
 
 /* ====================================================
-   TOASTS — Estilo moderno
+   TOASTS
    ==================================================== */
 
 ion-toast {
-  --background: #1a1a2e;
+  --background: #1E293B;
   --color: #ffffff;
-  --border-radius: 12px;
-  --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  --button-color: #2D7FF9;
+  --border-radius: 16px;
+  --box-shadow: 6px 6px 20px rgba(0,0,0,0.25), -4px -4px 12px rgba(255,255,255,0.05);
+  --button-color: #60A5FA;
   font-weight: 600;
 }
 
 /* ====================================================
-   LOADING — Estilo moderno
+   LOADING
    ==================================================== */
 
 ion-loading {
-  --backdrop-opacity: 0.4;
+  --backdrop-opacity: 0.25;
 }
 
 ion-loading .loading-wrapper {
-  background: #ffffff !important;
-  border-radius: 14px !important;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
-  padding: 20px 24px !important;
+  background: #E8EDF2 !important;
+  border-radius: 20px !important;
+  box-shadow: 10px 10px 26px rgba(163, 177, 198, 0.7), -8px -8px 20px rgba(255, 255, 255, 0.9) !important;
+  padding: 22px 28px !important;
   display: flex !important;
   align-items: center !important;
   gap: 14px !important;
@@ -494,12 +533,178 @@ ion-loading .loading-wrapper {
 ion-loading .loading-content {
   font-size: 14px !important;
   font-weight: 600 !important;
-  color: #1a1a2e !important;
+  color: #1E293B !important;
   margin: 0 !important;
 }
 
 ion-loading ion-spinner {
-  color: #2D7FF9 !important;
+  color: #2563EB !important;
   width: 24px !important;
   height: 24px !important;
+}
+
+/* ====================================================
+   C.H.I.P SHARED PAGE HEADER
+   ==================================================== */
+
+.chip-header {
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chip-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chip-header__icon {
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.chip-header__brand {
+  font-size: 20px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+}
+
+.chip-header__subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.3px;
+}
+
+/* ====================================================
+   FLOATING NAVBAR — Pop-up orange bubble animation
+   ==================================================== */
+
+@keyframes navBubblePop {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-28px) scale(1.18); }
+  65%  { transform: translateY(-22px) scale(0.95); }
+  80%  { transform: translateY(-25px) scale(1.05); }
+  100% { transform: translateY(-24px) scale(1); }
+}
+
+@keyframes navBubbleDown {
+  0%   { transform: translateY(-24px) scale(1); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes navLabelFadeIn {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.floating-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 8px calc(env(safe-area-inset-bottom) + 6px);
+  pointer-events: none;
+}
+
+.floating-navbar__inner {
+  pointer-events: all;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  background: linear-gradient(180deg, #1B3A6B 0%, #142D54 100%);
+  border-radius: 28px 28px 20px 20px;
+  padding: 10px 4px 14px;
+  box-shadow: 0 -4px 24px rgba(27, 58, 107, 0.4), 0 8px 32px rgba(0,0,0,0.3);
+  position: relative;
+  /* Extra top space so bubbles can float above */
+  min-height: 64px;
+}
+
+/* ── Each tab button ──────────────────────────────── */
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 2px;
+  flex: 1;
+  position: relative;
+  /* Height accommodates the floating bubble */
+  padding-top: 28px;
+}
+
+/* ── Bubble (the orange circle) ───────────────────── */
+.nav-tab__bubble {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(0) scale(1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease;
+}
+
+.nav-tab__bubble ion-icon {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.45);
+  transition: color 0.25s ease, font-size 0.25s ease;
+}
+
+/* ── Label ────────────────────────────────────────── */
+.nav-tab__label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.25s ease;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+/* ── ACTIVE state ─────────────────────────────────── */
+.nav-tab--active .nav-tab__bubble {
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.55),
+              0 2px 8px rgba(0, 0, 0, 0.25);
+  animation: navBubblePop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform: translateX(-50%) translateY(-24px) scale(1);
+}
+
+.nav-tab--active .nav-tab__bubble ion-icon {
+  color: #FFFFFF;
+  font-size: 24px;
+}
+
+.nav-tab--active .nav-tab__label {
+  color: #F97316;
+  animation: navLabelFadeIn 0.3s ease 0.1s both;
+}
+
+/* ── Press feedback ───────────────────────────────── */
+.nav-tab:active .nav-tab__bubble {
+  transform: translateX(-50%) scale(0.9);
+}
+
+/* Hide default Ionic tab bar */
+ion-tab-bar {
+  display: none !important;
+}
+
+/* Add bottom padding to content to avoid navbar overlap */
+ion-content {
+  --padding-bottom: 100px;
 }

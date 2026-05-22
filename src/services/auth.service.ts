@@ -23,12 +23,15 @@ export const AuthService = {
 
     // Fetch profile
     const profile = await ApiService.get<UserProfile>('/auth/profile');
+    profile.role = profile.role.toLowerCase() as UserRole;
     await StorageService.setProfile(profile);
     return profile;
   },
 
   async getProfile(): Promise<UserProfile> {
-    return ApiService.get<UserProfile>('/auth/profile');
+    const profile = await ApiService.get<UserProfile>('/auth/profile');
+    profile.role = profile.role.toLowerCase() as UserRole;
+    return profile;
   },
 
   async logout(refreshToken: string): Promise<void> {
@@ -41,7 +44,11 @@ export const AuthService = {
   },
 
   async getStoredProfile(): Promise<UserProfile | null> {
-    return StorageService.getProfile<UserProfile>();
+    const profile = await StorageService.getProfile<UserProfile>();
+    if (profile) {
+      profile.role = profile.role.toLowerCase() as UserRole;
+    }
+    return profile;
   },
 
   async isAuthenticated(): Promise<boolean> {

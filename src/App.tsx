@@ -1,9 +1,11 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, setupIonicReact } from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonPage, IonIcon, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { statsChartOutline, desktopOutline, constructOutline, documentTextOutline, settingsOutline } from 'ionicons/icons';
+import { statsChartOutline, desktopOutline, constructOutline, documentTextOutline, settingsOutline, personOutline } from 'ionicons/icons';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import Home from './pages/Home';
 import FormularioMantenimiento from './components/FormularioMantenimiento';
@@ -21,6 +23,7 @@ import ListaSolicitudes from './pages/solicitudes/ListaSolicitudes';
 import DetalleSolicitud from './pages/solicitudes/DetalleSolicitud';
 import HomeDashboard from './pages/dashboard/HomeDashboard';
 import Perfil from './pages/perfil/Perfil';
+import MiPerfil from './pages/perfil/MiPerfil';
 import { ToastProvider } from './context/ToastContext';
 
 /* Core CSS required for Ionic components to work properly */
@@ -45,39 +48,82 @@ import './theme/variables.css';
 setupIonicReact();
 
 interface TabConfig {
-  tab: string;
+  id: string;
   href: string;
   icon: string;
   label: string;
   roles: UserRole[];
+  isCenter?: boolean;
 }
 
 const TAB_CONFIG: TabConfig[] = [
-  { tab: 'dashboard', href: '/home', icon: statsChartOutline, label: 'Dashboard', roles: ['admin', 'supervisor', 'gestor', 'tecnico'] },
-  { tab: 'equipos', href: '/equipos', icon: desktopOutline, label: 'Equipos', roles: ['admin', 'supervisor', 'gestor'] },
-  { tab: 'mantenimientos', href: '/home-mantenimientos', icon: constructOutline, label: 'Mantenimientos', roles: ['tecnico'] },
-  { tab: 'solicitudes', href: '/solicitudes', icon: documentTextOutline, label: 'Solicitudes', roles: ['admin', 'supervisor'] },
-  { tab: 'config', href: '/perfil', icon: settingsOutline, label: 'Perfil', roles: ['admin', 'supervisor', 'gestor', 'tecnico'] },
+  { id: 'dashboard', href: '/home', icon: statsChartOutline, label: 'Inicio', roles: ['admin', 'supervisor', 'gestor', 'tecnico'] },
+  { id: 'equipos', href: '/equipos', icon: desktopOutline, label: 'Equipos', roles: ['admin', 'supervisor', 'gestor'] },
+  { id: 'mantenimientos', href: '/home-mantenimientos', icon: constructOutline, label: 'Mant.', roles: ['admin', 'tecnico'] },
+  { id: 'solicitudes', href: '/solicitudes', icon: documentTextOutline, label: 'Solicitudes', roles: ['admin', 'supervisor'] },
+  { id: 'config', href: '/perfil', icon: settingsOutline, label: 'Config', roles: ['admin', 'supervisor', 'gestor', 'tecnico'] },
+  { id: 'mi-perfil', href: '/mi-perfil', icon: personOutline, label: 'Perfil', roles: ['admin', 'supervisor', 'gestor', 'tecnico'] },
 ];
 
-const AppTabs: React.FC = () => {
-  const { user, isAuthenticated } = useAuth();
+/* ── Custom Floating Navbar ────────────────────────── */
+const FloatingNavbar: React.FC = () => {
+  const { user } = useAuth();
+  const history = useHistory();
+  const location = useLocation();
 
-  if (!isAuthenticated || !user) {
-    return (
-      <IonRouterOutlet>
-        <Route exact path="/login" component={Login} />
-        <Route>
-          <Redirect to="/login" />
-        </Route>
-      </IonRouterOutlet>
-    );
-  }
+  if (!user) return null;
 
   const visibleTabs = TAB_CONFIG.filter((t) => t.roles.includes(user.role));
 
+  const isActive = (href: string) =>
+    location.pathname === href || location.pathname.startsWith(href + '/');
+
   return (
-    <IonTabs>
+    <div className="floating-navbar">
+      <div className="floating-navbar__inner">
+        {visibleTabs.map((tab) => {
+          const active = isActive(tab.href);
+          return (
+            <button
+              key={tab.id}
+              className={`nav-tab ${active ? 'nav-tab--active' : ''}`}
+              onClick={() => history.push(tab.href)}
+            >
+              <span className="nav-tab__bubble">
+                <IonIcon icon={tab.icon} />
+              </span>
+              <span className="nav-tab__label">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+/* ── Hidden routes (pages without navbar visible) ──── */
+const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario'];
+
+const AppContent: React.FC = () => {
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const location = useLocation();
+
+  useInactivityLogout(logout, isAuthenticated);
+
+  const showNavbar = isAuthenticated && user && !HIDDEN_NAVBAR_ROUTES.some(r => location.pathname.startsWith(r));
+
+  // While loading auth state, show nothing (avoids flash)
+  if (isLoading) {
+    return null;
+  }
+
+  // If not authenticated and not on login page, redirect to login
+  if (!isAuthenticated && location.pathname !== '/login') {
+    return <Redirect to="/login" />;
+  }
+
+  return (
+    <>
       <IonRouterOutlet>
         <Route exact path="/home" component={HomeDashboard} />
         <Route exact path="/home-mantenimientos" component={Home} />
@@ -87,6 +133,7 @@ const AppTabs: React.FC = () => {
         <Route exact path="/tipos-mantenimiento" component={GestionTiposMantenimiento} />
         <Route exact path="/sugerencias" component={GestionSugerencias} />
         <Route exact path="/perfil" component={Perfil} />
+        <Route exact path="/mi-perfil" component={MiPerfil} />
         <Route exact path="/configuracion" component={Configuracion} />
         <Route exact path="/equipos" component={ListaEquipos} />
         <Route exact path="/equipos/:id" component={DetalleEquipo} />
@@ -99,15 +146,8 @@ const AppTabs: React.FC = () => {
         </Route>
       </IonRouterOutlet>
 
-      <IonTabBar slot="bottom">
-        {visibleTabs.map((tab) => (
-          <IonTabButton key={tab.tab} tab={tab.tab} href={tab.href}>
-            <IonIcon icon={tab.icon} />
-            <IonLabel>{tab.label}</IonLabel>
-          </IonTabButton>
-        ))}
-      </IonTabBar>
-    </IonTabs>
+      {showNavbar && <FloatingNavbar />}
+    </>
   );
 };
 
@@ -116,7 +156,7 @@ const App: React.FC = () => (
     <AuthProvider>
       <ToastProvider>
         <IonReactRouter>
-          <AppTabs />
+          <AppContent />
         </IonReactRouter>
       </ToastProvider>
     </AuthProvider>

@@ -1,115 +1,103 @@
 import React from 'react';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonCard, IonCardContent, IonItem, IonLabel, IonIcon,
-  IonButton, IonAvatar, IonBadge, IonList,
+  IonPage, IonContent,
+  IonIcon,
 } from '@ionic/react';
 import {
-  personOutline, mailOutline, businessOutline,
-  shieldCheckmarkOutline, logOutOutline, informationCircleOutline,
+  businessOutline, constructOutline,
+  bulbOutline, chevronForward, hardwareChipOutline,
 } from 'ionicons/icons';
 import { useAuth } from '../../context/AuthContext';
+import { useHistory } from 'react-router-dom';
 import './Perfil.css';
 
 const Perfil: React.FC = () => {
-  const { user, logout } = useAuth();
-
-  const getRolColor = (rol: string) => {
-    switch (rol) {
-      case 'admin': return 'danger';
-      case 'supervisor': return 'warning';
-      case 'gestor': return 'primary';
-      case 'tecnico': return 'success';
-      default: return 'medium';
-    }
-  };
-
-  const getRolLabel = (rol: string) => {
-    switch (rol) {
-      case 'admin': return 'Administrador';
-      case 'supervisor': return 'Supervisor';
-      case 'gestor': return 'Gestor de Agencia';
-      case 'tecnico': return 'Tecnico';
-      default: return rol;
-    }
-  };
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-  };
-
-  if (!user) return null;
+  const { hasRole } = useAuth();
+  const history = useHistory();
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Mi Perfil</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent className="perfil-content">
+      <IonContent className="perfil-content" fullscreen>
 
-        {/* Avatar y nombre */}
-        <div className="perfil-hero">
-          <div className="perfil-avatar">
-            {getInitials(user.name)}
+        {/* ── C.H.I.P Header ────────────────────── */}
+        <div className="chip-header">
+          <div className="chip-header__left">
+            <IonIcon icon={hardwareChipOutline} className="chip-header__icon" />
+            <span className="chip-header__brand">C.H.I.P</span>
           </div>
-          <h2>{user.name}</h2>
-          <IonBadge color={getRolColor(user.role)} className="rol-badge">
-            {getRolLabel(user.role)}
-          </IonBadge>
+          <span className="chip-header__subtitle">Configuración</span>
         </div>
 
-        {/* Info */}
-        <IonCard>
-          <IonCardContent className="ion-no-padding">
-            <IonList lines="inset">
-              <IonItem>
-                <IonIcon icon={mailOutline} slot="start" color="medium" />
-                <IonLabel>
-                  <p>Correo</p>
-                  <h3>{user.email}</h3>
-                </IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonIcon icon={shieldCheckmarkOutline} slot="start" color="medium" />
-                <IonLabel>
-                  <p>Rol</p>
-                  <h3>{getRolLabel(user.role)}</h3>
-                </IonLabel>
-              </IonItem>
-              {user.agencia_id && (
-                <IonItem lines="none">
-                  <IonIcon icon={businessOutline} slot="start" color="medium" />
-                  <IonLabel>
-                    <p>Agencia ID</p>
-                    <h3>{user.agencia_id}</h3>
-                  </IonLabel>
-                </IonItem>
-              )}
-            </IonList>
-          </IonCardContent>
-        </IonCard>
+        {/* ── Opciones dinámicas según rol ──────── */}
+        <div className="perfil-options-section">
+          <h3 className="perfil-section-title">
+            {hasRole(['admin', 'supervisor']) ? 'Administración del Sistema' : 'Acciones'}
+          </h3>
 
-        {/* Version */}
-        <IonCard>
-          <IonCardContent className="ion-no-padding">
-            <IonItem lines="none">
-              <IonIcon icon={informationCircleOutline} slot="start" color="medium" />
-              <IonLabel>
-                <p>Version</p>
-                <h3>ManteniApp v2.0</h3>
-              </IonLabel>
-            </IonItem>
-          </IonCardContent>
-        </IonCard>
+          <div className="perfil-options-list">
+            {hasRole(['admin', 'supervisor']) && (
+              <>
+                <button className="perfil-option" onClick={() => history.push('/agencias')}>
+                  <div className="perfil-option__icon perfil-option__icon--blue">
+                    <IonIcon icon={businessOutline} />
+                  </div>
+                  <div className="perfil-option__content">
+                    <span className="perfil-option__title">Agencias</span>
+                    <span className="perfil-option__desc">Gestionar agencias y ubicaciones</span>
+                  </div>
+                  <IonIcon icon={chevronForward} className="perfil-option__arrow" />
+                </button>
 
-        {/* Cerrar sesion */}
-        <div className="ion-padding">
-          <IonButton expand="block" color="danger" fill="outline" onClick={logout}>
-            <IonIcon icon={logOutOutline} slot="start" />
-            Cerrar Sesion
-          </IonButton>
+                <button className="perfil-option" onClick={() => history.push('/tipos-mantenimiento')}>
+                  <div className="perfil-option__icon perfil-option__icon--green">
+                    <IonIcon icon={constructOutline} />
+                  </div>
+                  <div className="perfil-option__content">
+                    <span className="perfil-option__title">Tipos de Mantenimiento</span>
+                    <span className="perfil-option__desc">Preventivo, correctivo, predictivo</span>
+                  </div>
+                  <IonIcon icon={chevronForward} className="perfil-option__arrow" />
+                </button>
+
+                <button className="perfil-option" onClick={() => history.push('/sugerencias')}>
+                  <div className="perfil-option__icon perfil-option__icon--orange">
+                    <IonIcon icon={bulbOutline} />
+                  </div>
+                  <div className="perfil-option__content">
+                    <span className="perfil-option__title">Sugerencias</span>
+                    <span className="perfil-option__desc">Textos técnicos predefinidos</span>
+                  </div>
+                  <IonIcon icon={chevronForward} className="perfil-option__arrow" />
+                </button>
+              </>
+            )}
+
+            {hasRole(['tecnico']) && (
+              <button className="perfil-option" onClick={() => history.push('/home-mantenimientos')}>
+                <div className="perfil-option__icon perfil-option__icon--green">
+                  <IonIcon icon={constructOutline} />
+                </div>
+                <div className="perfil-option__content">
+                  <span className="perfil-option__title">Mis Mantenimientos</span>
+                  <span className="perfil-option__desc">Ver registros de mantenimiento</span>
+                </div>
+                <IonIcon icon={chevronForward} className="perfil-option__arrow" />
+              </button>
+            )}
+
+            {hasRole(['gestor']) && (
+              <button className="perfil-option" onClick={() => history.push('/equipos')}>
+                <div className="perfil-option__icon perfil-option__icon--blue">
+                  <IonIcon icon={businessOutline} />
+                </div>
+                <div className="perfil-option__content">
+                  <span className="perfil-option__title">Equipos de mi Agencia</span>
+                  <span className="perfil-option__desc">Gestionar computadores</span>
+                </div>
+                <IonIcon icon={chevronForward} className="perfil-option__arrow" />
+              </button>
+            )}
+          </div>
         </div>
 
       </IonContent>

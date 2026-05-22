@@ -1,23 +1,57 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonList, IonItem, IonLabel, IonBadge, IonSkeletonText,
-  IonRefresher, IonRefresherContent, IonIcon, IonSegment,
-  IonSegmentButton, RefresherEventDetail,
+  IonPage, IonContent, IonSkeletonText,
+  IonRefresher, IonRefresherContent, IonIcon,
+  RefresherEventDetail,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { swapHorizontalOutline, timeOutline, checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
+import { swapHorizontalOutline, documentTextOutline, hardwareChipOutline } from 'ionicons/icons';
 import { SolicitudesService } from '../../services/solicitudes.service';
-import { Solicitud } from '../../types/solicitud.types';
 import './ListaSolicitudes.css';
+
+type Filtro = 'pendiente' | 'aprobada' | 'rechazada' | 'todas';
+
+const FILTROS: { value: Filtro; label: string }[] = [
+  { value: 'pendiente', label: 'Pendientes' },
+  { value: 'aprobada', label: 'Aprobadas' },
+  { value: 'rechazada', label: 'Rechazadas' },
+  { value: 'todas', label: 'Todas' },
+];
+
+const getTipoLabel = (tipo: string) => {
+  switch (tipo) {
+    case 'cambio_responsable': return 'Cambio de responsable';
+    case 'custodia_temporal': return 'Custodia temporal';
+    case 'creacion_responsable': return 'Creación de responsable';
+    default: return tipo;
+  }
+};
+
+const getDotClass = (estado: string) => {
+  switch (estado) {
+    case 'pendiente': return 'sol-card__dot--pendiente';
+    case 'aprobada': return 'sol-card__dot--aprobada';
+    case 'rechazada': return 'sol-card__dot--rechazada';
+    default: return 'sol-card__dot--default';
+  }
+};
+
+const getBadgeClass = (estado: string) => {
+  switch (estado) {
+    case 'pendiente': return 'sol-card__badge--pendiente';
+    case 'aprobada': return 'sol-card__badge--aprobada';
+    case 'rechazada': return 'sol-card__badge--rechazada';
+    default: return 'sol-card__badge--default';
+  }
+};
 
 const ListaSolicitudes: React.FC = () => {
   const history = useHistory();
   const [solicitudes, setSolicitudes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filtro, setFiltro] = useState<string>('pendiente');
+  const [filtro, setFiltro] = useState<Filtro>('pendiente');
 
-  const load = useCallback(async (estado: string) => {
+  const load = useCallback(async (estado: Filtro) => {
     setLoading(true);
     try {
       const data = await SolicitudesService.getSolicitudes(undefined, estado === 'todas' ? undefined : estado);
@@ -34,82 +68,72 @@ const ListaSolicitudes: React.FC = () => {
     e.detail.complete();
   };
 
-  const getBadgeColor = (estado: string) => {
-    switch (estado) {
-      case 'pendiente': return 'warning';
-      case 'aprobada': return 'success';
-      case 'rechazada': return 'danger';
-      default: return 'medium';
-    }
-  };
-
-  const getTipoLabel = (tipo: string) => {
-    switch (tipo) {
-      case 'cambio_responsable': return 'Cambio de responsable';
-      case 'custodia_temporal': return 'Custodia temporal';
-      case 'creacion_responsable': return 'Creacion de responsable';
-      default: return tipo;
-    }
-  };
-
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonTitle>Solicitudes</IonTitle>
-        </IonToolbar>
-        <IonToolbar>
-          <IonSegment value={filtro} onIonChange={e => setFiltro(e.detail.value as string)}>
-            <IonSegmentButton value="pendiente">Pendientes</IonSegmentButton>
-            <IonSegmentButton value="aprobada">Aprobadas</IonSegmentButton>
-            <IonSegmentButton value="rechazada">Rechazadas</IonSegmentButton>
-          </IonSegment>
-        </IonToolbar>
-      </IonHeader>
-      <IonContent>
+      <IonContent className="solicitudes-content" fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
 
+        <div className="chip-header">
+          <div className="chip-header__left">
+            <IonIcon icon={hardwareChipOutline} className="chip-header__icon" />
+            <span className="chip-header__brand">C.H.I.P</span>
+          </div>
+          <span className="chip-header__subtitle">Solicitudes</span>
+        </div>
+
+        <div className="sol-header">
+          <p className="sol-title">Solicitudes</p>
+        </div>
+
+        <div className="sol-filters">
+          {FILTROS.map(f => (
+            <button
+              key={f.value}
+              className={`sol-filter-btn${filtro === f.value ? ' sol-filter-btn--active' : ''}`}
+              onClick={() => setFiltro(f.value)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
         {loading ? (
-          <IonList>
-            {[1,2,3,4].map(i => (
-              <IonItem key={i}>
-                <IonLabel>
-                  <IonSkeletonText animated style={{ width: '60%' }} />
-                  <IonSkeletonText animated style={{ width: '40%' }} />
-                </IonLabel>
-              </IonItem>
+          <div className="sol-list">
+            {[1, 2, 3, 4].map(i => (
+              <IonSkeletonText key={i} animated className="sol-skeleton-card" style={{ height: '96px' }} />
             ))}
-          </IonList>
+          </div>
+        ) : solicitudes.length === 0 ? (
+          <div className="sol-empty">
+            <IonIcon icon={documentTextOutline} />
+            <p>No hay solicitudes {filtro !== 'todas' ? filtro + 's' : ''}</p>
+          </div>
         ) : (
-          <IonList>
-            {solicitudes.length === 0 ? (
-              <IonItem lines="none">
-                <IonLabel className="ion-text-center" color="medium">
-                  <IonIcon icon={timeOutline} size="large" />
-                  <p>No hay solicitudes {filtro !== 'todas' ? filtro + 's' : ''}</p>
-                </IonLabel>
-              </IonItem>
-            ) : (
-              solicitudes.map((s: any) => (
-                <IonItem key={s.id} button detail onClick={() => history.push(`/solicitudes/${s.id}`)}>
-                  <IonIcon icon={swapHorizontalOutline} slot="start" color="primary" />
-                  <IonLabel>
-                    <h2>{s.computador_codigo || 'Sin equipo'}</h2>
-                    <p>{getTipoLabel(s.tipo)}</p>
-                    <p className="responsables-line">
-                      {s.responsable_anterior_nombre || 'Sin anterior'}
-                      {' → '}
-                      {s.responsable_nuevo_nombre || 'Sin nuevo'}
-                    </p>
-                    <p className="fecha-line">{new Date(s.created_at).toLocaleDateString('es-CO')}</p>
-                  </IonLabel>
-                  <IonBadge slot="end" color={getBadgeColor(s.estado)}>{s.estado}</IonBadge>
-                </IonItem>
-              ))
-            )}
-          </IonList>
+          <div className="sol-list">
+            {solicitudes.map((s: any) => (
+              <div key={s.id} className="sol-card" onClick={() => history.push(`/solicitudes/${s.id}`)}>
+                <div className="sol-card__top">
+                  <div className="sol-card__left">
+                    <div className={`sol-card__dot ${getDotClass(s.estado)}`} />
+                    <div>
+                      <div className="sol-card__code">{s.computador_codigo || 'Sin equipo'}</div>
+                      <div className="sol-card__tipo">{getTipoLabel(s.tipo)}</div>
+                    </div>
+                  </div>
+                  <div className="sol-card__right">
+                    <span className="sol-card__date">{new Date(s.created_at).toLocaleDateString('es-CO')}</span>
+                    <span className={`sol-card__badge ${getBadgeClass(s.estado)}`}>{s.estado}</span>
+                  </div>
+                </div>
+                <div className="sol-card__responsables">
+                  <IonIcon icon={swapHorizontalOutline} />
+                  <span>{s.responsable_anterior_nombre || 'Sin anterior'} → {s.responsable_nuevo_nombre || 'Sin nuevo'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </IonContent>
     </IonPage>
@@ -117,3 +141,4 @@ const ListaSolicitudes: React.FC = () => {
 };
 
 export default ListaSolicitudes;
+
