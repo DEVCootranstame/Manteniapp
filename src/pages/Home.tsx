@@ -597,7 +597,7 @@ const Home: React.FC = () => {
 
         {/* FAB directo a nuevo mantenimiento */}
         <button
-          className="fab-speed-dial__main"
+          className="fab-new-mant"
           onClick={() => history.push('/formulario')}
         >
           <IonIcon icon={add} />

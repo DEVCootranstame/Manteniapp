@@ -4,7 +4,7 @@
 
 .notif-bell {
   position: fixed;
-  bottom: 96px;
+  bottom: 86px;
   left: 16px;
   z-index: 10000;
   width: 54px;

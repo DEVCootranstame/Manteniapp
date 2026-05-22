@@ -582,24 +582,8 @@ ion-loading ion-spinner {
 }
 
 /* ====================================================
-   FLOATING NAVBAR — Pop-up orange bubble animation
+   FLOATING NAVBAR — Compact pill with orange bubble
    ==================================================== */
-
-@keyframes navBubblePop {
-  0%   { transform: translateX(-50%) scale(0.8); }
-  50%  { transform: translateX(-50%) scale(1.1); }
-  100% { transform: translateX(-50%) scale(1); }
-}
-
-@keyframes navBubbleDown {
-  0%   { transform: translateX(-50%) scale(1); }
-  100% { transform: translateX(-50%) scale(0.8); }
-}
-
-@keyframes navLabelFadeIn {
-  0%   { opacity: 0; transform: translateY(4px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
 
 .floating-navbar {
   position: fixed;
@@ -607,102 +591,84 @@ ion-loading ion-spinner {
   left: 0;
   right: 0;
   z-index: 9999;
-  padding: 0 8px calc(env(safe-area-inset-bottom) + 6px);
+  padding: 0 12px calc(env(safe-area-inset-bottom) + 8px);
   pointer-events: none;
 }
 
 .floating-navbar__inner {
   pointer-events: all;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-evenly;
   background: linear-gradient(180deg, #1B3A6B 0%, #142D54 100%);
-  border-radius: 28px 28px 20px 20px;
-  padding: 10px 0 14px;
-  box-shadow: 0 -4px 24px rgba(27, 58, 107, 0.4), 0 8px 32px rgba(0,0,0,0.3);
-  position: relative;
-  /* Extra top space so bubbles can float above */
-  min-height: 64px;
+  border-radius: 22px;
+  padding: 10px 0;
+  box-shadow: 0 -2px 16px rgba(27, 58, 107, 0.35), 0 6px 20px rgba(0,0,0,0.25);
+  min-height: 50px;
 }
 
 /* ── Each tab button ──────────────────────────────── */
 .nav-tab {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px 0 0;
+  padding: 0;
   flex: 1;
   min-width: 0;
   position: relative;
+  height: 38px;
 }
 
-/* ── Bubble (orange circle behind icon, absolutely positioned) ── */
+/* ── Bubble (orange circle behind icon) ───────────── */
 .nav-tab__bubble {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 42px;
-  height: 42px;
+  transform: translate(-50%, -50%) scale(0);
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: transparent;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+  box-shadow: 0 3px 10px rgba(249, 115, 22, 0.45);
+  transition: transform 0.2s ease;
   pointer-events: none;
 }
 
-/* ── Icon (always static, never moves) ─────────────── */
+/* ── Icon (always static, centered) ───────────────── */
 .nav-tab__icon {
   position: relative;
   z-index: 1;
-  width: 42px;
-  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 .nav-tab__icon ion-icon {
-  font-size: 20px;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.5);
   transition: color 0.2s ease;
 }
 
-/* ── Label ────────────────────────────────────────── */
+/* ── Label (hidden) ───────────────────────────────── */
 .nav-tab__label {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  color: rgba(255, 255, 255, 0.4);
-  transition: color 0.25s ease;
-  line-height: 1;
-  margin-top: 2px;
-  white-space: nowrap;
-  text-align: center;
+  display: none;
 }
 
 /* ── ACTIVE state ─────────────────────────────────── */
 .nav-tab--active .nav-tab__bubble {
-  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
-  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.5);
+  transform: translate(-50%, -50%) scale(1);
 }
 
 .nav-tab--active .nav-tab__icon ion-icon {
   color: #FFFFFF;
 }
 
-.nav-tab--active .nav-tab__label {
-  color: #F97316;
-  animation: navLabelFadeIn 0.3s ease 0.1s both;
-}
-
 /* ── Press feedback ───────────────────────────────── */
 .nav-tab:active .nav-tab__bubble {
-  transform: translateX(-50%) scale(0.92);
+  transform: translate(-50%, -50%) scale(0.88);
 }
 
 /* Hide default Ionic tab bar */
@@ -712,5 +678,5 @@ ion-tab-bar {
 
 /* Add bottom padding to content to avoid navbar overlap */
 ion-content {
-  --padding-bottom: 100px;
+  --padding-bottom: 90px;
 }
