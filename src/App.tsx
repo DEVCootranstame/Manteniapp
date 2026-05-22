@@ -90,7 +90,8 @@ const FloatingNavbar: React.FC = () => {
               className={`nav-tab ${active ? 'nav-tab--active' : ''}`}
               onClick={() => history.push(tab.href)}
             >
-              <span className="nav-tab__bubble">
+              <span className="nav-tab__bubble" />
+              <span className="nav-tab__icon">
                 <IonIcon icon={tab.icon} />
               </span>
               <span className="nav-tab__label">{tab.label}</span>

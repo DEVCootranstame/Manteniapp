@@ -634,28 +634,42 @@ ion-loading ion-spinner {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
+  padding: 8px 0 0;
   flex: 1;
   min-width: 0;
   position: relative;
 }
 
-/* ── Bubble (the orange circle) ───────────────────── */
+/* ── Bubble (orange circle behind icon, absolutely positioned) ── */
 .nav-tab__bubble {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 42px;
   height: 42px;
   border-radius: 50%;
   background: transparent;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  pointer-events: none;
+}
+
+/* ── Icon (always static, never moves) ─────────────── */
+.nav-tab__icon {
+  position: relative;
+  z-index: 1;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  flex-shrink: 0;
 }
 
-.nav-tab__bubble ion-icon {
+.nav-tab__icon ion-icon {
   font-size: 20px;
   color: rgba(255, 255, 255, 0.45);
-  transition: color 0.25s ease, font-size 0.25s ease;
+  transition: color 0.2s ease;
 }
 
 /* ── Label ────────────────────────────────────────── */
@@ -675,12 +689,10 @@ ion-loading ion-spinner {
 .nav-tab--active .nav-tab__bubble {
   background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
   box-shadow: 0 4px 14px rgba(249, 115, 22, 0.5);
-  animation: navBubblePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-.nav-tab--active .nav-tab__bubble ion-icon {
+.nav-tab--active .nav-tab__icon ion-icon {
   color: #FFFFFF;
-  font-size: 24px;
 }
 
 .nav-tab--active .nav-tab__label {
@@ -690,7 +702,7 @@ ion-loading ion-spinner {
 
 /* ── Press feedback ───────────────────────────────── */
 .nav-tab:active .nav-tab__bubble {
-  transform: scale(0.9);
+  transform: translateX(-50%) scale(0.92);
 }
 
 /* Hide default Ionic tab bar */

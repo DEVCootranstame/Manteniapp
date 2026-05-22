@@ -2,7 +2,7 @@
 .sol-header { padding: 16px 20px 8px; }
 .sol-title { font-size: 24px; font-weight: 800; color: #1E293B; margin: 0 0 12px; }
 /* Filter tabs: horizontal scrollable row of pills */
-.sol-filters { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 12px; scrollbar-width: none; }
+.sol-filters { display: flex; gap: 8px; overflow-x: auto; padding: 14px 16px 12px; scrollbar-width: none; }
 .sol-filter-btn { flex-shrink: 0; padding: 6px 16px; border-radius: 20px; border: none; font-size: 12px; font-weight: 700; background: #EDF1F5; color: #5A6A7E; box-shadow: 3px 3px 8px rgba(163,177,198,0.5), -3px -3px 8px rgba(255,255,255,0.9); cursor: pointer; }
 .sol-filter-btn--active { background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%); color: #fff; box-shadow: 3px 3px 8px rgba(27,58,107,0.3); }
 /* Card list */
