@@ -12,7 +12,7 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, settingsOutline, construct, hardwareChipOutline } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, construct, hardwareChipOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -40,7 +40,7 @@ const Home: React.FC = () => {
   const [alertHeader, setAlertHeader] = useState<string>('');
   const [toastMessage, setToastMessage] = useState<string>('');
   const [showToast, setShowToast] = useState<boolean>(false);
-  const [fabOpen, setFabOpen] = useState<boolean>(false);
+  
 
   const cargarAgencias = useCallback(async () => {
     const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
@@ -595,42 +595,13 @@ const Home: React.FC = () => {
 
         <div className="home-spacer" />
 
-        {/* Overlay para cerrar FAB */}
-        {fabOpen && (
-          <div className="fab-overlay" onClick={() => setFabOpen(false)} />
-        )}
-
-        {/* FAB expandible estilo Nequi */}
-        <div className={`fab-speed-dial ${fabOpen ? 'fab-speed-dial--open' : ''}`}>
-          {fabOpen && (
-            <div className="fab-speed-dial__options">
-              <button
-                className="fab-speed-dial__option"
-                onClick={() => { setFabOpen(false); history.push('/configuracion'); }}
-              >
-                <span className="fab-speed-dial__label">Configuración</span>
-                <div className="fab-speed-dial__icon-btn fab-speed-dial__icon-btn--config">
-                  <IonIcon icon={settingsOutline} />
-                </div>
-              </button>
-              <button
-                className="fab-speed-dial__option"
-                onClick={() => { setFabOpen(false); history.push('/formulario'); }}
-              >
-                <span className="fab-speed-dial__label">Nuevo Mantenimiento</span>
-                <div className="fab-speed-dial__icon-btn fab-speed-dial__icon-btn--create">
-                  <IonIcon icon={construct} />
-                </div>
-              </button>
-            </div>
-          )}
-          <button
-            className={`fab-speed-dial__main ${fabOpen ? 'fab-speed-dial__main--open' : ''}`}
-            onClick={() => setFabOpen(!fabOpen)}
-          >
-            <IonIcon icon={fabOpen ? closeOutline : add} />
-          </button>
-        </div>
+        {/* FAB directo a nuevo mantenimiento */}
+        <button
+          className="fab-speed-dial__main"
+          onClick={() => history.push('/formulario')}
+        >
+          <IonIcon icon={add} />
+        </button>
 
         <IonLoading isOpen={loading} message={loadingMessage} />
         <IonAlert
