@@ -1,22 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IonPage, IonContent, IonIcon } from '@ionic/react';
 import {
   personOutline, mailOutline, shieldCheckmarkOutline,
   businessOutline, logOutOutline, hardwareChipOutline,
 } from 'ionicons/icons';
+import { Preferences } from '@capacitor/preferences';
 import { useAuth } from '../../context/AuthContext';
+import { Agencia, AGENCIAS_STORAGE_KEY } from '../../types';
 import './MiPerfil.css';
-
-const AGENCIAS: Record<number, string> = {
-  1: 'Arauca', 2: 'Arauquita', 3: 'Saravena', 4: 'Fortul', 5: 'Tame',
-  6: 'Puerto Rondón', 7: 'Hato Corozal', 8: 'Pore', 9: 'Paz de Ariporo',
-  10: 'Yopal', 11: 'Villavicencio', 12: 'San José de Guaviare', 13: 'Bogotá',
-  14: 'Medellín', 15: 'Armenia', 16: 'Bucaramanga', 17: 'Cúcuta',
-  18: 'Pamplona', 19: 'Pereira',
-};
 
 const MiPerfil: React.FC = () => {
   const { user, logout } = useAuth();
+  const [agenciaNombre, setAgenciaNombre] = useState<string>('');
 
   const getRolColor = (rol: string) => {
     switch (rol) {
@@ -40,6 +35,19 @@ const MiPerfil: React.FC = () => {
 
   const getInitials = (name: string) =>
     name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+
+  useEffect(() => {
+    const loadAgencia = async () => {
+      if (!user?.agencia_id) return;
+      const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
+      if (value) {
+        const agencias: Agencia[] = JSON.parse(value);
+        const found = agencias.find(a => Number(a.id) === user.agencia_id);
+        if (found) setAgenciaNombre(found.nombre);
+      }
+    };
+    loadAgencia();
+  }, [user]);
 
   if (!user) return null;
 
@@ -89,7 +97,7 @@ const MiPerfil: React.FC = () => {
                 <div className="miperfil-detail-row__icon">
                   <IonIcon icon={businessOutline} />
                 </div>
-                <span>Agencia: {AGENCIAS[user.agencia_id] ?? `#${user.agencia_id}`}</span>
+                <span>{agenciaNombre || `Agencia #${user.agencia_id}`}</span>
               </div>
             )}
           </div>
