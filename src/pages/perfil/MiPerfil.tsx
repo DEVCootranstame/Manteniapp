@@ -7,6 +7,14 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import './MiPerfil.css';
 
+const AGENCIAS: Record<number, string> = {
+  1: 'Arauca', 2: 'Arauquita', 3: 'Saravena', 4: 'Fortul', 5: 'Tame',
+  6: 'Puerto Rondón', 7: 'Hato Corozal', 8: 'Pore', 9: 'Paz de Ariporo',
+  10: 'Yopal', 11: 'Villavicencio', 12: 'San José de Guaviare', 13: 'Bogotá',
+  14: 'Medellín', 15: 'Armenia', 16: 'Bucaramanga', 17: 'Cúcuta',
+  18: 'Pamplona', 19: 'Pereira',
+};
+
 const MiPerfil: React.FC = () => {
   const { user, logout } = useAuth();
 
@@ -81,7 +89,7 @@ const MiPerfil: React.FC = () => {
                 <div className="miperfil-detail-row__icon">
                   <IonIcon icon={businessOutline} />
                 </div>
-                <span>Agencia #{user.agencia_id}</span>
+                <span>Agencia: {AGENCIAS[user.agencia_id] ?? `#${user.agencia_id}`}</span>
               </div>
             )}
           </div>
