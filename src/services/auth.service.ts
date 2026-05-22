@@ -1,6 +1,6 @@
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
-import { AuthTokens, LoginCredentials, UserProfile } from '../types/auth.types';
+import { AuthTokens, LoginCredentials, UserProfile, UserRole } from '../types/auth.types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
