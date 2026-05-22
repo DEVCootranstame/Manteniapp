@@ -4,17 +4,20 @@ import {
   IonButtons, IonBackButton, IonButton, IonItem, IonLabel,
   IonInput, IonSearchbar, IonList, IonIcon, IonNote,
   IonSpinner, IonCard, IonCardContent, IonTextarea,
-  IonProgressBar, IonChip, IonAlert,
+  IonProgressBar, IonChip, IonAlert, IonBadge,
 } from '@ionic/react';
 import { useParams, useHistory } from 'react-router-dom';
 import {
   personOutline, addOutline, checkmarkCircleOutline,
   swapHorizontalOutline, documentTextOutline, sendOutline,
+  cloudOfflineOutline, timeOutline,
 } from 'ionicons/icons';
 import { EquiposService, ComputadorDetalle } from '../../services/equipos.service';
 import { ResponsablesService } from '../../services/responsables.service';
 import { SolicitudesService } from '../../services/solicitudes.service';
+import { OfflineQueueService } from '../../services/offline-queue.service';
 import { useAuth } from '../../context/AuthContext';
+import { useNetwork } from '../../hooks/useNetwork';
 import { Responsable } from '../../types/equipo.types';
 import FirmaCanvas from '../../components/FirmaCanvas';
 import './CambiarResponsable.css';
@@ -25,6 +28,7 @@ const CambiarResponsable: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
   const { user } = useAuth();
+  const { isOnline, refreshPendingCount } = useNetwork();
   const [paso, setPaso] = useState<Paso>(1);
   const [equipo, setEquipo] = useState<ComputadorDetalle | null>(null);
   const [loadingEquipo, setLoadingEquipo] = useState(true);
@@ -37,6 +41,7 @@ const CambiarResponsable: React.FC = () => {
   const [nuevoCargo, setNuevoCargo] = useState('');
   const [nuevoCorreo, setNuevoCorreo] = useState('');
   const [responsableSeleccionado, setResponsableSeleccionado] = useState<Responsable | null>(null);
+  const [esNuevoResponsable, setEsNuevoResponsable] = useState(false);
   const [firmaEntrega, setFirmaEntrega] = useState('');
   const [firmaRecibe, setFirmaRecibe] = useState('');
   const [firmaGestor, setFirmaGestor] = useState('');
@@ -44,6 +49,7 @@ const CambiarResponsable: React.FC = () => {
   const [enviando, setEnviando] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMsg, setAlertMsg] = useState('');
+  const [guardadoOffline, setGuardadoOffline] = useState(false);
 
   useEffect(() => {
     EquiposService.getComputador(Number(id))
@@ -53,16 +59,53 @@ const CambiarResponsable: React.FC = () => {
 
   const buscarResponsables = async (q: string) => {
     setBusqueda(q);
+    if (!isOnline) {
+      const recientes = await ResponsablesService.getRecientes();
+      if (!q || q.length < 2) { setResultados(recientes); return; }
+      const lower = q.toLowerCase();
+      setResultados(recientes.filter(r =>
+        r.nombre.toLowerCase().includes(lower) || r.numero_documento.includes(q)
+      ));
+      return;
+    }
     if (!q || q.length < 2) { setResultados([]); return; }
     setBuscando(true);
     try { setResultados(await ResponsablesService.getResponsables(q)); }
     finally { setBuscando(false); }
   };
 
+  // Load recientes when offline and entering paso 2
+  useEffect(() => {
+    if (paso === 2 && !isOnline) {
+      ResponsablesService.getRecientes().then(setResultados);
+    }
+  }, [paso, isOnline]);
+
+  const seleccionarResponsable = async (r: Responsable) => {
+    await ResponsablesService.saveReciente(r);
+    setResponsableSeleccionado(r);
+    setEsNuevoResponsable(false);
+    setPaso(3);
+  };
+
   const crearYSeleccionar = async () => {
     if (!nuevoNombre || !nuevoDocumento) {
       setAlertMsg('Nombre y documento son obligatorios');
       setShowAlert(true);
+      return;
+    }
+    if (!isOnline) {
+      // Store data locally — will be created on sync
+      const tempResponsable: Responsable = {
+        id: -Date.now(), // temp negative id, replaced on sync
+        nombre: nuevoNombre,
+        numero_documento: nuevoDocumento,
+        cargo: nuevoCargo || null,
+        correo: nuevoCorreo || null,
+      };
+      setResponsableSeleccionado(tempResponsable);
+      setEsNuevoResponsable(true);
+      setPaso(3);
       return;
     }
     try {
@@ -72,7 +115,9 @@ const CambiarResponsable: React.FC = () => {
         cargo: nuevoCargo || undefined,
         correo: nuevoCorreo || undefined,
       });
+      await ResponsablesService.saveReciente(r);
       setResponsableSeleccionado(r);
+      setEsNuevoResponsable(false);
       setPaso(3);
     } catch (e: any) {
       setAlertMsg(e.message || 'Error al crear responsable');
@@ -89,25 +134,88 @@ const CambiarResponsable: React.FC = () => {
     }
     setEnviando(true);
     try {
-      await SolicitudesService.createActa({
-        computador_id: Number(equipo.id),
-        responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
-        responsable_recibe_id: Number(responsableSeleccionado.id),
-        firma_entrega: firmaEntrega,
-        firma_recibe: firmaRecibe,
-        firma_gestor: firmaGestor,
-        observaciones,
-      });
-      await SolicitudesService.createSolicitud({
-        tipo: 'cambio_responsable',
-        computador_id: Number(equipo.id),
-        responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
-        responsable_nuevo_id: Number(responsableSeleccionado.id),
-        agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
-        creado_por: Number(user.id),
-        observaciones,
-      });
-      setPaso(4);
+      if (!isOnline || esNuevoResponsable) {
+        // Build chained queue job
+        const steps = [];
+
+        if (esNuevoResponsable) {
+          // Step 1: create responsable, save id as 'resp_id'
+          steps.push({
+            method: 'POST' as const,
+            endpoint: '/responsables',
+            body: {
+              nombre: nuevoNombre,
+              numero_documento: nuevoDocumento,
+              cargo: nuevoCargo || undefined,
+              correo: nuevoCorreo || undefined,
+            },
+            saveAs: 'resp_id',
+            saveField: 'id',
+          });
+        }
+
+        // Step 2: create acta
+        steps.push({
+          method: 'POST' as const,
+          endpoint: '/solicitudes/actas',
+          body: {
+            computador_id: Number(equipo.id),
+            responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+            responsable_recibe_id: esNuevoResponsable ? '__resp_id__' : Number(responsableSeleccionado.id),
+            firma_entrega: firmaEntrega,
+            firma_recibe: firmaRecibe,
+            firma_gestor: firmaGestor,
+            observaciones,
+          },
+          ...(esNuevoResponsable ? { useFrom: { responsable_recibe_id: 'resp_id' } } : {}),
+        });
+
+        // Step 3: create solicitud
+        steps.push({
+          method: 'POST' as const,
+          endpoint: '/solicitudes',
+          body: {
+            tipo: 'cambio_responsable',
+            computador_id: Number(equipo.id),
+            responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+            responsable_nuevo_id: esNuevoResponsable ? '__resp_id__' : Number(responsableSeleccionado.id),
+            agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
+            creado_por: Number(user.id),
+            observaciones,
+          },
+          ...(esNuevoResponsable ? { useFrom: { responsable_nuevo_id: 'resp_id' } } : {}),
+        });
+
+        await OfflineQueueService.add({
+          label: `Cambio responsable: ${equipo.Codigo} → ${responsableSeleccionado.nombre}`,
+          steps,
+        });
+        await refreshPendingCount();
+        setGuardadoOffline(true);
+        setPaso(4);
+      } else {
+        // Online — send directly
+        await SolicitudesService.createActa({
+          computador_id: Number(equipo.id),
+          responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+          responsable_recibe_id: Number(responsableSeleccionado.id),
+          firma_entrega: firmaEntrega,
+          firma_recibe: firmaRecibe,
+          firma_gestor: firmaGestor,
+          observaciones,
+        });
+        await SolicitudesService.createSolicitud({
+          tipo: 'cambio_responsable',
+          computador_id: Number(equipo.id),
+          responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
+          responsable_nuevo_id: Number(responsableSeleccionado.id),
+          agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
+          creado_por: Number(user.id),
+          observaciones,
+        });
+        setGuardadoOffline(false);
+        setPaso(4);
+      }
     } catch (e: any) {
       setAlertMsg(e.message || 'Error al enviar solicitud');
       setShowAlert(true);
@@ -144,6 +252,14 @@ const CambiarResponsable: React.FC = () => {
         <IonProgressBar value={(paso - 1) / 3} color="warning" />
       </IonHeader>
       <IonContent className="cambiar-responsable-content">
+
+        {/* Offline indicator */}
+        {!isOnline && (
+          <div className="offline-bar">
+            <IonIcon icon={cloudOfflineOutline} />
+            <span>Sin conexión — se guardará y enviará al reconectar</span>
+          </div>
+        )}
 
         {/* PASO 1: Confirmar */}
         {paso === 1 && equipo && (
@@ -182,11 +298,17 @@ const CambiarResponsable: React.FC = () => {
             </div>
             {!modoCrear ? (
               <>
+                {!isOnline && (
+                  <div className="offline-hint">
+                    <IonIcon icon={timeOutline} />
+                    <span>Mostrando responsables recientes guardados</span>
+                  </div>
+                )}
                 <IonSearchbar value={busqueda} onIonInput={e => buscarResponsables(e.detail.value ?? '')} placeholder="Nombre o documento..." debounce={400} />
                 {buscando && <div className="ion-text-center"><IonSpinner /></div>}
                 <IonList>
                   {resultados.map(r => (
-                    <IonItem key={r.id} button onClick={() => { setResponsableSeleccionado(r); setPaso(3); }}>
+                    <IonItem key={r.id} button onClick={() => seleccionarResponsable(r)}>
                       <IonIcon icon={personOutline} slot="start" />
                       <IonLabel>
                         <h3>{r.nombre}</h3>
@@ -198,6 +320,12 @@ const CambiarResponsable: React.FC = () => {
               </>
             ) : (
               <div className="crear-form">
+                {!isOnline && (
+                  <div className="offline-hint">
+                    <IonIcon icon={cloudOfflineOutline} />
+                    <span>El responsable se creará al sincronizar</span>
+                  </div>
+                )}
                 <IonItem>
                   <IonLabel position="stacked">Nombre completo *</IonLabel>
                   <IonInput value={nuevoNombre} onIonInput={e => setNuevoNombre(e.detail.value ?? '')} />
@@ -214,7 +342,9 @@ const CambiarResponsable: React.FC = () => {
                   <IonLabel position="stacked">Correo</IonLabel>
                   <IonInput type="email" value={nuevoCorreo} onIonInput={e => setNuevoCorreo(e.detail.value ?? '')} />
                 </IonItem>
-                <IonButton expand="block" className="ion-margin-top" onClick={crearYSeleccionar}>Crear y continuar</IonButton>
+                <IonButton expand="block" className="ion-margin-top" onClick={crearYSeleccionar}>
+                  {isOnline ? 'Crear y continuar' : 'Guardar y continuar'}
+                </IonButton>
               </div>
             )}
           </div>
@@ -248,7 +378,12 @@ const CambiarResponsable: React.FC = () => {
               </IonItem>
             </div>
             <IonButton expand="block" className="ion-margin" onClick={enviarSolicitud} disabled={enviando}>
-              {enviando ? <IonSpinner name="crescent" /> : <><IonIcon icon={sendOutline} slot="start" />Enviar a supervision</>}
+              {enviando
+                ? <IonSpinner name="crescent" />
+                : isOnline
+                  ? <><IonIcon icon={sendOutline} slot="start" />Enviar a supervision</>
+                  : <><IonIcon icon={cloudOfflineOutline} slot="start" />Guardar (enviar al reconectar)</>
+              }
             </IonButton>
           </div>
         )}
@@ -256,11 +391,16 @@ const CambiarResponsable: React.FC = () => {
         {/* PASO 4: Exito */}
         {paso === 4 && (
           <div className="paso-container paso-exito">
-            <IonIcon icon={checkmarkCircleOutline} size="large" color="success" />
-            <h2>Solicitud enviada!</h2>
-            <p>El cambio de responsable fue enviado a supervision. Recibiras una notificacion cuando sea aprobado.</p>
+            <IonIcon icon={guardadoOffline ? timeOutline : checkmarkCircleOutline} size="large" color={guardadoOffline ? 'warning' : 'success'} />
+            <h2>{guardadoOffline ? 'Guardado sin conexión' : 'Solicitud enviada!'}</h2>
+            {guardadoOffline
+              ? <p>La solicitud se guardó localmente. Se enviará automáticamente cuando recuperes la conexión.</p>
+              : <p>El cambio de responsable fue enviado a supervision. Recibiras una notificacion cuando sea aprobado.</p>
+            }
             <IonButton expand="block" className="ion-margin" onClick={() => history.push('/equipos')}>Volver a Equipos</IonButton>
-            <IonButton expand="block" fill="outline" className="ion-margin-horizontal" onClick={() => history.push('/solicitudes')}>Ver solicitudes</IonButton>
+            {!guardadoOffline && (
+              <IonButton expand="block" fill="outline" className="ion-margin-horizontal" onClick={() => history.push('/solicitudes')}>Ver solicitudes</IonButton>
+            )}
           </div>
         )}
 

@@ -1,5 +1,8 @@
 import { ApiService } from './api.service';
+import { Preferences } from '@capacitor/preferences';
 import { Computador } from '../types/equipo.types';
+
+const EQUIPOS_CACHE_KEY = 'equipos_cache';
 
 export interface ComputadoresListItem {
   id: number;
@@ -44,11 +47,29 @@ class EquiposServiceClass {
     if (agenciaId) params.set('agencia_id', String(agenciaId));
     if (search) params.set('search', search);
     const query = params.toString() ? `?${params.toString()}` : '';
-    return ApiService.get<ComputadoresListItem[]>(`/computadores${query}`);
+    try {
+      const data = await ApiService.get<ComputadoresListItem[]>(`/computadores${query}`);
+      // Save to cache only on unfiltered fetch
+      if (!search) await this.saveCache(data);
+      return data;
+    } catch {
+      // Fallback to cache
+      return this.getCached();
+    }
   }
 
   async getComputador(id: number): Promise<ComputadorDetalle> {
     return ApiService.get<ComputadorDetalle>(`/computadores/${id}`);
+  }
+
+  async saveCache(list: ComputadoresListItem[]): Promise<void> {
+    await Preferences.set({ key: EQUIPOS_CACHE_KEY, value: JSON.stringify(list) });
+  }
+
+  async getCached(): Promise<ComputadoresListItem[]> {
+    const { value } = await Preferences.get({ key: EQUIPOS_CACHE_KEY });
+    if (!value) return [];
+    try { return JSON.parse(value); } catch { return []; }
   }
 }
 

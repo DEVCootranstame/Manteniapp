@@ -2,7 +2,7 @@ export interface Responsable {
   id: number;
   nombre: string;
   numero_documento: string;
-  tipo_documento_id: number;
+  tipo_documento_id?: number;
   correo: string | null;
   cargo: string | null;
   computadores_count?: number;

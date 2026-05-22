@@ -8,6 +8,7 @@ import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
 import { useHistory, useLocation } from 'react-router-dom';
 import NotificacionesBell from './components/NotificacionesBell';
+import OfflineBanner from './components/OfflineBanner';
 
 import Home from './pages/Home';
 import FormularioMantenimiento from './components/FormularioMantenimiento';
@@ -151,6 +152,7 @@ const AppContent: React.FC = () => {
 
       {showNavbar && <FloatingNavbar />}
       {showNavbar && <NotificacionesBell />}
+      <OfflineBanner />
     </>
   );
 };
