@@ -5,6 +5,7 @@ export interface UserProfile {
   name: string;
   email: string;
   agencia_id: number;
+  agencia?: { id: number; nombre: string; codigo?: string };
   role: UserRole;
 }
 

@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { IonPage, IonContent, IonIcon } from '@ionic/react';
 import {
   personOutline, mailOutline, shieldCheckmarkOutline,
   businessOutline, logOutOutline, hardwareChipOutline,
 } from 'ionicons/icons';
-import { Preferences } from '@capacitor/preferences';
 import { useAuth } from '../../context/AuthContext';
-import { Agencia, AGENCIAS_STORAGE_KEY } from '../../types';
 import './MiPerfil.css';
 
 const MiPerfil: React.FC = () => {
   const { user, logout } = useAuth();
-  const [agenciaNombre, setAgenciaNombre] = useState<string>('');
 
   const getRolColor = (rol: string) => {
     switch (rol) {
@@ -35,19 +32,6 @@ const MiPerfil: React.FC = () => {
 
   const getInitials = (name: string) =>
     name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-
-  useEffect(() => {
-    const loadAgencia = async () => {
-      if (!user?.agencia_id) return;
-      const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-      if (value) {
-        const agencias: Agencia[] = JSON.parse(value);
-        const found = agencias.find(a => Number(a.id) === user.agencia_id);
-        if (found) setAgenciaNombre(found.nombre);
-      }
-    };
-    loadAgencia();
-  }, [user]);
 
   if (!user) return null;
 
@@ -97,7 +81,7 @@ const MiPerfil: React.FC = () => {
                 <div className="miperfil-detail-row__icon">
                   <IonIcon icon={businessOutline} />
                 </div>
-                <span>{agenciaNombre || `Agencia #${user.agencia_id}`}</span>
+                <span>{user.agencia?.nombre ?? `Agencia #${user.agencia_id}`}</span>
               </div>
             )}
           </div>
