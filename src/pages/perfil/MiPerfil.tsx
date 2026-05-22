@@ -48,15 +48,6 @@ const MiPerfil: React.FC = () => {
           </div>
         </div>
 
-        {/* ── Welcome banner ────────────────────── */}
-        <div className="miperfil-welcome">
-          <span className="miperfil-welcome__emoji">👋</span>
-          <div className="miperfil-welcome__text">
-            <h2 className="miperfil-welcome__title">Bienvenido</h2>
-            <p className="miperfil-welcome__name">{user.name || 'Usuario'}</p>
-          </div>
-        </div>
-
         {/* ── Tarjeta de perfil ─────────────────── */}
         <div className="miperfil-card">
           <div className="miperfil-card__avatar">

@@ -77,6 +77,8 @@ const Login: React.FC = () => {
             <button type="submit" className="login-btn" disabled={loading}>
               Iniciar Sesión
             </button>
+
+            <p className="login-copyright">© Cootranstame 2026</p>
           </form>
         </div>
 

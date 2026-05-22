@@ -149,6 +149,12 @@ const HomeDashboard: React.FC = () => {
           <span className="chip-header__subtitle">Dashboard</span>
         </div>
 
+        {/* ── Welcome banner ────────────────────── */}
+        <div className="dashboard-welcome">
+          <span className="dashboard-welcome__greeting">Bienvenido,</span>
+          <span className="dashboard-welcome__name">{user.name || 'Usuario'}</span>
+        </div>
+
         {loading ? (
           <div className="dash-loading">
             {[1, 2, 3].map(i => <IonSkeletonText key={i} animated style={{ height: '120px', borderRadius: '18px', margin: '12px 16px' }} />)}

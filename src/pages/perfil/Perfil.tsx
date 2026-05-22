@@ -30,9 +30,6 @@ const Perfil: React.FC = () => {
 
         {/* ── Opciones dinámicas según rol ──────── */}
         <div className="perfil-options-section">
-          <h3 className="perfil-section-title">
-            {hasRole(['admin', 'supervisor']) ? 'Administración del Sistema' : 'Acciones'}
-          </h3>
 
           <div className="perfil-options-list">
             {hasRole(['admin', 'supervisor']) && (

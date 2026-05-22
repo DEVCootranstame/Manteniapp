@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   IonPage,
-  IonHeader,
-  IonToolbar,
   IonContent,
   IonSearchbar,
   IonIcon,
@@ -14,7 +12,7 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, settingsOutline, construct } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, settingsOutline, construct, hardwareChipOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -366,15 +364,17 @@ const Home: React.FC = () => {
   /* ======================== RENDER ======================== */
   return (
     <IonPage>
-      <IonHeader className="neo-header" mode="md">
-        <IonToolbar>
-          <div className="home-header-content">
-            <div className="home-logo-text">ManteniApp</div>
-          </div>
-        </IonToolbar>
-      </IonHeader>
 
       <IonContent fullscreen>
+        {/* ── C.H.I.P Header ────────────────────── */}
+        <div className="chip-header">
+          <div className="chip-header__left">
+            <IonIcon icon={hardwareChipOutline} className="chip-header__icon" />
+            <span className="chip-header__brand">C.H.I.P</span>
+          </div>
+          <span className="chip-header__subtitle">Mantenimientos</span>
+        </div>
+
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>

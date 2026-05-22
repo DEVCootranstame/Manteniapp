@@ -7,6 +7,26 @@
   --padding-bottom: 100px;
 }
 
+/* == Welcome Banner == */
+.dashboard-welcome {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 16px 20px 8px;
+}
+
+.dashboard-welcome__greeting {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2563EB;
+}
+
+.dashboard-welcome__name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1B3A6B;
+}
+
 /* == Profile Card == */
 .dashboard-profile-card {
   display: flex;
