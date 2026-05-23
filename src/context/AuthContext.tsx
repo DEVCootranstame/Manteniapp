@@ -9,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  softLogout: () => void;
   hasRole: (role: UserRole | UserRole[]) => boolean;
 }
 
@@ -69,6 +70,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (tokens) {
       await AuthService.logout(tokens.refresh_token);
     }
+    await StorageService.clearAll();
+    setUser(null);
+  }, []);
+
+  // Soft logout: only clears in-memory state, keeps tokens/profile in storage.
+  // Used for inactivity timeout so the user can re-enter without internet.
+  const softLogout = useCallback(() => {
     setUser(null);
   }, []);
 
@@ -86,6 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         logout,
+        softLogout,
         hasRole,
       }}
     >

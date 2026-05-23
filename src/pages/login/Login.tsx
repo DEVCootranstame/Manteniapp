@@ -32,7 +32,15 @@ const Login: React.FC = () => {
       await login(email.trim(), password);
       history.replace('/home');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      const raw = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      const isNetworkError = raw.toLowerCase().includes('unable to resolve') ||
+        raw.toLowerCase().includes('network') ||
+        raw.toLowerCase().includes('fetch') ||
+        raw.toLowerCase().includes('failed to fetch') ||
+        raw.toLowerCase().includes('no address');
+      const message = isNetworkError
+        ? 'Sin conexión. Verifica tu internet e intenta de nuevo.'
+        : raw;
       setError(message);
       setShowToast(true);
     } finally {

@@ -109,10 +109,10 @@ const FloatingNavbar: React.FC = React.memo(() => {
 const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario'];
 
 const AppContent: React.FC = () => {
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout, softLogout } = useAuth();
   const location = useLocation();
 
-  useInactivityLogout(logout, isAuthenticated);
+  useInactivityLogout(softLogout, isAuthenticated);
 
   const showNavbar = isAuthenticated && user && !HIDDEN_NAVBAR_ROUTES.some(r => location.pathname.startsWith(r));
 
