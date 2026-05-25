@@ -386,55 +386,55 @@ ion-page {
 
 /* ── Botones ─────────────────────────────────────── */
 .neo-btn {
-  background: var(--nm-base);
-  border-radius: var(--app-radius-sm);
+  background: #FFFFFF;
+  border-radius: 14px;
   border: none;
-  box-shadow: var(--nm-raised-sm);
-  padding: 14px 24px;
-  font-size: 15px;
-  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(15,23,42,0.08);
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
   cursor: pointer;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: var(--app-text-primary);
+  color: #0F172A;
+  letter-spacing: 0.2px;
 }
 
 .neo-btn:active {
-  box-shadow: var(--nm-inset-sm);
   transform: scale(0.97);
 }
 
 .neo-btn-primary {
-  background: var(--app-gradient-primary);
+  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
   color: #fff;
-  box-shadow: 4px 4px 14px rgba(27, 58, 107, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
+  box-shadow: 0 6px 18px rgba(37,99,235,0.35);
 }
 
 .neo-btn-primary:active {
-  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
+  box-shadow: 0 3px 8px rgba(37,99,235,0.20);
 }
 
 .neo-btn-green {
-  background: var(--app-gradient-success);
+  background: linear-gradient(135deg, #065F46 0%, #10B981 100%);
   color: #fff;
-  box-shadow: 4px 4px 14px rgba(16, 185, 129, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
+  box-shadow: 0 6px 18px rgba(16,185,129,0.35);
 }
 
 .neo-btn-green:active {
-  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
+  box-shadow: 0 3px 8px rgba(16,185,129,0.20);
 }
 
 .neo-btn-danger {
-  background: var(--app-gradient-danger);
+  background: linear-gradient(135deg, #991B1B 0%, #EF4444 100%);
   color: #fff;
-  box-shadow: 4px 4px 14px rgba(239, 68, 68, 0.4), -2px -2px 8px rgba(255,255,255,0.5);
+  box-shadow: 0 6px 18px rgba(239,68,68,0.35);
 }
 
 .neo-btn-danger:active {
-  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.2), inset -2px -2px 6px rgba(255,255,255,0.15);
+  box-shadow: 0 3px 8px rgba(239,68,68,0.20);
 }
 
 /* ── Badges ──────────────────────────────────────── */
