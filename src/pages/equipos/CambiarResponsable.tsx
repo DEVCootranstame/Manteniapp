@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import {
-  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButtons, IonBackButton, IonButton, IonItem, IonLabel,
-  IonInput, IonSearchbar, IonList, IonIcon, IonNote,
-  IonSpinner, IonCard, IonCardContent, IonTextarea,
-  IonProgressBar, IonChip, IonAlert, IonBadge,
+  IonPage, IonContent,
+  IonSearchbar, IonIcon, IonSpinner, IonAlert,
 } from '@ionic/react';
 import { useParams, useHistory } from 'react-router-dom';
 import {
   personOutline, addOutline, checkmarkCircleOutline,
-  swapHorizontalOutline, documentTextOutline, sendOutline,
-  cloudOfflineOutline, timeOutline,
+  documentTextOutline, sendOutline,
+  cloudOfflineOutline, timeOutline, chevronBackOutline,
+  chevronForwardOutline, desktopOutline, checkmarkDoneOutline,
 } from 'ionicons/icons';
 import { EquiposService, ComputadorDetalle } from '../../services/equipos.service';
 import { ResponsablesService } from '../../services/responsables.service';
@@ -74,7 +72,6 @@ const CambiarResponsable: React.FC = () => {
     finally { setBuscando(false); }
   };
 
-  // Load recientes when offline and entering paso 2
   useEffect(() => {
     if (paso === 2 && !isOnline) {
       ResponsablesService.getRecientes().then(setResultados);
@@ -95,9 +92,8 @@ const CambiarResponsable: React.FC = () => {
       return;
     }
     if (!isOnline) {
-      // Store data locally — will be created on sync
       const tempResponsable: Responsable = {
-        id: -Date.now(), // temp negative id, replaced on sync
+        id: -Date.now(),
         nombre: nuevoNombre,
         numero_documento: nuevoDocumento,
         cargo: nuevoCargo || null,
@@ -135,44 +131,29 @@ const CambiarResponsable: React.FC = () => {
     setEnviando(true);
     try {
       if (!isOnline || esNuevoResponsable) {
-        // Build chained queue job
-        const steps = [];
-
+        const steps: any[] = [];
         if (esNuevoResponsable) {
-          // Step 1: create responsable, save id as 'resp_id'
           steps.push({
-            method: 'POST' as const,
+            method: 'POST',
             endpoint: '/responsables',
-            body: {
-              nombre: nuevoNombre,
-              numero_documento: nuevoDocumento,
-              cargo: nuevoCargo || undefined,
-              correo: nuevoCorreo || undefined,
-            },
+            body: { nombre: nuevoNombre, numero_documento: nuevoDocumento, cargo: nuevoCargo || undefined, correo: nuevoCorreo || undefined },
             saveAs: 'resp_id',
             saveField: 'id',
           });
         }
-
-        // Step 2: create acta
         steps.push({
-          method: 'POST' as const,
+          method: 'POST',
           endpoint: '/solicitudes/actas',
           body: {
             computador_id: Number(equipo.id),
             responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
             responsable_recibe_id: esNuevoResponsable ? '__resp_id__' : Number(responsableSeleccionado.id),
-            firma_entrega: firmaEntrega,
-            firma_recibe: firmaRecibe,
-            firma_gestor: firmaGestor,
-            observaciones,
+            firma_entrega: firmaEntrega, firma_recibe: firmaRecibe, firma_gestor: firmaGestor, observaciones,
           },
           ...(esNuevoResponsable ? { useFrom: { responsable_recibe_id: 'resp_id' } } : {}),
         });
-
-        // Step 3: create solicitud
         steps.push({
-          method: 'POST' as const,
+          method: 'POST',
           endpoint: '/solicitudes',
           body: {
             tipo: 'cambio_responsable',
@@ -180,29 +161,20 @@ const CambiarResponsable: React.FC = () => {
             responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
             responsable_nuevo_id: esNuevoResponsable ? '__resp_id__' : Number(responsableSeleccionado.id),
             agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
-            creado_por: Number(user.id),
-            observaciones,
+            creado_por: Number(user.id), observaciones,
           },
           ...(esNuevoResponsable ? { useFrom: { responsable_nuevo_id: 'resp_id' } } : {}),
         });
-
-        await OfflineQueueService.add({
-          label: `Cambio responsable: ${equipo.Codigo} → ${responsableSeleccionado.nombre}`,
-          steps,
-        });
+        await OfflineQueueService.add({ label: `Cambio responsable: ${equipo.Codigo} -> ${responsableSeleccionado.nombre}`, steps });
         await refreshPendingCount();
         setGuardadoOffline(true);
         setPaso(4);
       } else {
-        // Online — send directly
         await SolicitudesService.createActa({
           computador_id: Number(equipo.id),
           responsable_entrega_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
           responsable_recibe_id: Number(responsableSeleccionado.id),
-          firma_entrega: firmaEntrega,
-          firma_recibe: firmaRecibe,
-          firma_gestor: firmaGestor,
-          observaciones,
+          firma_entrega: firmaEntrega, firma_recibe: firmaRecibe, firma_gestor: firmaGestor, observaciones,
         });
         await SolicitudesService.createSolicitud({
           tipo: 'cambio_responsable',
@@ -210,8 +182,7 @@ const CambiarResponsable: React.FC = () => {
           responsable_anterior_id: equipo.responsable_info?.id ? Number(equipo.responsable_info.id) : undefined,
           responsable_nuevo_id: Number(responsableSeleccionado.id),
           agencia_id: Number(equipo.agencia?.id ?? user.agencia_id!),
-          creado_por: Number(user.id),
-          observaciones,
+          creado_por: Number(user.id), observaciones,
         });
         setGuardadoOffline(false);
         setPaso(4);
@@ -228,64 +199,106 @@ const CambiarResponsable: React.FC = () => {
     1: 'Confirmar Cambio',
     2: 'Nuevo Responsable',
     3: 'Acta de Entrega',
-    4: 'Solicitud Enviada',
+    4: 'Listo',
   };
+
+  const stepIcons = [desktopOutline, personOutline, documentTextOutline, checkmarkDoneOutline];
+
+  const getInitials = (nombre: string) =>
+    nombre.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
 
   if (loadingEquipo) return (
     <IonPage>
-      <IonHeader><IonToolbar color="primary"><IonTitle>Cargando...</IonTitle></IonToolbar></IonHeader>
-      <IonContent className="ion-padding ion-text-center"><IonSpinner /></IonContent>
+      <IonContent className="cambiar-responsable-content ion-text-center">
+        <div style={{ paddingTop: '40%' }}><IonSpinner /></div>
+      </IonContent>
     </IonPage>
   );
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar color="primary">
-          <IonButtons slot="start">
-            {paso > 1 && paso < 4
-              ? <IonButton onClick={() => setPaso((paso - 1) as Paso)}>Atras</IonButton>
-              : <IonBackButton defaultHref={`/equipos/${id}`} />}
-          </IonButtons>
-          <IonTitle>{titulos[paso]}</IonTitle>
-        </IonToolbar>
-        <IonProgressBar value={(paso - 1) / 3} color="warning" />
-      </IonHeader>
+      <div className="wizard-header">
+        <div className="wizard-header__top">
+          <button className="wizard-header__back" onClick={() => {
+            if (paso > 1 && paso < 4) setPaso((paso - 1) as Paso);
+            else history.goBack();
+          }}>
+            <IonIcon icon={chevronBackOutline} />
+          </button>
+          <h2 className="wizard-header__title">{titulos[paso]}</h2>
+          <span className="wizard-header__badge">Paso {paso} / 4</span>
+        </div>
+        <div className="wizard-stepper">
+          {([1, 2, 3, 4] as Paso[]).map((s, i) => (
+            <React.Fragment key={s}>
+              <div className="wizard-step">
+                <div className={`wizard-step__circle wizard-step__circle--${paso > s ? 'done' : paso === s ? 'active' : 'pending'}`}>
+                  {paso > s
+                    ? <IonIcon icon={checkmarkCircleOutline} style={{ fontSize: 14 }} />
+                    : <IonIcon icon={stepIcons[i]} style={{ fontSize: 13 }} />
+                  }
+                </div>
+              </div>
+              {i < 3 && (
+                <div className={`wizard-step__line wizard-step__line--${paso > s ? 'done' : 'pending'}`} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
       <IonContent className="cambiar-responsable-content">
 
-        {/* Offline indicator */}
-        {!isOnline && (
+        {!isOnline && paso < 4 && (
           <div className="offline-bar">
             <IonIcon icon={cloudOfflineOutline} />
-            <span>Sin conexión — se guardará y enviará al reconectar</span>
+            <span>Sin conexion - se guardara y enviara al reconectar</span>
           </div>
         )}
 
-        {/* PASO 1: Confirmar */}
+        {/* PASO 1 */}
         {paso === 1 && equipo && (
           <div className="paso-container">
-            <IonCard><IonCardContent>
+            <div className="wizard-card">
               <div className="equipo-resumen">
-                <IonIcon icon={swapHorizontalOutline} size="large" color="primary" />
-                <h2>{equipo.Codigo}</h2>
-                {equipo.agencia && <p>{equipo.agencia.nombre}</p>}
+                <div className="equipo-resumen__icon">
+                  <IonIcon icon={desktopOutline} />
+                </div>
+                <h2 className="equipo-resumen__codigo">{equipo.Codigo}</h2>
+                {equipo.agencia && <p className="equipo-resumen__agencia">{equipo.agencia.nombre}</p>}
               </div>
-              <div className="responsable-actual">
-                <p className="paso-label">Responsable actual</p>
-                {equipo.responsable_info ? (
-                  <div className="responsable-card">
-                    <strong>{equipo.responsable_info.nombre}</strong>
-                    <span>{equipo.responsable_info.numero_documento}</span>
+              <p className="wizard-card__label">
+                <IonIcon icon={personOutline} />
+                Responsable actual
+              </p>
+              {equipo.responsable_info ? (
+                <div className="responsable-actual-row">
+                  <div className="responsable-actual-row__avatar">
+                    {getInitials(equipo.responsable_info.nombre)}
                   </div>
-                ) : <IonNote>Sin responsable asignado</IonNote>}
+                  <div className="responsable-actual-row__info">
+                    <p className="responsable-actual-row__nombre">{equipo.responsable_info.nombre}</p>
+                    <p className="responsable-actual-row__doc">{equipo.responsable_info.numero_documento}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="sin-responsable-chip">
+                  <IonIcon icon={personOutline} />
+                  Sin responsable asignado
+                </div>
+              )}
+              <div style={{ marginTop: 14 }}>
+                <p className="aviso-texto">Se creara una solicitud que debe ser aprobada por un supervisor. Se generara un acta de entrega con firmas.</p>
               </div>
-              <p className="aviso-texto">Se creara una solicitud que debe ser aprobada por un supervisor. Se generara un acta de entrega con firmas.</p>
-            </IonCardContent></IonCard>
-            <IonButton expand="block" className="ion-margin" onClick={() => setPaso(2)}>Continuar</IonButton>
+            </div>
+            <button className="wizard-btn-primary" onClick={() => setPaso(2)}>
+              Continuar
+              <IonIcon icon={chevronForwardOutline} />
+            </button>
           </div>
         )}
 
-        {/* PASO 2: Buscar / Crear responsable */}
+        {/* PASO 2 */}
         {paso === 2 && (
           <div className="paso-container">
             <div className="paso-tabs">
@@ -304,102 +317,135 @@ const CambiarResponsable: React.FC = () => {
                     <span>Mostrando responsables recientes guardados</span>
                   </div>
                 )}
-                <IonSearchbar value={busqueda} onIonInput={e => buscarResponsables(e.detail.value ?? '')} placeholder="Nombre o documento..." debounce={400} />
-                {buscando && <div className="ion-text-center"><IonSpinner /></div>}
-                <IonList>
+                <IonSearchbar
+                  value={busqueda}
+                  onIonInput={e => buscarResponsables(e.detail.value ?? '')}
+                  placeholder="Nombre o documento..."
+                  debounce={400}
+                  className="wizard-searchbar"
+                />
+                {buscando && <div style={{ textAlign: 'center', padding: 8 }}><IonSpinner /></div>}
+                <div className="responsable-result-list">
                   {resultados.map(r => (
-                    <IonItem key={r.id} button onClick={() => seleccionarResponsable(r)}>
-                      <IonIcon icon={personOutline} slot="start" />
-                      <IonLabel>
-                        <h3>{r.nombre}</h3>
-                        <p>{r.numero_documento}{r.cargo ? ` - ${r.cargo}` : ''}</p>
-                      </IonLabel>
-                    </IonItem>
+                    <div key={r.id} className="responsable-result-item" onClick={() => seleccionarResponsable(r)}>
+                      <div className="responsable-result-item__avatar">
+                        {getInitials(r.nombre)}
+                      </div>
+                      <div className="responsable-result-item__info">
+                        <p className="responsable-result-item__nombre">{r.nombre}</p>
+                        <p className="responsable-result-item__meta">{r.numero_documento}{r.cargo ? ` - ${r.cargo}` : ''}</p>
+                      </div>
+                      <IonIcon icon={chevronForwardOutline} className="responsable-result-item__arrow" />
+                    </div>
                   ))}
-                </IonList>
+                </div>
               </>
             ) : (
-              <div className="crear-form">
+              <div className="wizard-card">
                 {!isOnline && (
-                  <div className="offline-hint">
+                  <div className="offline-hint" style={{ margin: '0 0 12px' }}>
                     <IonIcon icon={cloudOfflineOutline} />
-                    <span>El responsable se creará al sincronizar</span>
+                    <span>El responsable se creara al sincronizar</span>
                   </div>
                 )}
-                <IonItem>
-                  <IonLabel position="stacked">Nombre completo *</IonLabel>
-                  <IonInput value={nuevoNombre} onIonInput={e => setNuevoNombre(e.detail.value ?? '')} />
-                </IonItem>
-                <IonItem>
-                  <IonLabel position="stacked">Numero de documento *</IonLabel>
-                  <IonInput type="number" value={nuevoDocumento} onIonInput={e => setNuevoDocumento(e.detail.value ?? '')} />
-                </IonItem>
-                <IonItem>
-                  <IonLabel position="stacked">Cargo</IonLabel>
-                  <IonInput value={nuevoCargo} onIonInput={e => setNuevoCargo(e.detail.value ?? '')} />
-                </IonItem>
-                <IonItem>
-                  <IonLabel position="stacked">Correo</IonLabel>
-                  <IonInput type="email" value={nuevoCorreo} onIonInput={e => setNuevoCorreo(e.detail.value ?? '')} />
-                </IonItem>
-                <IonButton expand="block" className="ion-margin-top" onClick={crearYSeleccionar}>
-                  {isOnline ? 'Crear y continuar' : 'Guardar y continuar'}
-                </IonButton>
+                <div className="crear-form">
+                  <div className="wizard-field">
+                    <label className="wizard-field__label">Nombre completo *</label>
+                    <input className="wizard-field__input" value={nuevoNombre} onChange={e => setNuevoNombre(e.target.value)} placeholder="Ej: Juan Perez" />
+                  </div>
+                  <div className="wizard-field">
+                    <label className="wizard-field__label">Numero de documento *</label>
+                    <input className="wizard-field__input" type="number" value={nuevoDocumento} onChange={e => setNuevoDocumento(e.target.value)} placeholder="Ej: 10234567890" />
+                  </div>
+                  <div className="wizard-field">
+                    <label className="wizard-field__label">Cargo</label>
+                    <input className="wizard-field__input" value={nuevoCargo} onChange={e => setNuevoCargo(e.target.value)} placeholder="Ej: Conductor" />
+                  </div>
+                  <div className="wizard-field">
+                    <label className="wizard-field__label">Correo</label>
+                    <input className="wizard-field__input" type="email" value={nuevoCorreo} onChange={e => setNuevoCorreo(e.target.value)} placeholder="correo@ejemplo.com" />
+                  </div>
+                  <button className="wizard-btn-primary" onClick={crearYSeleccionar} style={{ marginTop: 6 }}>
+                    {isOnline ? 'Crear y continuar' : 'Guardar y continuar'}
+                    <IonIcon icon={chevronForwardOutline} />
+                  </button>
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* PASO 3: Firmar acta */}
+        {/* PASO 3 */}
         {paso === 3 && responsableSeleccionado && (
           <div className="paso-container">
-            <IonCard><IonCardContent>
-              <p className="paso-label">Nuevo responsable</p>
-              <IonChip color="success">
-                <IonIcon icon={checkmarkCircleOutline} />
-                <IonLabel>{responsableSeleccionado.nombre} - {responsableSeleccionado.numero_documento}</IonLabel>
-              </IonChip>
-            </IonCardContent></IonCard>
-            <div className="firmas-container ion-padding">
-              <IonIcon icon={documentTextOutline} color="primary" />
-              <h3>Acta de Entrega</h3>
-              <FirmaCanvas
-                label={equipo?.responsable_info ? `Firma de quien entrega (${equipo.responsable_info.nombre})` : 'Firma de quien entrega'}
-                onFirma={setFirmaEntrega}
-              />
-              <FirmaCanvas
-                label={`Firma de quien recibe (${responsableSeleccionado.nombre})`}
-                onFirma={setFirmaRecibe}
-              />
-              <FirmaCanvas label="Firma del gestor" onFirma={setFirmaGestor} />
-              <IonItem>
-                <IonLabel position="stacked">Observaciones</IonLabel>
-                <IonTextarea rows={3} value={observaciones} onIonInput={e => setObservaciones(e.detail.value ?? '')} placeholder="Condiciones del equipo..." />
-              </IonItem>
+            <div className="wizard-card">
+              <p className="wizard-card__label"><IonIcon icon={personOutline} />Nuevo responsable</p>
+              <div className="responsable-seleccionado-chip">
+                <IonIcon icon={checkmarkCircleOutline} className="responsable-seleccionado-chip__icon" />
+                <div>
+                  <p className="responsable-seleccionado-chip__nombre">{responsableSeleccionado.nombre}</p>
+                  <p className="responsable-seleccionado-chip__doc">{responsableSeleccionado.numero_documento}</p>
+                </div>
+              </div>
             </div>
-            <IonButton expand="block" className="ion-margin" onClick={enviarSolicitud} disabled={enviando}>
+            <div className="wizard-card">
+              <div className="firmas-title">
+                <IonIcon icon={documentTextOutline} />
+                Acta de Entrega
+              </div>
+              <div className="firmas-container">
+                <FirmaCanvas
+                  label={equipo?.responsable_info ? `Firma de quien entrega (${equipo.responsable_info.nombre})` : 'Firma de quien entrega'}
+                  onFirma={setFirmaEntrega}
+                />
+                <FirmaCanvas
+                  label={`Firma de quien recibe (${responsableSeleccionado.nombre})`}
+                  onFirma={setFirmaRecibe}
+                />
+                <FirmaCanvas label="Firma del gestor" onFirma={setFirmaGestor} />
+                <div className="wizard-field">
+                  <label className="wizard-field__label">Observaciones</label>
+                  <textarea
+                    className="wizard-textarea"
+                    rows={3}
+                    value={observaciones}
+                    onChange={e => setObservaciones(e.target.value)}
+                    placeholder="Condiciones del equipo..."
+                  />
+                </div>
+              </div>
+            </div>
+            <button className="wizard-btn-primary" onClick={enviarSolicitud} disabled={enviando}>
               {enviando
-                ? <IonSpinner name="crescent" />
+                ? <IonSpinner name="crescent" style={{ width: 20, height: 20 }} />
                 : isOnline
-                  ? <><IonIcon icon={sendOutline} slot="start" />Enviar a supervision</>
-                  : <><IonIcon icon={cloudOfflineOutline} slot="start" />Guardar (enviar al reconectar)</>
+                  ? <><IonIcon icon={sendOutline} />Enviar a supervision</>
+                  : <><IonIcon icon={cloudOfflineOutline} />Guardar (enviar al reconectar)</>
               }
-            </IonButton>
+            </button>
           </div>
         )}
 
-        {/* PASO 4: Exito */}
+        {/* PASO 4 */}
         {paso === 4 && (
           <div className="paso-container paso-exito">
-            <IonIcon icon={guardadoOffline ? timeOutline : checkmarkCircleOutline} size="large" color={guardadoOffline ? 'warning' : 'success'} />
-            <h2>{guardadoOffline ? 'Guardado sin conexión' : 'Solicitud enviada!'}</h2>
-            {guardadoOffline
-              ? <p>La solicitud se guardó localmente. Se enviará automáticamente cuando recuperes la conexión.</p>
-              : <p>El cambio de responsable fue enviado a supervision. Recibiras una notificacion cuando sea aprobado.</p>
-            }
-            <IonButton expand="block" className="ion-margin" onClick={() => history.push('/equipos')}>Volver a Equipos</IonButton>
+            <div className={`paso-exito__icon-wrap paso-exito__icon-wrap--${guardadoOffline ? 'offline' : 'success'}`}>
+              <IonIcon icon={guardadoOffline ? timeOutline : checkmarkCircleOutline} />
+            </div>
+            <h2>{guardadoOffline ? 'Guardado sin conexion' : 'Solicitud enviada!'}</h2>
+            <p>
+              {guardadoOffline
+                ? 'La solicitud se guardo localmente. Se enviara automaticamente cuando recuperes la conexion.'
+                : 'El cambio de responsable fue enviado a supervision. Recibiras una notificacion cuando sea aprobado.'
+              }
+            </p>
+            <button className="wizard-btn-primary" onClick={() => history.push('/equipos')}>
+              Volver a Equipos
+            </button>
             {!guardadoOffline && (
-              <IonButton expand="block" fill="outline" className="ion-margin-horizontal" onClick={() => history.push('/solicitudes')}>Ver solicitudes</IonButton>
+              <button className="wizard-btn-outline" style={{ marginTop: 0 }} onClick={() => history.push('/solicitudes')}>
+                Ver solicitudes
+              </button>
             )}
           </div>
         )}

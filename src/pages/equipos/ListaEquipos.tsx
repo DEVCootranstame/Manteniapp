@@ -140,9 +140,6 @@ const ListaEquipos: React.FC = () => {
                   <span className="equipo-card__estado" style={{ '--estado-color': getEstadoColor(equipo.estado) } as any}>
                     {equipo.estado || 'Pendiente'}
                   </span>
-                  <div className="equipo-card__progress">
-                    <div className="equipo-card__progress-bar" style={{ '--bar-width': equipo.estado === 'activo' ? '100%' : equipo.estado === 'inactivo' ? '50%' : '25%', '--bar-color': getEstadoColor(equipo.estado) } as any}></div>
-                  </div>
                 </div>
               </div>
             ))}
