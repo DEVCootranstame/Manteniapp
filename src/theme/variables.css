@@ -1,6 +1,6 @@
 /* ====================================================
-   ManteniApp — Soft Neumorphic UI
-   Azul Navy + Verde + Naranja sobre base #E8EDF2
+   ManteniApp — Premium Gradient UI
+   Azul Navy profundo + Blanco limpio + Acentos naranja
    ==================================================== */
 
 :root {
@@ -54,76 +54,229 @@
   --ion-color-medium-shade: #5e6470;
   --ion-color-medium-tint: #7a808d;
 
-  --ion-color-light: #E8EDF2;
-  --ion-color-light-rgb: 232, 237, 242;
+  --ion-color-light: #F4F6FA;
+  --ion-color-light-rgb: 244, 246, 250;
   --ion-color-light-contrast: #1E293B;
   --ion-color-light-contrast-rgb: 30, 41, 59;
-  --ion-color-light-shade: #D1D8E0;
-  --ion-color-light-tint: #F0F4F8;
+  --ion-color-light-shade: #E2E6EF;
+  --ion-color-light-tint: #F8FAFC;
 
-  /* ── Neumorphic core ──────────────────────────── */
-  --nm-base: #E8EDF2;            /* fondo base */
-  --nm-shadow-dark: rgba(163, 177, 198, 0.7);
-  --nm-shadow-light: rgba(255, 255, 255, 0.9);
-
-  /* Sombras reutilizables */
-  --nm-raised:   6px  6px 16px var(--nm-shadow-dark), -6px -6px 16px var(--nm-shadow-light);
-  --nm-raised-sm:4px  4px 10px var(--nm-shadow-dark), -4px -4px 10px var(--nm-shadow-light);
-  --nm-inset:    inset 4px 4px 10px var(--nm-shadow-dark), inset -4px -4px 10px var(--nm-shadow-light);
-  --nm-inset-sm: inset 2px 2px  6px var(--nm-shadow-dark), inset -2px -2px  6px var(--nm-shadow-light);
-
-  /* ── Sistema de colores ───────────────────────── */
-  --app-bg:              #E8EDF2;
-  --app-surface:         #E8EDF2;   /* mismo que bg — el truco neumórfico */
-  --app-surface-elevated:#E8EDF2;
-  --app-border:          rgba(163, 177, 198, 0.3);
-  --app-text-primary:    #1E293B;
-  --app-text-secondary:  #5A6A7E;
+  /* ── Sistema de colores Premium ───────────────── */
+  --app-bg:              #F4F6FA;
+  --app-surface:         #FFFFFF;
+  --app-surface-elevated:#FFFFFF;
+  --app-border:          rgba(30, 41, 59, 0.08);
+  --app-text-primary:    #0F172A;
+  --app-text-secondary:  #64748B;
   --app-text-muted:      #94A3B8;
-  --app-accent:          #1B3A6B;
-  --app-accent-blue:     #2563EB;
-  --app-accent-green:    #10B981;
-  --app-accent-orange:   #F97316;
 
+  /* Gradientes */
   --app-gradient-primary: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
-  --app-gradient-success: linear-gradient(135deg, #059669 0%, #10B981 100%);
-  --app-gradient-warning: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
-  --app-gradient-danger:  linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+  --app-gradient-orange:  linear-gradient(135deg, #EA580C 0%, #F97316 100%);
+  --app-gradient-green:   linear-gradient(135deg, #059669 0%, #10B981 100%);
+  --app-gradient-red:     linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+  --app-gradient-purple:  linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%);
 
-  --app-radius:    22px;
-  --app-radius-sm: 16px;
-  --app-radius-xs: 12px;
+  /* Sombras */
+  --shadow-sm:  0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md:  0 4px 16px rgba(15,23,42,0.10), 0 2px 6px rgba(15,23,42,0.06);
+  --shadow-lg:  0 10px 32px rgba(15,23,42,0.12), 0 4px 12px rgba(15,23,42,0.06);
+  --shadow-colored-blue:   0 8px 24px rgba(37,99,235,0.30);
+  --shadow-colored-orange: 0 8px 24px rgba(249,115,22,0.30);
+  --shadow-colored-green:  0 8px 24px rgba(16,185,129,0.30);
+  --shadow-colored-red:    0 8px 24px rgba(239,68,68,0.28);
+}
 
-  /* legacy aliases */
-  --app-shadow:    var(--nm-raised);
-  --app-shadow-sm: var(--nm-raised-sm);
+/* ── Global base ─────────────────────────────────── */
+ion-app, ion-page, ion-content {
+  --background: #F4F6FA;
+}
 
-  /* Overrides Ionic */
-  --ion-background-color:  #E8EDF2;
-  --ion-toolbar-background:#E8EDF2;
-  --ion-item-background:    transparent;
-  --ion-card-background:    #E8EDF2;
+ion-content {
+  --background: #F4F6FA;
+}
 
-  --ion-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/* ── Chip Header (usado en todas las secciones) ─── */
+.chip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 52px 20px 18px;
+  background: linear-gradient(160deg, #0F2344 0%, #1B3A6B 50%, #2563EB 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.chip-header::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+
+.chip-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30px; left: 20px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(249,115,22,0.18);
+}
+
+.chip-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.chip-header__icon {
+  font-size: 26px;
+  color: #F97316;
+  filter: drop-shadow(0 2px 6px rgba(249,115,22,0.5));
+}
+
+.chip-header__brand {
+  font-size: 22px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+}
+
+.chip-header__subtitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.65);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,0.12);
+  padding: 4px 12px;
+  border-radius: 20px;
 }
 
 /* ====================================================
-   ESTILOS GLOBALES — SOFT NEUMORPHIC
+   FLOATING NAVBAR — Compact pill with orange bubble
    ==================================================== */
 
-/* Safe area - respetar barra de notificaciones */
+.floating-navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  padding: 0 16px calc(env(safe-area-inset-bottom) + 10px);
+  pointer-events: none;
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.floating-navbar__inner {
+  pointer-events: all;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  background: linear-gradient(160deg, #0F2344 0%, #1B3A6B 100%);
+  border-radius: 26px;
+  padding: 10px 0;
+  box-shadow: 0 -4px 24px rgba(15,35,68,0.40), 0 8px 32px rgba(0,0,0,0.28),
+              inset 0 1px 0 rgba(255,255,255,0.08);
+  min-height: 52px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ── Each tab button ──────────────────────────────── */
+.nav-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  height: 40px;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+/* ── Bubble (orange circle behind icon) ───────────── */
+.nav-tab__bubble {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #EA580C 0%, #F97316 60%, #FB923C 100%);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.55),
+              inset 0 1px 0 rgba(255,255,255,0.2);
+  pointer-events: none;
+  transform: translate3d(-50%, -50%, 0) scale(0);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  will-change: transform;
+}
+
+/* ── Icon (always static, centered) ───────────────── */
+.nav-tab__icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.nav-tab__icon ion-icon {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: color 0.18s ease;
+  pointer-events: none;
+}
+
+/* ── Label (hidden) ───────────────────────────────── */
+.nav-tab__label {
+  display: none;
+}
+
+/* ── ACTIVE state ─────────────────────────────────── */
+.nav-tab--active .nav-tab__bubble {
+  transform: translate3d(-50%, -50%, 0) scale(1);
+}
+
+.nav-tab--active .nav-tab__icon ion-icon {
+  color: #FFFFFF;
+}
+
+/* ── Press feedback ───────────────────────────────── */
+.nav-tab:active .nav-tab__bubble {
+  transform: translate3d(-50%, -50%, 0) scale(0.88);
+}
+
+/* ====================================================
+   ESTILOS GLOBALES
+   ==================================================== */
+
 ion-content {
-  --background: #E8EDF2;
-  --padding-top: env(safe-area-inset-top, 0px);
+  --background: #F4F6FA;
 }
 
 ion-page {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* ── Header ─────────────────────────────────────── */
+/* ── Header legacy ───────────────────────────────── */
 .neo-header ion-toolbar {
-  --background: #E8EDF2;
+  --background: #F4F6FA;
   --border-width: 0;
   --padding-top: 8px;
   --padding-bottom: 8px;
@@ -399,7 +552,7 @@ ion-page {
 }
 
 /* ====================================================
-   ALERTAS — Neumorphic style
+   ALERTAS
    ==================================================== */
 
 ion-alert {
@@ -408,10 +561,10 @@ ion-alert {
 }
 
 ion-alert .alert-wrapper {
-  background: #E8EDF2 !important;
+  background: #FFFFFF !important;
   border-radius: 24px !important;
-  box-shadow: 12px 12px 30px rgba(163, 177, 198, 0.7), -8px -8px 20px rgba(255, 255, 255, 0.9) !important;
-  border: none !important;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.18), 0 8px 20px rgba(15,23,42,0.10) !important;
+  border: 1px solid rgba(15,23,42,0.06) !important;
   overflow: hidden !important;
   max-width: 300px !important;
 }
@@ -444,18 +597,19 @@ ion-alert .alert-input-wrapper {
 }
 
 ion-alert input.alert-input {
-  background: #E8EDF2 !important;
-  border-radius: 14px !important;
-  border: none !important;
-  box-shadow: inset 3px 3px 8px rgba(163, 177, 198, 0.6), inset -3px -3px 8px rgba(255,255,255,0.9) !important;
+  background: #F4F6FA !important;
+  border-radius: 12px !important;
+  border: 1.5px solid rgba(15,23,42,0.10) !important;
+  box-shadow: none !important;
   padding: 12px 14px !important;
   font-size: 14px !important;
-  color: #1E293B !important;
+  color: #0F172A !important;
   margin: 4px 0 !important;
 }
 
 ion-alert input.alert-input:focus {
-  box-shadow: inset 3px 3px 8px rgba(163, 177, 198, 0.6), inset -3px -3px 8px rgba(255,255,255,0.9), 0 0 0 2px rgba(37, 99, 235, 0.3) !important;
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15) !important;
 }
 
 ion-alert .alert-button-group {
@@ -521,9 +675,9 @@ ion-loading {
 }
 
 ion-loading .loading-wrapper {
-  background: #E8EDF2 !important;
+  background: #FFFFFF !important;
   border-radius: 20px !important;
-  box-shadow: 10px 10px 26px rgba(163, 177, 198, 0.7), -8px -8px 20px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 20px 60px rgba(15,23,42,0.18) !important;
   padding: 22px 28px !important;
   display: flex !important;
   align-items: center !important;
@@ -541,145 +695,6 @@ ion-loading ion-spinner {
   color: #2563EB !important;
   width: 24px !important;
   height: 24px !important;
-}
-
-/* ====================================================
-   C.H.I.P SHARED PAGE HEADER
-   ==================================================== */
-
-.chip-header {
-  background: linear-gradient(135deg, #1B3A6B 0%, #2563EB 100%);
-  padding: calc(env(safe-area-inset-top) + 16px) 16px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 4px 16px rgba(27, 58, 107, 0.35);
-}
-
-.chip-header__left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.chip-header__icon {
-  font-size: 30px;
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.chip-header__brand {
-  font-size: 22px;
-  font-weight: 900;
-  color: #FFFFFF;
-  letter-spacing: 2.5px;
-}
-
-.chip-header__subtitle {
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
-  letter-spacing: 0.4px;
-}
-
-/* ====================================================
-   FLOATING NAVBAR — Compact pill with orange bubble
-   ==================================================== */
-
-.floating-navbar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 9999;
-  padding: 0 12px calc(env(safe-area-inset-bottom) + 8px);
-  pointer-events: none;
-  will-change: transform;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.floating-navbar__inner {
-  pointer-events: all;
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  background: linear-gradient(180deg, #1B3A6B 0%, #142D54 100%);
-  border-radius: 22px;
-  padding: 10px 0;
-  box-shadow: 0 -2px 16px rgba(27, 58, 107, 0.35), 0 6px 20px rgba(0,0,0,0.25);
-  min-height: 50px;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* ── Each tab button ──────────────────────────────── */
-.nav-tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  height: 38px;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-  user-select: none;
-}
-
-/* ── Bubble (orange circle behind icon) ───────────── */
-.nav-tab__bubble {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
-  box-shadow: 0 3px 10px rgba(249, 115, 22, 0.45);
-  pointer-events: none;
-  transform: translate3d(-50%, -50%, 0) scale(0);
-  transition: transform 0.18s ease;
-  will-change: transform;
-}
-
-/* ── Icon (always static, centered) ───────────────── */
-.nav-tab__icon {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.nav-tab__icon ion-icon {
-  font-size: 22px;
-  color: rgba(255, 255, 255, 0.5);
-  transition: color 0.18s ease;
-  pointer-events: none;
-}
-
-/* ── Label (hidden) ───────────────────────────────── */
-.nav-tab__label {
-  display: none;
-}
-
-/* ── ACTIVE state ─────────────────────────────────── */
-.nav-tab--active .nav-tab__bubble {
-  transform: translate3d(-50%, -50%, 0) scale(1);
-}
-
-.nav-tab--active .nav-tab__icon ion-icon {
-  color: #FFFFFF;
-}
-
-/* ── Press feedback ───────────────────────────────── */
-.nav-tab:active .nav-tab__bubble {
-  transform: translate3d(-50%, -50%, 0) scale(0.88);
 }
 
 /* Hide default Ionic tab bar */
