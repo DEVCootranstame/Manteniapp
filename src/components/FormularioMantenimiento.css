@@ -238,10 +238,9 @@
   width: 100%;
   height: 110px;
   border-radius: 14px;
-  border: none;
-  background: #E8EDF2;
-  box-shadow: inset 4px 4px 10px rgba(163, 177, 198, 0.6), inset -4px -4px 10px rgba(255,255,255,0.9);
-  color: var(--app-text-secondary);
+  border: 2px dashed #CBD5E1;
+  background: #F8FAFC;
+  color: #64748B;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -250,13 +249,14 @@
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: box-shadow 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .form-photos__add-btn:active {
   transform: scale(0.96);
-  border-color: var(--app-accent);
-  color: var(--app-accent);
+  border-color: #2563EB;
+  color: #2563EB;
+  background: #EFF6FF;
 }
 
 .form-photos__add-btn ion-icon {
@@ -311,16 +311,16 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: var(--app-gradient-success);
+  background: linear-gradient(135deg, #065F46 0%, #10B981 100%);
   color: #fff;
-  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.3);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
   transition: all 0.2s ease;
   margin-bottom: 12px;
 }
 
 .form-save-btn:active {
   transform: scale(0.98);
-  box-shadow: 0 3px 10px rgba(52, 211, 153, 0.2);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.20);
 }
 
 .form-save-btn ion-icon {

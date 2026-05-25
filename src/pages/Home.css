@@ -87,7 +87,7 @@ ion-page .home-content,
 }
 
 .neo-btn:active:not(:disabled) { transform: scale(0.97); }
-.neo-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.neo-btn:disabled { opacity: 0.55; cursor: not-allowed; }
 .neo-btn ion-icon { font-size: 17px; }
 
 .neo-btn-green {
