@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.cootranstame.manteniapp',
-  appName: 'ManteniApp',
+  appName: 'C.H.I.P',
   webDir: 'dist',
   server: {
     androidScheme: 'https',
