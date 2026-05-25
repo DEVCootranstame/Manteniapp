@@ -1,0 +1,137 @@
+/* ==============================================
+   Welcome.css — Pantalla de bienvenida animada
+   ============================================== */
+
+.welcome-content {
+  --background: linear-gradient(160deg, #0F2344 0%, #1B3A6B 55%, #2563EB 100%);
+}
+
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 32px;
+  gap: 0;
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.welcome-container--visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Ícono animado ── */
+.welcome-logo-wrap {
+  margin-bottom: 32px;
+}
+
+.welcome-icon-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 30px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: iconPulse 2s ease-in-out infinite;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+  50%       { box-shadow: 0 0 0 16px rgba(249,115,22,0); }
+}
+
+.welcome-icon {
+  font-size: 48px;
+  animation: iconSpin 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes iconSpin {
+  from { opacity: 0; transform: rotate(-30deg) scale(0.5); }
+  to   { opacity: 1; transform: rotate(0deg) scale(1); }
+}
+
+/* ── Texto ── */
+.welcome-text-block {
+  text-align: center;
+  margin-bottom: 48px;
+  animation: textSlideUp 0.6s ease 0.3s both;
+}
+
+@keyframes textSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.welcome-greeting {
+  font-size: 16px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.65);
+  margin: 0 0 4px 0;
+  letter-spacing: 0.3px;
+}
+
+.welcome-name {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+}
+
+.welcome-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.welcome-brand {
+  font-size: 42px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 6px;
+  text-shadow: 0 4px 20px rgba(249,115,22,0.6);
+}
+
+.welcome-tagline {
+  font-size: 13px;
+  color: rgba(255,255,255,0.50);
+  margin: 0;
+  letter-spacing: 0.3px;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+/* ── Barra de carga ── */
+.welcome-loader {
+  width: 120px;
+  height: 3px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: loaderAppear 0.4s ease 0.6s both;
+}
+
+@keyframes loaderAppear {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.welcome-loader__bar {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #F97316, #FBBF24);
+  animation: loaderFill 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.7s both;
+}
+
+@keyframes loaderFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}

@@ -30,7 +30,7 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       await login(email.trim(), password);
-      history.replace('/home');
+      history.replace('/welcome');
     } catch (err: unknown) {
       const raw = err instanceof Error ? err.message : 'Error al iniciar sesión';
       const isNetworkError = raw.toLowerCase().includes('unable to resolve') ||

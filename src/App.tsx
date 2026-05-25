@@ -24,6 +24,7 @@ import DetalleEquipo from './pages/equipos/DetalleEquipo';
 import CambiarResponsable from './pages/equipos/CambiarResponsable';
 import ListaSolicitudes from './pages/solicitudes/ListaSolicitudes';
 import DetalleSolicitud from './pages/solicitudes/DetalleSolicitud';
+import Welcome from './pages/welcome/Welcome';
 import HomeDashboard from './pages/dashboard/HomeDashboard';
 import Perfil from './pages/perfil/Perfil';
 import MiPerfil from './pages/perfil/MiPerfil';
@@ -106,7 +107,7 @@ const FloatingNavbar: React.FC = React.memo(() => {
 });
 
 /* ── Hidden routes (pages without navbar visible) ──── */
-const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario'];
+const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario', '/welcome'];
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout, softLogout } = useAuth();
@@ -121,14 +122,15 @@ const AppContent: React.FC = () => {
     return null;
   }
 
-  // If not authenticated and not on login page, redirect to login
-  if (!isAuthenticated && location.pathname !== '/login') {
+  // If not authenticated and not on login/welcome page, redirect to login
+  if (!isAuthenticated && location.pathname !== '/login' && location.pathname !== '/welcome') {
     return <Redirect to="/login" />;
   }
 
   return (
     <>
       <IonRouterOutlet>
+        <Route exact path="/welcome" component={Welcome} />
         <Route exact path="/home" component={HomeDashboard} />
         <Route exact path="/home-mantenimientos" component={Home} />
         <Route exact path="/formulario" component={FormularioMantenimiento} />

@@ -96,67 +96,45 @@ ion-content {
   --background: #F4F6FA;
 }
 
-/* ── Chip Header (usado en todas las secciones) ─── */
+/* ── Chip Header — Compacto opción D ─────────────── */
 .chip-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 52px 20px 18px;
-  background: linear-gradient(160deg, #0F2344 0%, #1B3A6B 50%, #2563EB 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.chip-header::before {
-  content: '';
-  position: absolute;
-  top: -40px; right: -40px;
-  width: 130px; height: 130px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-}
-
-.chip-header::after {
-  content: '';
-  position: absolute;
-  bottom: -30px; left: 20px;
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: rgba(249,115,22,0.18);
+  padding: 52px 20px 14px;
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(15,23,42,0.06);
+  box-shadow: 0 2px 8px rgba(15,23,42,0.05);
 }
 
 .chip-header__left {
   display: flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
-  z-index: 1;
+  gap: 8px;
 }
 
 .chip-header__icon {
-  font-size: 26px;
+  font-size: 18px;
   color: #F97316;
-  filter: drop-shadow(0 2px 6px rgba(249,115,22,0.5));
 }
 
 .chip-header__brand {
-  font-size: 22px;
+  font-size: 15px;
   font-weight: 900;
-  color: #FFFFFF;
+  color: #1B3A6B;
   letter-spacing: 2px;
 }
 
 .chip-header__subtitle {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255,255,255,0.65);
+  color: #2563EB;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  position: relative;
-  z-index: 1;
-  background: rgba(255,255,255,0.12);
-  padding: 4px 12px;
+  letter-spacing: 1px;
+  background: #EFF6FF;
+  padding: 3px 10px;
   border-radius: 20px;
+  border: 1px solid #BFDBFE;
 }
 
 /* ====================================================
