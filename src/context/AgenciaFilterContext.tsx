@@ -7,17 +7,11 @@ import { AgenciasService } from '../services/agencias.service';
 const FILTER_STORAGE_KEY = 'agencia_filter_selected';
 
 interface AgenciaFilterContextType {
-  /** null = "Todas las agencias" */
   agenciaSeleccionada: Agencia | null;
-  /** ID seleccionado o 'todas' */
   agenciaFilterId: string;
-  /** Todas las agencias disponibles (solo para admin) */
   agenciasDisponibles: Agencia[];
-  /** Cambiar la agencia activa */
   setFilterAgencia: (id: string) => void;
-  /** Indica si el filtro global está activo (user es admin) */
   isFilterActive: boolean;
-  /** Retorna el agencia_id para queries (undefined = sin filtro) */
   getFilteredAgenciaId: () => number | undefined;
 }
 
@@ -47,8 +41,12 @@ export const AgenciaFilterProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const load = async () => {
       if (isAdmin && user) {
-        const data = await AgenciasService.getAgencias();
-        setAgenciasDisponibles(data);
+        try {
+          const data = await AgenciasService.getAgencias();
+          setAgenciasDisponibles(data);
+        } catch {
+          // API no disponible, el filtro no se muestra
+        }
       }
     };
     load();

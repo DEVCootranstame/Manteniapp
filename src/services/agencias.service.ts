@@ -40,11 +40,14 @@ class AgenciasServiceClass {
     await this.migrateIfNeeded();
     try {
       const params = search ? `?search=${encodeURIComponent(search)}` : '';
-      const data = await ApiService.get<AgenciaAPI[]>(`/agencias${params}`);
-      const agencias = data.map(toLocal);
+      const raw = await ApiService.get<AgenciaAPI[] | { items?: AgenciaAPI[]; data?: AgenciaAPI[] }>(`/agencias${params}`);
+      // Soportar respuesta como array directo o como objeto paginado { items: [...] } / { data: [...] }
+      const list: AgenciaAPI[] = Array.isArray(raw) ? raw : ((raw as any).items ?? (raw as any).data ?? []);
+      const agencias = list.map(toLocal);
       await this.saveCache(agencias);
       return agencias;
-    } catch {
+    } catch (e) {
+      console.warn('[AgenciasService] getAgencias failed, using cache:', e);
       return this.getCached();
     }
   }
