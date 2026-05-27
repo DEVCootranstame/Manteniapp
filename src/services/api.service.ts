@@ -1,12 +1,14 @@
 import { StorageService, StoredTokens } from './storage.service';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const DEFAULT_TIMEOUT_MS = 15000; // 15 segundos
 
 interface ApiOptions {
   method?: string;
   body?: unknown;
   headers?: Record<string, string>;
   skipAuth?: boolean;
+  timeout?: number;
 }
 
 class ApiServiceClass {
@@ -68,7 +70,7 @@ class ApiServiceClass {
   }
 
   async request<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-    const { method = 'GET', body, headers = {}, skipAuth = false } = options;
+    const { method = 'GET', body, headers = {}, skipAuth = false, timeout = DEFAULT_TIMEOUT_MS } = options;
 
     const requestHeaders: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -83,24 +85,37 @@ class ApiServiceClass {
       requestHeaders['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method,
-      headers: requestHeaders,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    if (response.status === 401) {
-      await StorageService.clearAll();
-      window.dispatchEvent(new CustomEvent('auth:session-expired'));
-      throw new Error('Unauthorized');
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method,
+        headers: requestHeaders,
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      });
+
+      if (response.status === 401) {
+        await StorageService.clearAll();
+        window.dispatchEvent(new CustomEvent('auth:session-expired'));
+        throw new Error('Unauthorized');
+      }
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Error desconocido' }));
+        throw new Error(error.message || `HTTP ${response.status}`);
+      }
+
+      return response.json();
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw new Error('Tiempo de espera agotado. Verifica tu conexión.');
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Error desconocido' }));
-      throw new Error(error.message || `HTTP ${response.status}`);
-    }
-
-    return response.json();
   }
 
   get<T>(endpoint: string, options?: Omit<ApiOptions, 'method'>) {

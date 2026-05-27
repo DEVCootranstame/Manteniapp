@@ -24,6 +24,7 @@ export interface FotosCategorized {
 export interface Mantenimiento {
   id: string;
   nombreEquipo: string;
+  computadorId?: number;
   proveedor: string;
   mantenimientoRealizado: string;
   observaciones: string;
