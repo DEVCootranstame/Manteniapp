@@ -13,13 +13,15 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import { add, pencil, trash } from 'ionicons/icons';
-import { Preferences } from '@capacitor/preferences';
 import { useParams } from 'react-router-dom';
-import { Agencia, Ubicacion, AGENCIAS_STORAGE_KEY } from '../types';
+import { Agencia, Ubicacion } from '../types';
+import { AgenciasService } from '../services/agencias.service';
+import { useAuth } from '../context/AuthContext';
 import './GestionUbicaciones.css';
 
 const GestionUbicaciones: React.FC = () => {
   const { agenciaId } = useParams<{ agenciaId: string }>();
+  const { user } = useAuth();
   const [agencia, setAgencia] = useState<Agencia | null>(null);
   const [showAddAlert, setShowAddAlert] = useState(false);
   const [showEditAlert, setShowEditAlert] = useState(false);
@@ -29,33 +31,24 @@ const GestionUbicaciones: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
 
   const cargarAgencia = useCallback(async () => {
-    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-    if (value) {
-      const agencias: Agencia[] = JSON.parse(value);
-      const encontrada = agencias.find((a) => a.id === agenciaId);
-      if (encontrada) {
-        setAgencia(encontrada);
-      }
+    const agencias = await AgenciasService.getAgenciasForUser(user);
+    const encontrada = agencias.find((a) => a.id === agenciaId);
+    if (encontrada) {
+      setAgencia(encontrada);
     }
-  }, [agenciaId]);
+  }, [agenciaId, user]);
 
   useIonViewWillEnter(() => {
     cargarAgencia();
   });
 
   const guardarAgencia = async (agenciaActualizada: Agencia) => {
-    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-    if (value) {
-      const agencias: Agencia[] = JSON.parse(value);
-      const actualizadas = agencias.map((a) =>
-        a.id === agenciaActualizada.id ? agenciaActualizada : a
-      );
-      await Preferences.set({
-        key: AGENCIAS_STORAGE_KEY,
-        value: JSON.stringify(actualizadas),
-      });
-      setAgencia(agenciaActualizada);
-    }
+    const agencias = await AgenciasService.getCached();
+    const actualizadas = agencias.map((a) =>
+      a.id === agenciaActualizada.id ? agenciaActualizada : a
+    );
+    await AgenciasService.saveCache(actualizadas);
+    setAgencia(agenciaActualizada);
   };
 
   const agregarUbicacion = async (nombre: string) => {

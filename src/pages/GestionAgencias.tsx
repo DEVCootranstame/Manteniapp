@@ -13,35 +13,16 @@ import {
   useIonViewWillEnter,
 } from '@ionic/react';
 import { add, pencil, trash, locationOutline } from 'ionicons/icons';
-import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
-import { Agencia, AGENCIAS_STORAGE_KEY } from '../types';
+import { Agencia } from '../types';
+import { AgenciasService } from '../services/agencias.service';
+import { useAuth } from '../context/AuthContext';
 import './GestionAgencias.css';
-
-const AGENCIAS_INICIALES: Agencia[] = [
-  { id: '1', codigo: 'AR', nombre: 'Arauca', ubicaciones: [] },
-  { id: '2', codigo: 'AQ', nombre: 'Arauquita', ubicaciones: [] },
-  { id: '3', codigo: 'SA', nombre: 'Saravena', ubicaciones: [] },
-  { id: '4', codigo: 'FT', nombre: 'Fortul', ubicaciones: [] },
-  { id: '5', codigo: 'TA', nombre: 'Tame', ubicaciones: [] },
-  { id: '6', codigo: 'PR', nombre: 'Puerto Rondón', ubicaciones: [] },
-  { id: '7', codigo: 'HC', nombre: 'Hato Corozal', ubicaciones: [] },
-  { id: '8', codigo: 'PO', nombre: 'Pore', ubicaciones: [] },
-  { id: '9', codigo: 'PA', nombre: 'Paz de Ariporo', ubicaciones: [] },
-  { id: '10', codigo: 'YP', nombre: 'Yopal', ubicaciones: [] },
-  { id: '11', codigo: 'VI', nombre: 'Villavicencio', ubicaciones: [] },
-  { id: '12', codigo: 'JG', nombre: 'San José de Guaviare', ubicaciones: [] },
-  { id: '13', codigo: 'BT', nombre: 'Bogotá', ubicaciones: [] },
-  { id: '14', codigo: 'MD', nombre: 'Medellín', ubicaciones: [] },
-  { id: '15', codigo: 'AM', nombre: 'Armenia', ubicaciones: [] },
-  { id: '16', codigo: 'BM', nombre: 'Bucaramanga', ubicaciones: [] },
-  { id: '17', codigo: 'CT', nombre: 'Cúcuta', ubicaciones: [] },
-  { id: '18', codigo: 'PM', nombre: 'Pamplona', ubicaciones: [] },
-  { id: '19', codigo: 'PE', nombre: 'Pereira', ubicaciones: [] },
-];
 
 const GestionAgencias: React.FC = () => {
   const history = useHistory();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [showAddAlert, setShowAddAlert] = useState(false);
   const [showEditAlert, setShowEditAlert] = useState(false);
@@ -51,57 +32,61 @@ const GestionAgencias: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
 
   const cargarAgencias = useCallback(async () => {
-    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-    if (value) {
-      setAgencias(JSON.parse(value));
-    } else {
-      // Primera vez: precargar agencias iniciales
-      await Preferences.set({
-        key: AGENCIAS_STORAGE_KEY,
-        value: JSON.stringify(AGENCIAS_INICIALES),
-      });
-      setAgencias(AGENCIAS_INICIALES);
-    }
-  }, []);
+    // Limpiar cache viejo con IDs incorrectos y forzar sync con API
+    const data = await AgenciasService.getAgenciasForUser(user);
+    setAgencias(data);
+  }, [user]);
 
   useIonViewWillEnter(() => {
     cargarAgencias();
   });
 
   const guardarAgencias = async (nuevas: Agencia[]) => {
-    await Preferences.set({
-      key: AGENCIAS_STORAGE_KEY,
-      value: JSON.stringify(nuevas),
-    });
+    await AgenciasService.saveCache(nuevas);
     setAgencias(nuevas);
   };
 
   const agregarAgencia = async (nombre: string, codigo: string) => {
     if (!nombre.trim() || !codigo.trim()) return;
 
-    const nueva: Agencia = {
-      id: crypto.randomUUID(),
-      codigo: codigo.trim().toUpperCase(),
-      nombre: nombre.trim(),
-      ubicaciones: [],
-    };
-
-    const actualizadas = [...agencias, nueva];
-    await guardarAgencias(actualizadas);
-    setToastMessage(`Agencia "${nueva.nombre}" creada`);
+    try {
+      const nueva = await AgenciasService.createAgencia(nombre.trim(), codigo.trim().toUpperCase());
+      setAgencias((prev) => [...prev, nueva]);
+      setToastMessage(`Agencia "${nueva.nombre}" creada`);
+    } catch {
+      setToastMessage('Error al crear agencia. Se guardará localmente.');
+      const nueva: Agencia = {
+        id: crypto.randomUUID(),
+        codigo: codigo.trim().toUpperCase(),
+        nombre: nombre.trim(),
+        ubicaciones: [],
+      };
+      const actualizadas = [...agencias, nueva];
+      await guardarAgencias(actualizadas);
+    }
     setShowToast(true);
   };
 
   const editarAgencia = async (nombre: string, codigo: string) => {
     if (!agenciaSeleccionada || !nombre.trim() || !codigo.trim()) return;
 
-    const actualizadas = agencias.map((a) =>
-      a.id === agenciaSeleccionada.id
-        ? { ...a, nombre: nombre.trim(), codigo: codigo.trim().toUpperCase() }
-        : a
-    );
-    await guardarAgencias(actualizadas);
-    setToastMessage('Agencia actualizada');
+    try {
+      const updated = await AgenciasService.updateAgencia(
+        agenciaSeleccionada.id,
+        nombre.trim(),
+        codigo.trim().toUpperCase()
+      );
+      setAgencias((prev) => prev.map((a) => (a.id === updated.id ? { ...updated, ubicaciones: a.ubicaciones } : a)));
+      setToastMessage('Agencia actualizada');
+    } catch {
+      setToastMessage('Error al actualizar. Cambio guardado localmente.');
+      const actualizadas = agencias.map((a) =>
+        a.id === agenciaSeleccionada.id
+          ? { ...a, nombre: nombre.trim(), codigo: codigo.trim().toUpperCase() }
+          : a
+      );
+      await guardarAgencias(actualizadas);
+    }
     setShowToast(true);
   };
 
@@ -127,11 +112,13 @@ const GestionAgencias: React.FC = () => {
 
       <IonContent fullscreen>
         <div className="agencias-container">
-          {/* Botón agregar */}
-          <button className="agencias-add-btn" onClick={() => setShowAddAlert(true)}>
-            <IonIcon icon={add} />
-            Nueva Agencia
-          </button>
+          {/* Botón agregar — solo admin */}
+          {isAdmin && (
+            <button className="agencias-add-btn" onClick={() => setShowAddAlert(true)}>
+              <IonIcon icon={add} />
+              Nueva Agencia
+            </button>
+          )}
 
           {/* Lista de agencias */}
           {agencias.length === 0 ? (
@@ -156,24 +143,28 @@ const GestionAgencias: React.FC = () => {
                     >
                       <IonIcon icon={locationOutline} />
                     </button>
-                    <button
-                      className="agencia-btn agencia-btn--edit"
-                      onClick={() => {
-                        setAgenciaSeleccionada(agencia);
-                        setShowEditAlert(true);
-                      }}
-                    >
-                      <IonIcon icon={pencil} />
-                    </button>
-                    <button
-                      className="agencia-btn agencia-btn--delete"
-                      onClick={() => {
-                        setAgenciaSeleccionada(agencia);
-                        setShowDeleteAlert(true);
-                      }}
-                    >
-                      <IonIcon icon={trash} />
-                    </button>
+                    {isAdmin && (
+                      <>
+                        <button
+                          className="agencia-btn agencia-btn--edit"
+                          onClick={() => {
+                            setAgenciaSeleccionada(agencia);
+                            setShowEditAlert(true);
+                          }}
+                        >
+                          <IonIcon icon={pencil} />
+                        </button>
+                        <button
+                          className="agencia-btn agencia-btn--delete"
+                          onClick={() => {
+                            setAgenciaSeleccionada(agencia);
+                            setShowDeleteAlert(true);
+                          }}
+                        >
+                          <IonIcon icon={trash} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}

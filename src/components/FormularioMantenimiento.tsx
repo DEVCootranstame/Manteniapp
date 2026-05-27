@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -12,12 +12,15 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/react';
-import { camera, close, save, bulb } from 'ionicons/icons';
+import { camera, close, save, bulb, locationOutline, constructOutline, documentTextOutline, cameraOutline, refreshOutline, warningOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
-import { Mantenimiento, Agencia, TipoMantenimiento, FotosCategorized, SugerenciaMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY, SUGERENCIAS_STORAGE_KEY } from '../types';
+import { Mantenimiento, Agencia, TipoMantenimiento, FotosCategorized, SugerenciaMantenimiento, STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY, SUGERENCIAS_STORAGE_KEY } from '../types';
 import { useIonViewWillEnter } from '@ionic/react';
+import { EquiposService, ComputadoresListItem } from '../services/equipos.service';
+import { AgenciasService } from '../services/agencias.service';
+import { useAuth } from '../context/AuthContext';
 import './FormularioMantenimiento.css';
 
 function generarId(): string {
@@ -42,6 +45,7 @@ function obtenerFechaHora(): { fecha: string; hora: string } {
 
 const FormularioMantenimiento: React.FC = () => {
   const history = useHistory();
+  const { user } = useAuth();
 
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
@@ -50,6 +54,10 @@ const FormularioMantenimiento: React.FC = () => {
   const [tipoMantenimientoId, setTipoMantenimientoId] = useState('');
 
   const [nombreEquipo, setNombreEquipo] = useState('');
+  const [computadorId, setComputadorId] = useState<number | undefined>(undefined);
+  const [equipos, setEquipos] = useState<ComputadoresListItem[]>([]);
+  const [loadingEquipos, setLoadingEquipos] = useState(false);
+  const [equiposModoManual, setEquiposModoManual] = useState(false);
   const [proveedor, setProveedor] = useState('');
   const [mantenimientoRealizado, setMantenimientoRealizado] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -66,12 +74,36 @@ const FormularioMantenimiento: React.FC = () => {
   const [sugerencias, setSugerencias] = useState<SugerenciaMantenimiento[]>([]);
   const [showSugerencias, setShowSugerencias] = useState(false);
 
-  const cargarAgencias = useCallback(async () => {
-    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-    if (value) {
-      setAgencias(JSON.parse(value));
+  const cargarEquipos = useCallback(async (agId: string) => {
+    if (!agId) {
+      setEquipos([]);
+      setEquiposModoManual(false);
+      return;
+    }
+    setLoadingEquipos(true);
+    setNombreEquipo('');
+    setComputadorId(undefined);
+    try {
+      const lista = await EquiposService.getComputadores(parseInt(agId, 10));
+      setEquipos(lista);
+      setEquiposModoManual(lista.length === 0);
+    } catch {
+      setEquipos([]);
+      setEquiposModoManual(true);
+    } finally {
+      setLoadingEquipos(false);
     }
   }, []);
+
+  const cargarAgencias = useCallback(async () => {
+    const data = await AgenciasService.getAgenciasForUser(user);
+    setAgencias(data);
+    // Auto-seleccionar si solo hay una agencia
+    if (data.length === 1 && !agenciaId) {
+      setAgenciaId(data[0].id);
+      cargarEquipos(data[0].id);
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cargarTiposMantenimiento = useCallback(async () => {
     const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });
@@ -99,6 +131,18 @@ const FormularioMantenimiento: React.FC = () => {
   const sugerenciasFiltradas = tipoSeleccionado
     ? sugerencias.filter((s) => s.tipoMantenimiento.toLowerCase() === tipoSeleccionado.nombre.toLowerCase())
     : [];
+
+  const progreso = useMemo(() => {
+    let completados = 0;
+    const total = 6;
+    if (agenciaId) completados++;
+    if (ubicacionId) completados++;
+    if (tipoMantenimientoId) completados++;
+    if (nombreEquipo.trim()) completados++;
+    if (proveedor.trim()) completados++;
+    if (mantenimientoRealizado.trim()) completados++;
+    return Math.round((completados / total) * 100);
+  }, [agenciaId, ubicacionId, tipoMantenimientoId, nombreEquipo, proveedor, mantenimientoRealizado]);
 
   const aplicarSugerencia = (texto: string) => {
     setMantenimientoRealizado((prev) => {
@@ -185,6 +229,9 @@ const FormularioMantenimiento: React.FC = () => {
     setUbicacionId('');
     setTipoMantenimientoId('');
     setNombreEquipo('');
+    setComputadorId(undefined);
+    setEquipos([]);
+    setEquiposModoManual(false);
     setProveedor('');
     setMantenimientoRealizado('');
     setObservaciones('');
@@ -257,6 +304,7 @@ const FormularioMantenimiento: React.FC = () => {
       const nuevoRegistro: Mantenimiento = {
         id: generarId(),
         nombreEquipo: nombreEquipo.trim(),
+        computadorId,
         proveedor: proveedor.trim(),
         mantenimientoRealizado: mantenimientoRealizado.trim(),
         observaciones: observaciones.trim(),
@@ -309,156 +357,277 @@ const FormularioMantenimiento: React.FC = () => {
 
       <IonContent fullscreen>
         <div className="form-container">
-          {/* Campo: Agencia */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Agencia <span className="form-field__required">*</span>
-            </label>
-            <select
-              className="neo-select"
-              value={agenciaId}
-              onChange={(e) => {
-                setAgenciaId(e.target.value);
-                setUbicacionId('');
-              }}
-              onBlur={() => marcarTocado('agenciaId')}
-            >
-              <option value="">-- Selecciona una agencia --</option>
-              {agencias.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.codigo} - {a.nombre}
-                </option>
-              ))}
-            </select>
-            {touched.agenciaId && agenciaId === '' && (
-              <div className="form-field__error">Selecciona una agencia</div>
-            )}
-          </div>
 
-          {/* Campo: Ubicación */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Ubicación <span className="form-field__required">*</span>
-            </label>
-            <select
-              className="neo-select"
-              value={ubicacionId}
-              onChange={(e) => setUbicacionId(e.target.value)}
-              onBlur={() => marcarTocado('ubicacionId')}
-              disabled={!agenciaId}
-            >
-              <option value="">
-                {agenciaId ? '-- Selecciona ubicación --' : '-- Primero selecciona agencia --'}
-              </option>
-              {ubicacionesDisponibles.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nombre}
-                </option>
-              ))}
-            </select>
-            {touched.ubicacionId && ubicacionId === '' && agenciaId !== '' && (
-              <div className="form-field__error">Selecciona una ubicación</div>
-            )}
-          </div>
-
-          {/* Campo: Tipo de Mantenimiento */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Tipo de Mantenimiento <span className="form-field__required">*</span>
-            </label>
-            <select
-              className="neo-select"
-              value={tipoMantenimientoId}
-              onChange={(e) => setTipoMantenimientoId(e.target.value)}
-              onBlur={() => marcarTocado('tipoMantenimientoId')}
-            >
-              <option value="">-- Selecciona un tipo --</option>
-              {tiposMantenimiento.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.nombre}
-                </option>
-              ))}
-            </select>
-            {touched.tipoMantenimientoId && tipoMantenimientoId === '' && (
-              <div className="form-field__error">Selecciona un tipo de mantenimiento</div>
-            )}
-          </div>
-
-          {/* Campo: Nombre del equipo */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Nombre del Equipo <span className="form-field__required">*</span>
-            </label>
-            <input
-              className="neo-input neo-input-uppercase"
-              value={nombreEquipo}
-              onChange={(e) => setNombreEquipo(e.target.value.toUpperCase())}
-              onBlur={() => marcarTocado('nombreEquipo')}
-              placeholder={agenciaId ? `Ej: ${agencias.find(a => a.id === agenciaId)?.codigo || ''}-01-0001` : 'Primero selecciona una agencia'}
-            />
-            {touched.nombreEquipo && nombreEquipo.trim() === '' && (
-              <div className="form-field__error">Este campo es obligatorio</div>
-            )}
-            {touched.nombreEquipo && nombreEquipo.trim() !== '' && !PATRON_EQUIPO.test(nombreEquipo.trim()) && (
-              <div className="form-field__error">Formato inválido. Usa: XX-00-0000 (ej: AR-01-0001)</div>
-            )}
-          </div>
-
-          {/* Campo: Proveedor */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Proveedor <span className="form-field__required">*</span>
-            </label>
-            <input
-              className="neo-input"
-              value={proveedor}
-              onChange={(e) => setProveedor(e.target.value)}
-              onBlur={() => marcarTocado('proveedor')}
-              placeholder="Ej: HP, Dell, Lenovo, Compusoluciones..."
-            />
-            {touched.proveedor && proveedor.trim() === '' && (
-              <div className="form-field__error">Este campo es obligatorio</div>
-            )}
-          </div>
-
-          {/* Campo: Mantenimiento Realizado */}
-          <div className="form-field">
-            <div className="form-field__label-row">
-              <label className="form-field__label">
-                Mantenimiento Realizado <span className="form-field__required">*</span>
-              </label>
-              <button
-                className="form-field__suggest-btn"
-                onClick={() => {
-                  if (!tipoMantenimientoId) {
-                    setAlertHeader('Selecciona un tipo');
-                    setAlertMessage('Primero selecciona el tipo de mantenimiento para ver las sugerencias correspondientes.');
-                    setShowAlert(true);
-                    return;
-                  }
-                  if (sugerenciasFiltradas.length === 0) {
-                    setToastMessage(`No hay sugerencias para "${tipoSeleccionado?.nombre}". Agrega en Configuración.`);
-                    setShowToast(true);
-                    return;
-                  }
-                  setShowSugerencias(true);
-                }}
-                title="Sugerencias"
-              >
-                <IonIcon icon={bulb} />
-              </button>
+          {/* Barra de progreso */}
+          <div className="form-progress">
+            <div className="form-progress__bar">
+              <div
+                className="form-progress__fill"
+                style={{ width: `${progreso}%` }}
+              />
             </div>
-            <textarea
-              className="neo-textarea"
-              value={mantenimientoRealizado}
-              onChange={(e) => setMantenimientoRealizado(e.target.value)}
-              onBlur={() => marcarTocado('mantenimientoRealizado')}
-              placeholder="Limpieza interna, cambio de pasta térmica, actualización de drivers..."
-              rows={4}
-            />
-            {touched.mantenimientoRealizado && mantenimientoRealizado.trim() === '' && (
-              <div className="form-field__error">Este campo es obligatorio</div>
-            )}
+            <span className="form-progress__text">{progreso}% completado</span>
+          </div>
+
+          {/* ═══════ SECCIÓN 1: Ubicación ═══════ */}
+          <div className="form-section">
+            <div className="form-section__header">
+              <div className="form-section__icon form-section__icon--blue">
+                <IonIcon icon={locationOutline} />
+              </div>
+              <div>
+                <h3 className="form-section__title">Ubicación</h3>
+                <p className="form-section__subtitle">¿Dónde se realiza el mantenimiento?</p>
+              </div>
+            </div>
+
+            <div className="form-section__body">
+              {/* Campo: Agencia */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Agencia <span className="form-field__required">*</span>
+                </label>
+                <select
+                  className="neo-select"
+                  value={agenciaId}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAgenciaId(val);
+                    setUbicacionId('');
+                    cargarEquipos(val);
+                  }}
+                  onBlur={() => marcarTocado('agenciaId')}
+                >
+                  <option value="">-- Selecciona una agencia --</option>
+                  {agencias.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.codigo} - {a.nombre}
+                    </option>
+                  ))}
+                </select>
+                {touched.agenciaId && agenciaId === '' && (
+                  <div className="form-field__error">Selecciona una agencia</div>
+                )}
+              </div>
+
+              {/* Campo: Ubicación */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Ubicación <span className="form-field__required">*</span>
+                </label>
+                <select
+                  className="neo-select"
+                  value={ubicacionId}
+                  onChange={(e) => setUbicacionId(e.target.value)}
+                  onBlur={() => marcarTocado('ubicacionId')}
+                  disabled={!agenciaId}
+                >
+                  <option value="">
+                    {agenciaId ? '-- Selecciona ubicación --' : '-- Primero selecciona agencia --'}
+                  </option>
+                  {ubicacionesDisponibles.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.nombre}
+                    </option>
+                  ))}
+                </select>
+                {touched.ubicacionId && ubicacionId === '' && agenciaId !== '' && (
+                  <div className="form-field__error">Selecciona una ubicación</div>
+                )}
+              </div>
+
+              {/* Campo: Tipo de Mantenimiento */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Tipo de Mantenimiento <span className="form-field__required">*</span>
+                </label>
+                <select
+                  className="neo-select"
+                  value={tipoMantenimientoId}
+                  onChange={(e) => setTipoMantenimientoId(e.target.value)}
+                  onBlur={() => marcarTocado('tipoMantenimientoId')}
+                >
+                  <option value="">-- Selecciona un tipo --</option>
+                  {tiposMantenimiento.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.nombre}
+                    </option>
+                  ))}
+                </select>
+                {touched.tipoMantenimientoId && tipoMantenimientoId === '' && (
+                  <div className="form-field__error">Selecciona un tipo de mantenimiento</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ═══════ SECCIÓN 2: Equipo ═══════ */}
+          <div className="form-section">
+            <div className="form-section__header">
+              <div className="form-section__icon form-section__icon--green">
+                <IonIcon icon={constructOutline} />
+              </div>
+              <div>
+                <h3 className="form-section__title">Equipo</h3>
+                <p className="form-section__subtitle">Identificación del equipo intervenido</p>
+              </div>
+            </div>
+
+            <div className="form-section__body">
+              {/* Campo: Nombre del equipo */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Equipo <span className="form-field__required">*</span>
+                </label>
+
+                {loadingEquipos ? (
+                  <div className="equipos-loading">
+                    <IonIcon icon={refreshOutline} className="equipos-loading__icon" />
+                    <span>Cargando equipos...</span>
+                  </div>
+                ) : equiposModoManual ? (
+                  <>
+                    <div className="equipos-offline-notice">
+                      <IonIcon icon={warningOutline} />
+                      <span>Sin conexión a la API. Escribe el código manualmente.</span>
+                    </div>
+                    <input
+                      className="neo-input neo-input-uppercase"
+                      value={nombreEquipo}
+                      onChange={(e) => {
+                        setNombreEquipo(e.target.value.toUpperCase());
+                        setComputadorId(undefined);
+                      }}
+                      onBlur={() => marcarTocado('nombreEquipo')}
+                      placeholder={agenciaId ? `Ej: ${agencias.find(a => a.id === agenciaId)?.codigo || ''}-01-0001` : 'Primero selecciona una agencia'}
+                    />
+                    {agenciaId && (
+                      <button
+                        className="equipos-retry-btn"
+                        onClick={() => cargarEquipos(agenciaId)}
+                      >
+                        <IonIcon icon={refreshOutline} /> Reintentar conexión
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <select
+                    className="neo-select"
+                    value={nombreEquipo}
+                    onChange={(e) => {
+                      const codigo = e.target.value;
+                      setNombreEquipo(codigo);
+                      const eq = equipos.find(eq => eq.Codigo === codigo);
+                      setComputadorId(eq?.id);
+                    }}
+                    onBlur={() => marcarTocado('nombreEquipo')}
+                    disabled={!agenciaId}
+                  >
+                    <option value="">
+                      {agenciaId ? `-- Selecciona un equipo (${equipos.length}) --` : '-- Primero selecciona una agencia --'}
+                    </option>
+                    {equipos.map((eq) => (
+                      <option key={eq.id} value={eq.Codigo}>
+                        {eq.Codigo} — {eq.Responsable || eq.responsable_nombre || 'Sin responsable'}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {touched.nombreEquipo && nombreEquipo.trim() === '' && (
+                  <div className="form-field__error">Selecciona o ingresa un equipo</div>
+                )}
+                {touched.nombreEquipo && nombreEquipo.trim() !== '' && !PATRON_EQUIPO.test(nombreEquipo.trim()) && (
+                  <div className="form-field__error">Formato inválido. Usa: XX-00-0000 (ej: AR-01-0001)</div>
+                )}
+              </div>
+
+              {/* Campo: Proveedor */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Proveedor <span className="form-field__required">*</span>
+                </label>
+                <input
+                  className="neo-input"
+                  value={proveedor}
+                  onChange={(e) => setProveedor(e.target.value)}
+                  onBlur={() => marcarTocado('proveedor')}
+                  placeholder="Ej: HP, Dell, Lenovo, Compusoluciones..."
+                />
+                {touched.proveedor && proveedor.trim() === '' && (
+                  <div className="form-field__error">Este campo es obligatorio</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* ═══════ SECCIÓN 3: Detalles ═══════ */}
+          <div className="form-section">
+            <div className="form-section__header">
+              <div className="form-section__icon form-section__icon--orange">
+                <IonIcon icon={documentTextOutline} />
+              </div>
+              <div>
+                <h3 className="form-section__title">Detalles</h3>
+                <p className="form-section__subtitle">Describe el trabajo realizado</p>
+              </div>
+            </div>
+
+            <div className="form-section__body">
+              {/* Campo: Mantenimiento Realizado */}
+              <div className="form-field">
+                <div className="form-field__label-row">
+                  <label className="form-field__label">
+                    Mantenimiento Realizado <span className="form-field__required">*</span>
+                  </label>
+                  <button
+                    className="form-field__suggest-btn"
+                    onClick={() => {
+                      if (!tipoMantenimientoId) {
+                        setAlertHeader('Selecciona un tipo');
+                        setAlertMessage('Primero selecciona el tipo de mantenimiento para ver las sugerencias correspondientes.');
+                        setShowAlert(true);
+                        return;
+                      }
+                      if (sugerenciasFiltradas.length === 0) {
+                        setToastMessage(`No hay sugerencias para "${tipoSeleccionado?.nombre}". Agrega en Configuración.`);
+                        setShowToast(true);
+                        return;
+                      }
+                      setShowSugerencias(true);
+                    }}
+                    title="Sugerencias"
+                  >
+                    <IonIcon icon={bulb} />
+                  </button>
+                </div>
+                <textarea
+                  className="neo-textarea"
+                  value={mantenimientoRealizado}
+                  onChange={(e) => setMantenimientoRealizado(e.target.value)}
+                  onBlur={() => marcarTocado('mantenimientoRealizado')}
+                  placeholder="Limpieza interna, cambio de pasta térmica, actualización de drivers..."
+                  rows={4}
+                />
+                {touched.mantenimientoRealizado && mantenimientoRealizado.trim() === '' && (
+                  <div className="form-field__error">Este campo es obligatorio</div>
+                )}
+              </div>
+
+              {/* Campo: Observaciones (opcional) */}
+              <div className="form-field">
+                <label className="form-field__label">
+                  Observaciones <span className="form-field__optional">(opcional)</span>
+                </label>
+                <textarea
+                  className="neo-textarea"
+                  value={observaciones}
+                  onChange={(e) => setObservaciones(e.target.value)}
+                  placeholder="Daños encontrados, piezas faltantes, recomendaciones..."
+                  rows={3}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Modal de sugerencias */}
@@ -487,67 +656,64 @@ const FormularioMantenimiento: React.FC = () => {
             </div>
           )}
 
-          {/* Campo: Observaciones (opcional) */}
-          <div className="form-field">
-            <label className="form-field__label">
-              Observaciones
-            </label>
-            <textarea
-              className="neo-textarea"
-              value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              placeholder="Daños encontrados, piezas faltantes, recomendaciones..."
-              rows={3}
-            />
-          </div>
-
-          {/* Sección de fotos categorizadas */}
-          <div className="form-photos">
-            <div className="form-photos__header">
-              <h3 className="form-photos__title">📷 Evidencia fotográfica</h3>
+          {/* ═══════ SECCIÓN 4: Evidencia fotográfica ═══════ */}
+          <div className="form-section">
+            <div className="form-section__header">
+              <div className="form-section__icon form-section__icon--purple">
+                <IonIcon icon={cameraOutline} />
+              </div>
+              <div>
+                <h3 className="form-section__title">Evidencia Fotográfica</h3>
+                <p className="form-section__subtitle">Captura antes, durante y después</p>
+              </div>
             </div>
 
-            <div className="form-photos__categorized">
-              {(['antes', 'durante', 'despues'] as const).map((cat) => {
-                const labels = { antes: 'Antes', durante: 'Durante', despues: 'Después' };
-                const icons = { antes: '🔴', durante: '🟡', despues: '🟢' };
-                const foto = fotosCat[cat];
-                return (
-                  <div key={cat} className={`form-photos__slot form-photos__slot--${cat}`}>
-                    <div className="form-photos__slot-label">
-                      {icons[cat]} {labels[cat]}
-                    </div>
-                    {foto ? (
-                      <div className="form-photos__item">
-                        <img
-                          className="form-photos__img"
-                          src={`data:image/jpeg;base64,${foto}`}
-                          alt={`Foto ${labels[cat]}`}
-                        />
-                        <button
-                          className="form-photos__delete-btn"
-                          onClick={() => eliminarFoto(cat)}
-                        >
-                          <IonIcon icon={close} />
-                        </button>
+            <div className="form-section__body">
+              <div className="form-photos__categorized">
+                {(['antes', 'durante', 'despues'] as const).map((cat) => {
+                  const labels = { antes: 'Antes', durante: 'Durante', despues: 'Después' };
+                  const icons = { antes: '🔴', durante: '🟡', despues: '🟢' };
+                  const foto = fotosCat[cat];
+                  return (
+                    <div key={cat} className={`form-photos__slot form-photos__slot--${cat}`}>
+                      <div className="form-photos__slot-label">
+                        {icons[cat]} {labels[cat]}
                       </div>
-                    ) : (
-                      <button
-                        className="form-photos__add-btn"
-                        onClick={() => tomarFoto(cat)}
-                      >
-                        <IonIcon icon={camera} />
-                        <span>Tomar</span>
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
+                      {foto ? (
+                        <div className="form-photos__item">
+                          <img
+                            className="form-photos__img"
+                            src={`data:image/jpeg;base64,${foto}`}
+                            alt={`Foto ${labels[cat]}`}
+                          />
+                          <button
+                            className="form-photos__delete-btn"
+                            onClick={() => eliminarFoto(cat)}
+                          >
+                            <IonIcon icon={close} />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="form-photos__add-btn"
+                          onClick={() => tomarFoto(cat)}
+                        >
+                          <IonIcon icon={camera} />
+                          <span>Tomar</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
           {/* Botón guardar */}
-          <button className="form-save-btn" onClick={guardarRegistro}>
+          <button
+            className={`form-save-btn ${progreso === 100 ? 'form-save-btn--ready' : ''}`}
+            onClick={guardarRegistro}
+          >
             <IonIcon icon={save} />
             Guardar Mantenimiento
           </button>

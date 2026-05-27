@@ -19,11 +19,14 @@ import { Share } from '@capacitor/share';
 import { supabase } from '../supabaseClient';
 import { useHistory } from 'react-router-dom';
 import { decode } from 'base64-arraybuffer';
-import { Mantenimiento, Agencia, TipoMantenimiento, STORAGE_KEY, AGENCIAS_STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY } from '../types';
+import { Mantenimiento, Agencia, TipoMantenimiento, STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY } from '../types';
+import { AgenciasService } from '../services/agencias.service';
+import { useAuth } from '../context/AuthContext';
 import './Home.css';
 
 const Home: React.FC = () => {
   const history = useHistory();
+  const { user } = useAuth();
   const [registros, setRegistros] = useState<Mantenimiento[]>([]);
   const [filteredRegistros, setFilteredRegistros] = useState<Mantenimiento[]>([]);
   const [searchText, setSearchText] = useState<string>('');
@@ -43,11 +46,9 @@ const Home: React.FC = () => {
   
 
   const cargarAgencias = useCallback(async () => {
-    const { value } = await Preferences.get({ key: AGENCIAS_STORAGE_KEY });
-    if (value) {
-      setAgencias(JSON.parse(value));
-    }
-  }, []);
+    const data = await AgenciasService.getAgenciasForUser(user);
+    setAgencias(data);
+  }, [user]);
 
   const cargarTiposMantenimiento = useCallback(async () => {
     const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });
