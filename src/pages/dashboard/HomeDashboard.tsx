@@ -12,6 +12,7 @@ import {
 } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { useAuth } from '../../context/AuthContext';
+import AgenciaFilterSelect from '../../components/AgenciaFilterSelect';
 import { DashboardService, DashboardStats } from '../../services/dashboard.service';
 import { SolicitudesService } from '../../services/solicitudes.service';
 import { Mantenimiento, STORAGE_KEY, TIPOS_MANTENIMIENTO_STORAGE_KEY, TipoMantenimiento } from '../../types';
@@ -154,6 +155,9 @@ const HomeDashboard: React.FC = () => {
           <span className="dashboard-welcome__greeting">Bienvenido,</span>
           <span className="dashboard-welcome__name">{user.name || 'Usuario'}</span>
         </div>
+
+        {/* ── Filtro global de agencia (solo admin) ── */}
+        <AgenciaFilterSelect />
 
         {loading ? (
           <div className="dash-loading">

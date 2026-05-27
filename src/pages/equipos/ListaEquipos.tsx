@@ -8,11 +8,14 @@ import { useHistory } from 'react-router-dom';
 import { desktopOutline, personOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline } from 'ionicons/icons';
 import { EquiposService, ComputadoresListItem } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
+import { useAgenciaFilter } from '../../context/AgenciaFilterContext';
+import AgenciaFilterSelect from '../../components/AgenciaFilterSelect';
 import './ListaEquipos.css';
 
 const ListaEquipos: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
+  const { getFilteredAgenciaId, agenciaFilterId } = useAgenciaFilter();
   const [equipos, setEquipos] = useState<ComputadoresListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -21,8 +24,7 @@ const ListaEquipos: React.FC = () => {
   const loadEquipos = useCallback(async (searchTerm?: string) => {
     try {
       setError(null);
-      // Admin ve todos los equipos; otros roles solo los de su agencia
-      const agenciaId = user?.role === 'admin' ? undefined : (user?.agencia_id ?? undefined);
+      const agenciaId = getFilteredAgenciaId();
       const data = await EquiposService.getComputadores(agenciaId, searchTerm);
       setEquipos(data);
     } catch (e: any) {
@@ -30,11 +32,16 @@ const ListaEquipos: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [getFilteredAgenciaId]);
 
   useEffect(() => {
     loadEquipos();
   }, [loadEquipos]);
+
+  // Re-cargar cuando cambia el filtro global de agencia
+  useEffect(() => {
+    loadEquipos(search);
+  }, [agenciaFilterId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = (e: CustomEvent) => {
     const val = e.detail.value ?? '';
@@ -82,6 +89,8 @@ const ListaEquipos: React.FC = () => {
             </div>
           )}
         </div>
+
+        <AgenciaFilterSelect />
 
         <div className="equipos-search-wrapper">
           <IonSearchbar

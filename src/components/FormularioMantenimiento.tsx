@@ -21,6 +21,7 @@ import { useIonViewWillEnter } from '@ionic/react';
 import { EquiposService, ComputadoresListItem } from '../services/equipos.service';
 import { AgenciasService } from '../services/agencias.service';
 import { useAuth } from '../context/AuthContext';
+import { useAgenciaFilter } from '../context/AgenciaFilterContext';
 import './FormularioMantenimiento.css';
 
 function generarId(): string {
@@ -46,6 +47,7 @@ function obtenerFechaHora(): { fecha: string; hora: string } {
 const FormularioMantenimiento: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
+  const { agenciaFilterId, isFilterActive } = useAgenciaFilter();
 
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
@@ -98,12 +100,18 @@ const FormularioMantenimiento: React.FC = () => {
   const cargarAgencias = useCallback(async () => {
     const data = await AgenciasService.getAgenciasForUser(user);
     setAgencias(data);
-    // Auto-seleccionar si solo hay una agencia
-    if (data.length === 1 && !agenciaId) {
+    // Auto-seleccionar: si hay filtro global activo, usarlo; si solo hay una agencia, seleccionarla
+    if (isFilterActive && agenciaFilterId !== 'todas') {
+      const filtered = data.find(a => a.id === agenciaFilterId);
+      if (filtered && !agenciaId) {
+        setAgenciaId(filtered.id);
+        cargarEquipos(filtered.id);
+      }
+    } else if (data.length === 1 && !agenciaId) {
       setAgenciaId(data[0].id);
       cargarEquipos(data[0].id);
     }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, agenciaFilterId, isFilterActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cargarTiposMantenimiento = useCallback(async () => {
     const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });

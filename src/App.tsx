@@ -3,6 +3,7 @@ import { IonApp, IonRouterOutlet, IonPage, IonIcon, setupIonicReact } from '@ion
 import { IonReactRouter } from '@ionic/react-router';
 import { statsChartOutline, desktopOutline, constructOutline, documentTextOutline, settingsOutline, personOutline } from 'ionicons/icons';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AgenciaFilterProvider } from './context/AgenciaFilterContext';
 import React from 'react';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
@@ -162,11 +163,13 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => (
   <IonApp>
     <AuthProvider>
-      <ToastProvider>
-        <IonReactRouter>
-          <AppContent />
-        </IonReactRouter>
-      </ToastProvider>
+      <AgenciaFilterProvider>
+        <ToastProvider>
+          <IonReactRouter>
+            <AppContent />
+          </IonReactRouter>
+        </ToastProvider>
+      </AgenciaFilterProvider>
     </AuthProvider>
   </IonApp>
 );
