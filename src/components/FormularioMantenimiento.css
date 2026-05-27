@@ -590,19 +590,20 @@
 /* ====== EQUIPO AUTOCOMPLETE ====== */
 .equipo-autocomplete {
   position: relative;
+  width: 100%;
 }
 
 .equipo-autocomplete__list {
-  position: fixed;
-  z-index: 99999;
+  width: 100%;
+  margin-top: 6px;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
-  margin-top: 0;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
   max-height: 220px;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .equipo-autocomplete__item {

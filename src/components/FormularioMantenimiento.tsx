@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -48,9 +48,6 @@ const FormularioMantenimiento: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
   const { agenciaFilterId, isFilterActive } = useAgenciaFilter();
-
-  const equipoInputRef = useRef<HTMLInputElement>(null);
-  const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null);
 
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
@@ -497,7 +494,6 @@ const FormularioMantenimiento: React.FC = () => {
                 ) : (
                   <div className="equipo-autocomplete">
                     <input
-                      ref={equipoInputRef}
                       className="neo-input neo-input-uppercase"
                       value={nombreEquipo}
                       onChange={(e) => {
@@ -505,34 +501,18 @@ const FormularioMantenimiento: React.FC = () => {
                         setNombreEquipo(val);
                         const eq = equipos.find(eq => eq.Codigo === val);
                         setComputadorId(eq?.id);
-                        if (equipoInputRef.current) {
-                          const rect = equipoInputRef.current.getBoundingClientRect();
-                          setDropdownRect({ top: rect.bottom + 4, left: rect.left, width: rect.width });
-                        }
                       }}
-                      onFocus={() => {
-                        if (equipoInputRef.current) {
-                          const rect = equipoInputRef.current.getBoundingClientRect();
-                          setDropdownRect({ top: rect.bottom + 4, left: rect.left, width: rect.width });
-                        }
-                      }}
-                      onBlur={() => {
-                        marcarTocado('nombreEquipo');
-                        setTimeout(() => setDropdownRect(null), 150);
-                      }}
+                      onBlur={() => marcarTocado('nombreEquipo')}
                       placeholder={agenciaId ? `Buscar equipo... (${equipos.length} disponibles)` : 'Primero selecciona una agencia'}
                       disabled={!agenciaId}
                     />
-                    {dropdownRect && nombreEquipo.trim() !== '' && (() => {
+                    {nombreEquipo.trim() !== '' && (() => {
                       const filtrados = equipos.filter(eq =>
                         eq.Codigo.toUpperCase().includes(nombreEquipo.trim())
-                      ).slice(0, 4);
+                      );
                       if (filtrados.length === 0 || (filtrados.length === 1 && filtrados[0].Codigo === nombreEquipo)) return null;
                       return (
-                        <div
-                          className="equipo-autocomplete__list"
-                          style={{ top: dropdownRect.top, left: dropdownRect.left, width: dropdownRect.width }}
-                        >
+                        <div className="equipo-autocomplete__list">
                           {filtrados.map((eq) => (
                             <button
                               key={eq.id}
@@ -542,7 +522,6 @@ const FormularioMantenimiento: React.FC = () => {
                               onClick={() => {
                                 setNombreEquipo(eq.Codigo);
                                 setComputadorId(eq.id);
-                                setDropdownRect(null);
                               }}
                             >
                               <span className="equipo-autocomplete__code">{eq.Codigo}</span>
