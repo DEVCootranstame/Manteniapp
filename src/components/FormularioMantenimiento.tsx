@@ -52,7 +52,6 @@ const FormularioMantenimiento: React.FC = () => {
   const [agencias, setAgencias] = useState<Agencia[]>([]);
   const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
   const [agenciaId, setAgenciaId] = useState('');
-  const [ubicacionId, setUbicacionId] = useState('');
   const [tipoMantenimientoId, setTipoMantenimientoId] = useState('');
 
   const [nombreEquipo, setNombreEquipo] = useState('');
@@ -141,7 +140,6 @@ const FormularioMantenimiento: React.FC = () => {
   }, [cargarAgencias]);
 
   const agenciaSeleccionada = agencias.find((a) => a.id === agenciaId);
-  const ubicacionesDisponibles = agenciaSeleccionada?.ubicaciones || [];
   const tipoSeleccionado = tiposMantenimiento.find((t) => t.id === tipoMantenimientoId);
   const sugerenciasFiltradas = tipoSeleccionado
     ? sugerencias.filter((s) => s.tipoMantenimiento.toLowerCase() === tipoSeleccionado.nombre.toLowerCase())
@@ -149,15 +147,14 @@ const FormularioMantenimiento: React.FC = () => {
 
   const progreso = useMemo(() => {
     let completados = 0;
-    const total = 6;
+    const total = 5;
     if (agenciaId) completados++;
-    if (ubicacionId) completados++;
     if (tipoMantenimientoId) completados++;
     if (nombreEquipo.trim()) completados++;
     if (proveedor.trim()) completados++;
     if (mantenimientoRealizado.trim()) completados++;
     return Math.round((completados / total) * 100);
-  }, [agenciaId, ubicacionId, tipoMantenimientoId, nombreEquipo, proveedor, mantenimientoRealizado]);
+  }, [agenciaId, tipoMantenimientoId, nombreEquipo, proveedor, mantenimientoRealizado]);
 
   const aplicarSugerencia = (texto: string) => {
     setMantenimientoRealizado((prev) => {
@@ -217,7 +214,6 @@ const FormularioMantenimiento: React.FC = () => {
   const formularioValido = (): boolean => {
     return (
       agenciaId.length > 0 &&
-      ubicacionId.length > 0 &&
       tipoMantenimientoId.length > 0 &&
       nombreEquipo.trim().length > 0 &&
       proveedor.trim().length > 0 &&
@@ -241,7 +237,6 @@ const FormularioMantenimiento: React.FC = () => {
 
   const limpiarFormulario = () => {
     setAgenciaId('');
-    setUbicacionId('');
     setTipoMantenimientoId('');
     setNombreEquipo('');
     setComputadorId(undefined);
@@ -258,7 +253,6 @@ const FormularioMantenimiento: React.FC = () => {
     if (!formularioValido()) {
       setTouched({
         agenciaId: true,
-        ubicacionId: true,
         tipoMantenimientoId: true,
         nombreEquipo: true,
         proveedor: true,
@@ -329,7 +323,6 @@ const FormularioMantenimiento: React.FC = () => {
         fotosCategorized: { ...fotosCat },
         sincronizado: false,
         agenciaId,
-        ubicacionId,
         tipoMantenimientoId,
       };
 
@@ -408,7 +401,6 @@ const FormularioMantenimiento: React.FC = () => {
                   onChange={(e) => {
                     const val = e.target.value;
                     setAgenciaId(val);
-                    setUbicacionId('');
                     cargarEquipos(val);
                   }}
                   onBlur={() => marcarTocado('agenciaId')}
@@ -422,32 +414,6 @@ const FormularioMantenimiento: React.FC = () => {
                 </select>
                 {touched.agenciaId && agenciaId === '' && (
                   <div className="form-field__error">Selecciona una agencia</div>
-                )}
-              </div>
-
-              {/* Campo: Ubicación */}
-              <div className="form-field">
-                <label className="form-field__label">
-                  Ubicación <span className="form-field__required">*</span>
-                </label>
-                <select
-                  className="neo-select"
-                  value={ubicacionId}
-                  onChange={(e) => setUbicacionId(e.target.value)}
-                  onBlur={() => marcarTocado('ubicacionId')}
-                  disabled={!agenciaId}
-                >
-                  <option value="">
-                    {agenciaId ? '-- Selecciona ubicación --' : '-- Primero selecciona agencia --'}
-                  </option>
-                  {ubicacionesDisponibles.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.nombre}
-                    </option>
-                  ))}
-                </select>
-                {touched.ubicacionId && ubicacionId === '' && agenciaId !== '' && (
-                  <div className="form-field__error">Selecciona una ubicación</div>
                 )}
               </div>
 
