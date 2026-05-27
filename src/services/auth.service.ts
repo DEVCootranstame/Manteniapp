@@ -4,6 +4,13 @@ import { AuthTokens, LoginCredentials, UserProfile, UserRole } from '../types/au
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
 
+/** Normaliza el rol del backend al enum interno */
+function normalizeRole(raw: string): UserRole {
+  const lower = raw.toLowerCase();
+  if (lower === 'administrador') return 'admin';
+  return lower as UserRole;
+}
+
 export const AuthService = {
   async login(credentials: LoginCredentials): Promise<UserProfile> {
     // Login request (no auth needed)
@@ -23,14 +30,14 @@ export const AuthService = {
 
     // Fetch profile
     const profile = await ApiService.get<UserProfile>('/auth/profile');
-    profile.role = profile.role.toLowerCase() as UserRole;
+    profile.role = normalizeRole(profile.role);
     await StorageService.setProfile(profile);
     return profile;
   },
 
   async getProfile(): Promise<UserProfile> {
     const profile = await ApiService.get<UserProfile>('/auth/profile');
-    profile.role = profile.role.toLowerCase() as UserRole;
+    profile.role = normalizeRole(profile.role);
     return profile;
   },
 
@@ -46,7 +53,7 @@ export const AuthService = {
   async getStoredProfile(): Promise<UserProfile | null> {
     const profile = await StorageService.getProfile<UserProfile>();
     if (profile) {
-      profile.role = profile.role.toLowerCase() as UserRole;
+      profile.role = normalizeRole(profile.role);
     }
     return profile;
   },
