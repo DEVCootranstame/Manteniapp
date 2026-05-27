@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -41,6 +41,12 @@ const GestionUbicaciones: React.FC = () => {
   useIonViewWillEnter(() => {
     cargarAgencia();
   });
+
+  useEffect(() => {
+    if (user) {
+      cargarAgencia();
+    }
+  }, [cargarAgencia]);
 
   const guardarAgencia = async (agenciaActualizada: Agencia) => {
     const agencias = await AgenciasService.getCached();

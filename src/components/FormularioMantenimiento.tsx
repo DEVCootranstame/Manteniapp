@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -124,6 +124,13 @@ const FormularioMantenimiento: React.FC = () => {
     cargarTiposMantenimiento();
     cargarSugerencias();
   });
+
+  // Re-cargar agencias cuando el usuario se resuelve (puede ser null inicialmente)
+  useEffect(() => {
+    if (user) {
+      cargarAgencias();
+    }
+  }, [cargarAgencias]);
 
   const agenciaSeleccionada = agencias.find((a) => a.id === agenciaId);
   const ubicacionesDisponibles = agenciaSeleccionada?.ubicaciones || [];

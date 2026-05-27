@@ -21,7 +21,8 @@ const ListaEquipos: React.FC = () => {
   const loadEquipos = useCallback(async (searchTerm?: string) => {
     try {
       setError(null);
-      const agenciaId = user?.agencia_id ?? undefined;
+      // Admin ve todos los equipos; otros roles solo los de su agencia
+      const agenciaId = user?.role === 'admin' ? undefined : (user?.agencia_id ?? undefined);
       const data = await EquiposService.getComputadores(agenciaId, searchTerm);
       setEquipos(data);
     } catch (e: any) {

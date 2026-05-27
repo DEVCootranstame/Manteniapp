@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -40,6 +40,12 @@ const GestionAgencias: React.FC = () => {
   useIonViewWillEnter(() => {
     cargarAgencias();
   });
+
+  useEffect(() => {
+    if (user) {
+      cargarAgencias();
+    }
+  }, [cargarAgencias]);
 
   const guardarAgencias = async (nuevas: Agencia[]) => {
     await AgenciasService.saveCache(nuevas);
