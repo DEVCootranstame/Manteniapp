@@ -492,27 +492,46 @@ const FormularioMantenimiento: React.FC = () => {
                     )}
                   </>
                 ) : (
-                  <select
-                    className="neo-select"
-                    value={nombreEquipo}
-                    onChange={(e) => {
-                      const codigo = e.target.value;
-                      setNombreEquipo(codigo);
-                      const eq = equipos.find(eq => eq.Codigo === codigo);
-                      setComputadorId(eq?.id);
-                    }}
-                    onBlur={() => marcarTocado('nombreEquipo')}
-                    disabled={!agenciaId}
-                  >
-                    <option value="">
-                      {agenciaId ? `-- Selecciona un equipo (${equipos.length}) --` : '-- Primero selecciona una agencia --'}
-                    </option>
-                    {equipos.map((eq) => (
-                      <option key={eq.id} value={eq.Codigo}>
-                        {eq.Codigo} — {eq.Responsable || eq.responsable_nombre || 'Sin responsable'}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="equipo-autocomplete">
+                    <input
+                      className="neo-input neo-input-uppercase"
+                      value={nombreEquipo}
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+                        setNombreEquipo(val);
+                        const eq = equipos.find(eq => eq.Codigo === val);
+                        setComputadorId(eq?.id);
+                      }}
+                      onBlur={() => marcarTocado('nombreEquipo')}
+                      placeholder={agenciaId ? `Buscar equipo... (${equipos.length} disponibles)` : 'Primero selecciona una agencia'}
+                      disabled={!agenciaId}
+                    />
+                    {nombreEquipo.trim() !== '' && (() => {
+                      const filtrados = equipos.filter(eq =>
+                        eq.Codigo.toUpperCase().includes(nombreEquipo.trim())
+                      ).slice(0, 4);
+                      if (filtrados.length === 0 || (filtrados.length === 1 && filtrados[0].Codigo === nombreEquipo)) return null;
+                      return (
+                        <div className="equipo-autocomplete__list">
+                          {filtrados.map((eq) => (
+                            <button
+                              key={eq.id}
+                              className="equipo-autocomplete__item"
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => {
+                                setNombreEquipo(eq.Codigo);
+                                setComputadorId(eq.id);
+                              }}
+                            >
+                              <span className="equipo-autocomplete__code">{eq.Codigo}</span>
+                              <span className="equipo-autocomplete__resp">{eq.Responsable || eq.responsable_nombre || 'Sin responsable'}</span>
+                            </button>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </div>
                 )}
 
                 {touched.nombreEquipo && nombreEquipo.trim() === '' && (

@@ -586,3 +586,61 @@
 .form-camera-btn ion-icon {
   font-size: 18px;
 }
+
+/* ====== EQUIPO AUTOCOMPLETE ====== */
+.equipo-autocomplete {
+  position: relative;
+}
+
+.equipo-autocomplete__list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid var(--app-border, #e2e8f0);
+  border-radius: 12px;
+  margin-top: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.equipo-autocomplete__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.equipo-autocomplete__item:last-child {
+  border-bottom: none;
+}
+
+.equipo-autocomplete__item:active {
+  background: #eff6ff;
+}
+
+.equipo-autocomplete__code {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e293b;
+}
+
+.equipo-autocomplete__resp {
+  font-size: 12px;
+  color: #64748b;
+  max-width: 50%;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
