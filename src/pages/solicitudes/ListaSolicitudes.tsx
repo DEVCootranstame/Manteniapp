@@ -110,23 +110,33 @@ const ListaSolicitudes: React.FC = () => {
           <div className="sol-list">
             {solicitudes.map((s: any) => (
               <div key={s.id} className="sol-card" onClick={() => history.push(`/solicitudes/${s.id}`)}>
+
+                {/* Fila 1: # solicitud + badge estado */}
                 <div className="sol-card__top">
-                  <div className="sol-card__left">
-                    <div className={`sol-card__dot ${getDotClass(s.estado)}`} />
-                    <div>
-                      <div className="sol-card__code">{s.computador_codigo || 'Sin equipo'}</div>
-                      <div className="sol-card__tipo">{getTipoLabel(s.tipo)}</div>
-                    </div>
+                  <div className="sol-card__num-wrap">
+                    <span className="sol-card__num">Solicitud #{s.id}</span>
+                    <span className="sol-card__tipo">{getTipoLabel(s.tipo)}</span>
                   </div>
-                  <div className="sol-card__right">
-                    <span className="sol-card__date">{new Date(s.created_at).toLocaleDateString('es-CO')}</span>
-                    <span className={`sol-card__badge ${getBadgeClass(s.estado)}`}>{s.estado}</span>
-                  </div>
+                  <span className={`sol-card__badge ${getBadgeClass(s.estado)}`}>{s.estado}</span>
                 </div>
+
+                {/* Fila 2: equipo */}
+                <div className="sol-card__equipo">
+                  <IonIcon icon={hardwareChipOutline} />
+                  <span>{s.computador_codigo || 'Sin equipo'}</span>
+                  {s.agencia_nombre && <span className="sol-card__agencia">· {s.agencia_nombre}</span>}
+                </div>
+
+                {/* Fila 3: cambio responsable */}
                 <div className="sol-card__responsables">
-                  <IonIcon icon={swapHorizontalOutline} />
-                  <span>{s.responsable_anterior_nombre || 'Sin anterior'} → {s.responsable_nuevo_nombre || 'Sin nuevo'}</span>
+                  <span className="sol-card__resp-name">{s.responsable_anterior_nombre || 'Sin anterior'}</span>
+                  <IonIcon icon={swapHorizontalOutline} className="sol-card__arrow" />
+                  <span className="sol-card__resp-name sol-card__resp-name--new">{s.responsable_nuevo_nombre || 'Sin nuevo'}</span>
                 </div>
+
+                {/* Fecha */}
+                <div className="sol-card__date">{new Date(s.created_at).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+
               </div>
             ))}
           </div>
