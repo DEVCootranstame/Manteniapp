@@ -25,19 +25,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const profile = await AuthService.getStoredProfile();
         if (profile && profile.name && profile.role) {
+          // Check if access token is still valid or can be refreshed
+          const tokens = await StorageService.getTokens();
+          if (!tokens) {
+            await StorageService.clearAll();
+            setUser(null);
+            return;
+          }
+
+          // If token expired, try to refresh before granting access
+          if (tokens.expires_at <= Date.now()) {
+            try {
+              const freshProfile = await AuthService.getProfile();
+              setUser(freshProfile);
+              StorageService.setProfile(freshProfile);
+            } catch {
+              // Refresh failed (token too old or no network) — force login
+              await StorageService.clearAll();
+              setUser(null);
+            }
+            return;
+          }
+
+          // Token still valid — use stored profile, refresh in background
           setUser(profile);
-          // Refresh profile in background — if it fails, clear session
           AuthService.getProfile()
             .then((fresh) => {
               setUser(fresh);
               StorageService.setProfile(fresh);
             })
-            .catch(async () => {
-              // Token invalid or API unreachable — keep stored profile
-              // Only clear if we get an auth error (handled by session-expired event)
+            .catch(() => {
+              // Background refresh failed but token was valid — keep session
             });
         } else {
-          // Stored profile is incomplete, clear it
           await StorageService.clearAll();
           setUser(null);
         }
