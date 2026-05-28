@@ -25,6 +25,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const profile = await AuthService.getStoredProfile();
         if (profile && profile.name && profile.role) {
+          // Strict: if >24h since last activity, force login
+          const expired = await StorageService.isSessionExpiredByInactivity();
+          if (expired) {
+            await StorageService.clearAll();
+            setUser(null);
+            return;
+          }
+
           // Check if access token is still valid or can be refreshed
           const tokens = await StorageService.getTokens();
           if (!tokens) {
@@ -39,8 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               const freshProfile = await AuthService.getProfile();
               setUser(freshProfile);
               StorageService.setProfile(freshProfile);
+              StorageService.touchActivity();
             } catch {
-              // Refresh failed (token too old or no network) — force login
               await StorageService.clearAll();
               setUser(null);
             }
@@ -49,14 +57,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
           // Token still valid — use stored profile, refresh in background
           setUser(profile);
+          StorageService.touchActivity();
           AuthService.getProfile()
             .then((fresh) => {
               setUser(fresh);
               StorageService.setProfile(fresh);
             })
-            .catch(() => {
-              // Background refresh failed but token was valid — keep session
-            });
+            .catch(() => {});
         } else {
           await StorageService.clearAll();
           setUser(null);
@@ -82,6 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = useCallback(async (email: string, password: string) => {
     const profile = await AuthService.login({ email, password });
+    await StorageService.touchActivity();
     setUser(profile);
   }, []);
 

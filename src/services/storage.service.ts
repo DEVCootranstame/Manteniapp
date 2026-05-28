@@ -2,6 +2,9 @@ import { Preferences } from '@capacitor/preferences';
 
 const TOKEN_KEY = 'auth_tokens';
 const PROFILE_KEY = 'user_profile';
+const LAST_ACTIVITY_KEY = 'last_activity_ts';
+
+const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 horas
 
 export interface StoredTokens {
   access_token: string;
@@ -44,5 +47,17 @@ export const StorageService = {
   async clearAll() {
     await Preferences.remove({ key: TOKEN_KEY });
     await Preferences.remove({ key: PROFILE_KEY });
+    await Preferences.remove({ key: LAST_ACTIVITY_KEY });
+  },
+
+  async touchActivity() {
+    await Preferences.set({ key: LAST_ACTIVITY_KEY, value: Date.now().toString() });
+  },
+
+  async isSessionExpiredByInactivity(): Promise<boolean> {
+    const { value } = await Preferences.get({ key: LAST_ACTIVITY_KEY });
+    if (!value) return true; // No activity recorded = expired
+    const lastActivity = parseInt(value, 10);
+    return (Date.now() - lastActivity) > SESSION_MAX_AGE_MS;
   },
 };
