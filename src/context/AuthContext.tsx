@@ -98,9 +98,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         if (backgroundTimestamp.current) {
           const elapsed = Date.now() - backgroundTimestamp.current;
-          const LOCK_AFTER_MS = 60 * 1000; // 1 minuto
+          const LOCK_AFTER_MS = 5 * 60 * 1000; // 5 minutos
           if (elapsed > LOCK_AFTER_MS && user) {
-            setUser(null); // Soft logout — force login screen
+            // Full logout — clear tokens, force user/password
+            StorageService.clearAll();
+            setUser(null);
           }
           backgroundTimestamp.current = null;
         }
