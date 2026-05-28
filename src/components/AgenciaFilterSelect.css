@@ -1,38 +1,91 @@
 .agencia-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.agencia-filter__btn {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
-  background: var(--ion-color-light, #f4f5f8);
+  padding: 5px 9px;
+  background: #EEF2FF;
+  border: 1.5px solid #C7D2FE;
   border-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  flex-shrink: 0;
-  max-width: 160px;
+  cursor: pointer;
+  outline: none;
 }
 
 .agencia-filter__icon {
-  font-size: 14px;
-  color: var(--ion-color-primary, #2563eb);
+  font-size: 13px;
+  color: #4F46E5;
   flex-shrink: 0;
 }
 
-.agencia-filter__select {
-  border: none;
-  background: transparent;
+.agencia-filter__label {
   font-size: 11px;
-  font-weight: 600;
-  color: var(--ion-text-color, #1f2937);
-  outline: none;
-  cursor: pointer;
-  padding: 0;
-  max-width: 120px;
-  -webkit-appearance: none;
-  appearance: none;
+  font-weight: 700;
+  color: #3730A3;
+  max-width: 100px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.agencia-filter__select:focus {
-  outline: none;
+.agencia-filter__chevron {
+  font-size: 11px;
+  color: #6366F1;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
 }
+
+.agencia-filter__chevron--open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.agencia-filter__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 9999;
+  background: #fff;
+  border: 1.5px solid #E0E7FF;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
+  min-width: 180px;
+  max-height: 240px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.agencia-filter__option {
+  display: block;
+  width: 100%;
+  padding: 11px 16px;
+  text-align: left;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+  border-bottom: 1px solid #F1F5F9;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agencia-filter__option:last-child {
+  border-bottom: none;
+}
+
+.agencia-filter__option--active {
+  background: #EEF2FF;
+  color: #4F46E5;
+  font-weight: 700;
+}
+
+.agencia-filter__option:active {
+  background: #E0E7FF;
+}
+
