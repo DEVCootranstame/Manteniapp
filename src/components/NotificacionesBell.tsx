@@ -18,7 +18,10 @@ const NotificacionesBell: React.FC = () => {
     try {
       const aprobadas = await SolicitudesService.getSolicitudes(undefined, 'aprobada');
       const rechazadas = await SolicitudesService.getSolicitudes(undefined, 'rechazada');
-      const todas = [...aprobadas, ...rechazadas]
+      // Handle both array and paginated responses
+      const arrAprobadas = Array.isArray(aprobadas) ? aprobadas : (aprobadas as any)?.data ?? [];
+      const arrRechazadas = Array.isArray(rechazadas) ? rechazadas : (rechazadas as any)?.data ?? [];
+      const todas = [...arrAprobadas, ...arrRechazadas]
         .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
         .slice(0, 20);
       setNotificaciones(todas);
@@ -102,14 +105,14 @@ const NotificacionesBell: React.FC = () => {
                         <span className="notif-item__label">
                           Solicitud #{sol.id} — {isAprobada ? 'Aprobada' : 'Rechazada'}
                         </span>
-                        {/* Equipo y agencia */}
-                        {sol.computador?.Codigo && (
-                          <span className="notif-item__equipo">💻 {sol.computador.Codigo}</span>
+                        {/* Equipo */}
+                        {(sol as any).computador_codigo && (
+                          <span className="notif-item__equipo">💻 {(sol as any).computador_codigo}{(sol as any).agencia_nombre ? ` · ${(sol as any).agencia_nombre}` : ''}</span>
                         )}
                         {/* Cambio de responsable */}
-                        {(sol.responsable_anterior?.nombre || sol.responsable_nuevo?.nombre) && (
+                        {((sol as any).responsable_anterior_nombre || (sol as any).responsable_nuevo_nombre) && (
                           <span className="notif-item__cambio">
-                            {sol.responsable_anterior?.nombre || '—'} → {sol.responsable_nuevo?.nombre || '—'}
+                            {(sol as any).responsable_anterior_nombre || '—'} → {(sol as any).responsable_nuevo_nombre || '—'}
                           </span>
                         )}
                         {/* Motivo/observaciones (solo al expandir) */}
