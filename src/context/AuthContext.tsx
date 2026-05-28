@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { UserProfile, UserRole } from '../types/auth.types';
 import { AuthService } from '../services/auth.service';
 import { StorageService } from '../services/storage.service';
+import { App } from '@capacitor/app';
 
 interface AuthContextType {
   user: UserProfile | null;
@@ -86,6 +87,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     window.addEventListener('auth:session-expired', handler);
     return () => window.removeEventListener('auth:session-expired', handler);
   }, []);
+
+  // Bank-style: lock session after 1 min in background
+  const backgroundTimestamp = useRef<number | null>(null);
+
+  useEffect(() => {
+    const listener = App.addListener('appStateChange', ({ isActive }) => {
+      if (!isActive) {
+        backgroundTimestamp.current = Date.now();
+      } else {
+        if (backgroundTimestamp.current) {
+          const elapsed = Date.now() - backgroundTimestamp.current;
+          const LOCK_AFTER_MS = 60 * 1000; // 1 minuto
+          if (elapsed > LOCK_AFTER_MS && user) {
+            setUser(null); // Soft logout — force login screen
+          }
+          backgroundTimestamp.current = null;
+        }
+      }
+    });
+
+    return () => { listener.then(l => l.remove()); };
+  }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
     const profile = await AuthService.login({ email, password });
