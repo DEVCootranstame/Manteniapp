@@ -150,14 +150,14 @@ const HomeDashboard: React.FC = () => {
           <span className="chip-header__subtitle">Dashboard</span>
         </div>
 
-        {/* ── Welcome banner ────────────────────── */}
-        <div className="dashboard-welcome">
-          <span className="dashboard-welcome__greeting">Bienvenido,</span>
-          <span className="dashboard-welcome__name">{user.name || 'Usuario'}</span>
+        {/* ── Welcome + filtro en misma fila ─────── */}
+        <div className="dashboard-topbar">
+          <div className="dashboard-welcome">
+            <span className="dashboard-welcome__greeting">Bienvenido,</span>
+            <span className="dashboard-welcome__name">{user.name || 'Usuario'}</span>
+          </div>
+          <AgenciaFilterSelect />
         </div>
-
-        {/* ── Filtro global de agencia (solo admin) ── */}
-        <AgenciaFilterSelect />
 
         {loading ? (
           <div className="dash-loading">

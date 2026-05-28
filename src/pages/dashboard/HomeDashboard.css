@@ -8,23 +8,36 @@
 }
 
 /* == Welcome Banner == */
+.dashboard-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 4px;
+  gap: 10px;
+}
+
 .dashboard-welcome {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 18px 20px 6px;
+  gap: 6px;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .dashboard-welcome__greeting {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   color: #64748B;
+  white-space: nowrap;
 }
 
 .dashboard-welcome__name {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 800;
   color: #0F172A;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* == Stats Grid == */
