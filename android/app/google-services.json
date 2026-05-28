@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "59693027917",
+    "project_id": "c-h-i-p-6cb70",
+    "storage_bucket": "c-h-i-p-6cb70.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59693027917:android:d07e80ee69552ccc014204",
+        "android_client_info": {
+          "package_name": "com.cootranstame.manteniapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCrztbdCIkxZVQDPc4TiW3QfyUTSYx0bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

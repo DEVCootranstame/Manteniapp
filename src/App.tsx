@@ -9,6 +9,7 @@ import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
 import { useHistory, useLocation } from 'react-router-dom';
 import { ApiService } from './services/api.service';
+import { PushNotificationService } from './services/push-notification.service';
 import NotificacionesBell from './components/NotificacionesBell';
 import OfflineBanner from './components/OfflineBanner';
 
@@ -136,8 +137,18 @@ const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario', '/welcome'];
 const AppContent: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout, softLogout } = useAuth();
   const location = useLocation();
+  const history = useHistory();
 
   useInactivityLogout(softLogout, isAuthenticated);
+
+  // Iniciar push notifications cuando el usuario está autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      PushNotificationService.init((path) => history.push(path));
+    } else {
+      PushNotificationService.unregister();
+    }
+  }, [isAuthenticated, user]);
 
   const showNavbar = isAuthenticated && user && !HIDDEN_NAVBAR_ROUTES.some(r => location.pathname.startsWith(r));
 
