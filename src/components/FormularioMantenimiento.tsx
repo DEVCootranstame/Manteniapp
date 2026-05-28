@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import {
   IonPage,
   IonHeader,
@@ -12,7 +12,7 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/react';
-import { camera, close, save, bulb, locationOutline, constructOutline, documentTextOutline, cameraOutline, refreshOutline, warningOutline } from 'ionicons/icons';
+import { camera, close, save, bulb, locationOutline, constructOutline, documentTextOutline, cameraOutline, refreshOutline, warningOutline, chevronDownOutline, businessOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
@@ -23,6 +23,65 @@ import { AgenciasService } from '../services/agencias.service';
 import { useAuth } from '../context/AuthContext';
 import { useAgenciaFilter } from '../context/AgenciaFilterContext';
 import './FormularioMantenimiento.css';
+
+/* ── Dropdown de agencia custom (mismo estilo que equipos) ── */
+const AgenciaDropdown: React.FC<{
+  agencias: Agencia[];
+  value: string;
+  onChange: (val: string) => void;
+  onBlur?: () => void;
+}> = ({ agencias, value, onChange, onBlur }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        onBlur?.();
+      }
+    };
+    if (open) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const selected = agencias.find(a => a.id === value);
+
+  return (
+    <div className="agencia-dropdown" ref={ref}>
+      <button
+        className="agencia-dropdown__btn"
+        onClick={() => setOpen(v => !v)}
+        type="button"
+      >
+        <IonIcon icon={businessOutline} className="agencia-dropdown__icon" />
+        <span className="agencia-dropdown__label">
+          {selected ? `${selected.codigo} - ${selected.nombre}` : '-- Selecciona una agencia --'}
+        </span>
+        <IonIcon icon={chevronDownOutline} className={`agencia-dropdown__chevron ${open ? 'agencia-dropdown__chevron--open' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="agencia-dropdown__list">
+          {agencias.map(a => (
+            <button
+              key={a.id}
+              type="button"
+              className={`agencia-dropdown__option ${a.id === value ? 'agencia-dropdown__option--active' : ''}`}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                onChange(a.id);
+                setOpen(false);
+              }}
+            >
+              {a.codigo} - {a.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 function generarId(): string {
   return crypto.randomUUID();
@@ -395,23 +454,15 @@ const FormularioMantenimiento: React.FC = () => {
                 <label className="form-field__label">
                   Agencia <span className="form-field__required">*</span>
                 </label>
-                <select
-                  className="neo-select"
+                <AgenciaDropdown
+                  agencias={agencias}
                   value={agenciaId}
-                  onChange={(e) => {
-                    const val = e.target.value;
+                  onChange={(val) => {
                     setAgenciaId(val);
                     cargarEquipos(val);
                   }}
                   onBlur={() => marcarTocado('agenciaId')}
-                >
-                  <option value="">-- Selecciona una agencia --</option>
-                  {agencias.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.codigo} - {a.nombre}
-                    </option>
-                  ))}
-                </select>
+                />
                 {touched.agenciaId && agenciaId === '' && (
                   <div className="form-field__error">Selecciona una agencia</div>
                 )}
