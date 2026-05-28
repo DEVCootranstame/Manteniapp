@@ -7,7 +7,13 @@ export class PushNotificationService {
   private static registered = false;
 
   static async init(onNavigate: (path: string) => void): Promise<void> {
-    if (!Capacitor.isNativePlatform() || this.registered) return;
+    if (!Capacitor.isNativePlatform()) return;
+
+    // Si ya registrado, solo re-enviar token al backend
+    if (this.registered) {
+      await this.resendToken();
+      return;
+    }
 
     console.log('PUSH: Iniciando registro de push notifications...');
 
@@ -18,6 +24,7 @@ export class PushNotificationService {
     // Registrar listeners ANTES de register() para no perder el evento
     PushNotifications.addListener('registration', async (token: Token) => {
       console.log('PUSH: FCM Token recibido:', token.value);
+      PushNotificationService.lastToken = token.value;
       try {
         await ApiService.post('/usuarios/fcm-token', { token: token.value });
         console.log('PUSH: Token enviado al backend OK');
@@ -67,10 +74,24 @@ export class PushNotificationService {
     this.registered = true;
   }
 
+  private static lastToken: string | null = null;
+
+  private static async resendToken(): Promise<void> {
+    if (!this.lastToken) return;
+    console.log('PUSH: Re-enviando token al backend...');
+    try {
+      await ApiService.post('/usuarios/fcm-token', { token: this.lastToken });
+      console.log('PUSH: Token re-enviado OK');
+    } catch (e) {
+      console.warn('PUSH: Error re-enviando token:', e);
+    }
+  }
+
   static async unregister(): Promise<void> {
     if (!Capacitor.isNativePlatform()) return;
     await PushNotifications.removeAllListeners();
     await LocalNotifications.removeAllListeners();
     this.registered = false;
+    this.lastToken = null;
   }
 }
