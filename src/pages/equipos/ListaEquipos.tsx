@@ -82,15 +82,14 @@ const ListaEquipos: React.FC = () => {
 
         <div className="equipos-header-section">
           <h1 className="equipos-page-title">Equipos</h1>
-          {sinResponsable > 0 && (
-            <div className="equipos-alert-badge">
-              <IonIcon icon={alertCircleOutline} />
-              <span>{sinResponsable} sin responsable</span>
-            </div>
-          )}
+          <AgenciaFilterSelect />
         </div>
-
-        <AgenciaFilterSelect />
+        {sinResponsable > 0 && (
+          <div className="equipos-alert-badge">
+            <IonIcon icon={alertCircleOutline} />
+            <span>{sinResponsable} sin responsable</span>
+          </div>
+        )}
 
         <div className="equipos-search-wrapper">
           <IonSearchbar
