@@ -4,10 +4,11 @@ import { IonReactRouter } from '@ionic/react-router';
 import { statsChartOutline, desktopOutline, constructOutline, documentTextOutline, settingsOutline, personOutline } from 'ionicons/icons';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AgenciaFilterProvider } from './context/AgenciaFilterContext';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useInactivityLogout } from './hooks/useInactivityLogout';
 import { UserRole } from './types/auth.types';
 import { useHistory, useLocation } from 'react-router-dom';
+import { ApiService } from './services/api.service';
 import NotificacionesBell from './components/NotificacionesBell';
 import OfflineBanner from './components/OfflineBanner';
 
@@ -75,6 +76,24 @@ const FloatingNavbar: React.FC = React.memo(() => {
   const { user } = useAuth();
   const history = useHistory();
   const location = useLocation();
+  const [pendientesSol, setPendientesSol] = useState(0);
+
+  // Cargar conteo de solicitudes pendientes para admin/supervisor
+  useEffect(() => {
+    if (!user || !['admin', 'supervisor'].includes(user.role)) return;
+    const fetchPendientes = async () => {
+      try {
+        const data = await ApiService.get<any>('/solicitudes?estado=pendiente');
+        const arr = Array.isArray(data) ? data : (data?.data ?? []);
+        setPendientesSol(arr.length);
+      } catch {
+        // silencioso
+      }
+    };
+    fetchPendientes();
+    const interval = setInterval(fetchPendientes, 60000); // refresca cada minuto
+    return () => clearInterval(interval);
+  }, [user]);
 
   if (!user) return null;
 
@@ -88,6 +107,7 @@ const FloatingNavbar: React.FC = React.memo(() => {
       <div className="floating-navbar__inner">
         {visibleTabs.map((tab) => {
           const active = isActive(tab.href);
+          const showBadge = tab.id === 'solicitudes' && pendientesSol > 0;
           return (
             <button
               key={tab.id}
@@ -97,6 +117,9 @@ const FloatingNavbar: React.FC = React.memo(() => {
               <span className="nav-tab__bubble" />
               <span className="nav-tab__icon">
                 <IonIcon icon={tab.icon} />
+                {showBadge && (
+                  <span className="nav-tab__badge">{pendientesSol > 9 ? '9+' : pendientesSol}</span>
+                )}
               </span>
               <span className="nav-tab__label">{tab.label}</span>
             </button>

@@ -50,12 +50,18 @@ const ListaSolicitudes: React.FC = () => {
   const [solicitudes, setSolicitudes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState<Filtro>('pendiente');
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async (estado: Filtro) => {
     setLoading(true);
+    setError(null);
     try {
       const data = await SolicitudesService.getSolicitudes(undefined, estado === 'todas' ? undefined : estado);
-      setSolicitudes(data);
+      // API may return paginated object { data: [], total: N } or plain array
+      setSolicitudes(Array.isArray(data) ? data : (data as any).data ?? []);
+    } catch (e: any) {
+      setError(e.message || 'Error al cargar solicitudes');
+      setSolicitudes([]);
     } finally {
       setLoading(false);
     }

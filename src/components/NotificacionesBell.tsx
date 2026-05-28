@@ -102,9 +102,20 @@ const NotificacionesBell: React.FC = () => {
                         <span className="notif-item__label">
                           Solicitud #{sol.id} — {isAprobada ? 'Aprobada' : 'Rechazada'}
                         </span>
-                        <p className={`notif-item__motivo ${isExpanded ? 'notif-item__motivo--expanded' : ''}`}>
-                          {motivo}
-                        </p>
+                        {/* Equipo y agencia */}
+                        {sol.computador?.Codigo && (
+                          <span className="notif-item__equipo">💻 {sol.computador.Codigo}</span>
+                        )}
+                        {/* Cambio de responsable */}
+                        {(sol.responsable_anterior?.nombre || sol.responsable_nuevo?.nombre) && (
+                          <span className="notif-item__cambio">
+                            {sol.responsable_anterior?.nombre || '—'} → {sol.responsable_nuevo?.nombre || '—'}
+                          </span>
+                        )}
+                        {/* Motivo/observaciones (solo al expandir) */}
+                        {isExpanded && motivo !== 'Sin motivo especificado' && (
+                          <p className="notif-item__motivo notif-item__motivo--expanded">{motivo}</p>
+                        )}
                       </div>
                       <IonIcon
                         icon={isExpanded ? chevronUpOutline : chevronDownOutline}

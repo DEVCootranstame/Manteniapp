@@ -152,10 +152,32 @@
   margin-bottom: 4px;
 }
 
-.notif-item__motivo {
+.notif-item__equipo {
+  display: block;
   font-size: 12px;
+  font-weight: 600;
+  color: #2563EB;
+  margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notif-item__cambio {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notif-item__motivo {
+  font-size: 11px;
   color: #5A6A7E;
-  margin: 0;
+  margin: 4px 0 0;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
