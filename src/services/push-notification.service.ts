@@ -1,5 +1,6 @@
 import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { ApiService } from './api.service';
 
 export class PushNotificationService {
@@ -8,27 +9,40 @@ export class PushNotificationService {
   static async init(onNavigate: (path: string) => void): Promise<void> {
     if (!Capacitor.isNativePlatform() || this.registered) return;
 
+    console.log('PUSH: Iniciando registro de push notifications...');
+
     const permission = await PushNotifications.requestPermissions();
+    console.log('PUSH: Permiso:', permission.receive);
     if (permission.receive !== 'granted') return;
 
-    await PushNotifications.register();
-    this.registered = true;
-
-    // Enviar token FCM al backend
+    // Registrar listeners ANTES de register() para no perder el evento
     PushNotifications.addListener('registration', async (token: Token) => {
+      console.log('PUSH: FCM Token recibido:', token.value);
       try {
         await ApiService.post('/usuarios/fcm-token', { token: token.value });
-      } catch {
-        // Si el endpoint no existe aún, ignorar silenciosamente
+        console.log('PUSH: Token enviado al backend OK');
+      } catch (e) {
+        console.warn('PUSH: Error enviando FCM token al backend:', e);
       }
     });
 
-    // Notificación recibida con app abierta (foreground)
-    PushNotifications.addListener('pushNotificationReceived', (_notification: PushNotificationSchema) => {
-      // Ionic mostrará la notificación, no hacemos nada extra
+    PushNotifications.addListener('registrationError', (error) => {
+      console.error('PUSH: Error registrando push:', JSON.stringify(error));
     });
 
-    // Usuario toca la notificación → navegar a la solicitud
+    // Notificación recibida con app abierta → mostrar local notification
+    PushNotifications.addListener('pushNotificationReceived', (notification: PushNotificationSchema) => {
+      LocalNotifications.schedule({
+        notifications: [{
+          id: Date.now(),
+          title: notification.title || 'ManteniApp',
+          body: notification.body || '',
+          extra: notification.data,
+        }]
+      });
+    });
+
+    // Usuario toca la notificación push
     PushNotifications.addListener('pushNotificationActionPerformed', (action: ActionPerformed) => {
       const data = action.notification.data;
       if (data?.solicitud_id) {
@@ -37,11 +51,26 @@ export class PushNotificationService {
         onNavigate('/solicitudes');
       }
     });
+
+    // Usuario toca la notificación local (foreground)
+    LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+      const data = action.notification.extra;
+      if (data?.solicitud_id) {
+        onNavigate(`/solicitudes/${data.solicitud_id}`);
+      } else {
+        onNavigate('/solicitudes');
+      }
+    });
+
+    // Ahora sí registrar para obtener el token
+    await PushNotifications.register();
+    this.registered = true;
   }
 
   static async unregister(): Promise<void> {
     if (!Capacitor.isNativePlatform()) return;
     await PushNotifications.removeAllListeners();
+    await LocalNotifications.removeAllListeners();
     this.registered = false;
   }
 }
