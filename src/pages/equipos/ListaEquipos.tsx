@@ -5,7 +5,7 @@ import {
   IonIcon, RefresherEventDetail,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { desktopOutline, personOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline } from 'ionicons/icons';
+import { desktopOutline, personOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline, addOutline } from 'ionicons/icons';
 import { EquiposService, ComputadoresListItem } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
 import { useAgenciaFilter } from '../../context/AgenciaFilterContext';
@@ -153,6 +153,13 @@ const ListaEquipos: React.FC = () => {
               </div>
             ))}
           </div>
+        )}
+
+        {/* FAB para crear equipo (solo admin y gestor) */}
+        {user && ['admin', 'gestor'].includes(user.role) && (
+          <button className="equipos-fab" onClick={() => history.push('/equipos/crear')}>
+            <IonIcon icon={addOutline} />
+          </button>
         )}
 
       </IonContent>

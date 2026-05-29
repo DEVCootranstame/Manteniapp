@@ -1,4 +1,4 @@
-export type TipoSolicitud = 'cambio_responsable' | 'custodia_temporal' | 'creacion_responsable';
+export type TipoSolicitud = 'cambio_responsable' | 'custodia_temporal' | 'creacion_responsable' | 'crear_equipo';
 export type EstadoSolicitud = 'pendiente' | 'aprobada' | 'rechazada';
 
 export interface Solicitud {
@@ -15,6 +15,7 @@ export interface Solicitud {
   fecha_aprobacion: string | null;
   motivo_cambio: string | null;
   observaciones: string | null;
+  datos_equipo?: Record<string, any> | null;
   created_at: string;
   updated_at: string;
   // Relations

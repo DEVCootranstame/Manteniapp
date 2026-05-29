@@ -63,7 +63,9 @@ const AgenciaDropdown: React.FC<{
 
       {open && (
         <div className="agencia-dropdown__list">
-          {agencias.map(a => (
+          {agencias.length === 0 ? (
+            <div className="agencia-dropdown__option" style={{ color: '#94a3b8' }}>Cargando agencias...</div>
+          ) : agencias.map(a => (
             <button
               key={a.id}
               type="button"

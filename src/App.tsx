@@ -25,6 +25,7 @@ import RoleGuard from './guards/RoleGuard';
 import ListaEquipos from './pages/equipos/ListaEquipos';
 import DetalleEquipo from './pages/equipos/DetalleEquipo';
 import CambiarResponsable from './pages/equipos/CambiarResponsable';
+import CrearEquipo from './pages/equipos/CrearEquipo';
 import ListaSolicitudes from './pages/solicitudes/ListaSolicitudes';
 import DetalleSolicitud from './pages/solicitudes/DetalleSolicitud';
 import Welcome from './pages/welcome/Welcome';
@@ -132,7 +133,7 @@ const FloatingNavbar: React.FC = React.memo(() => {
 });
 
 /* ── Hidden routes (pages without navbar visible) ──── */
-const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario', '/welcome'];
+const HIDDEN_NAVBAR_ROUTES = ['/login', '/formulario', '/welcome', '/equipos/crear'];
 
 const AppContent: React.FC = () => {
   const { user, isAuthenticated, isLoading, logout, softLogout } = useAuth();
@@ -177,6 +178,7 @@ const AppContent: React.FC = () => {
         <Route exact path="/mi-perfil" component={MiPerfil} />
         <Route exact path="/configuracion" component={Configuracion} />
         <Route exact path="/equipos" component={ListaEquipos} />
+        <Route exact path="/equipos/crear" component={CrearEquipo} />
         <Route exact path="/equipos/:id" component={DetalleEquipo} />
         <Route exact path="/equipos/:id/cambiar-responsable" component={CambiarResponsable} />
         <Route exact path="/solicitudes" component={ListaSolicitudes} />

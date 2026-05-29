@@ -652,7 +652,6 @@
 
 /* ====== AGENCIA DROPDOWN (custom, igual que equipos) ====== */
 .agencia-dropdown {
-  position: relative;
   width: 100%;
 }
 
@@ -702,11 +701,8 @@
 }
 
 .agencia-dropdown__list {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  z-index: 100;
+  width: 100%;
+  margin-top: 6px;
   background: #ffffff;
   border: 1.5px solid #cbd5e1;
   border-radius: 14px;
