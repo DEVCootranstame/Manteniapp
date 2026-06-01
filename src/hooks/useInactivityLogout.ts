@@ -5,8 +5,9 @@ import { Preferences } from '@capacitor/preferences';
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
 const LAST_ACTIVE_KEY = 'last_active_timestamp';
 
-export const useInactivityLogout = (onLogout: () => void, isActive: boolean) => {
+export const useInactivityLogout = (onLogout: () => void | Promise<void>, isActive: boolean) => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedAt = useRef<number>(Date.now());
 
   const saveTimestamp = useCallback(async () => {
     await Preferences.set({ key: LAST_ACTIVE_KEY, value: String(Date.now()) });
@@ -24,9 +25,20 @@ export const useInactivityLogout = (onLogout: () => void, isActive: boolean) => 
       return;
     }
 
+    // Update mount timestamp and save fresh activity on activation
+    mountedAt.current = Date.now();
+    saveTimestamp();
+
     // Check elapsed time when app resumes from background
     const resumeListener = App.addListener('appStateChange', async ({ isActive: appActive }) => {
       if (appActive) {
+        // Skip check if we just mounted (< 5 seconds ago) to avoid false triggers
+        const timeSinceMount = Date.now() - mountedAt.current;
+        if (timeSinceMount < 5000) {
+          resetTimer();
+          return;
+        }
+
         const { value } = await Preferences.get({ key: LAST_ACTIVE_KEY });
         if (value) {
           const elapsed = Date.now() - Number(value);

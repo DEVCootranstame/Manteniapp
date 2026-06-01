@@ -10,9 +10,8 @@ const Welcome: React.FC = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Trigger animation on mount
     const t1 = setTimeout(() => setVisible(true), 50);
-    // Redirect after 2.4s
+    // Always redirect to /home after 2.4s — AppContent will handle auth check
     const t2 = setTimeout(() => {
       history.replace('/home');
     }, 2400);

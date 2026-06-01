@@ -25,11 +25,28 @@ export const AuthService = {
       throw new Error(error.message || 'Credenciales inválidas');
     }
 
-    const tokens: AuthTokens = await response.json();
-    await StorageService.setTokens(tokens);
+    const data = await response.json();
+    
+    // Validate token response
+    if (!data.access_token || !data.refresh_token || !data.expires_in) {
+      throw new Error('Respuesta inválida del servidor: tokens ausentes o expiración no especificada');
+    }
+
+    // Pass to storage service, it will calculate expires_at
+    await StorageService.setTokens({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+    });
 
     // Fetch profile
     const profile = await ApiService.get<UserProfile>('/auth/profile');
+    
+    // Validate profile
+    if (!profile.id || !profile.name || !profile.email) {
+      throw new Error('Respuesta inválida del servidor: perfil incompleto');
+    }
+    
     profile.role = normalizeRole(profile.role);
     await StorageService.setProfile(profile);
     return profile;

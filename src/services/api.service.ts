@@ -1,6 +1,7 @@
 import { StorageService, StoredTokens } from './storage.service';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+const API_KEY = '3ba62ce22890b459a6dc70066d76ea669a23023ba4e9c2a898159ef178554a2b';
 const DEFAULT_TIMEOUT_MS = 15000; // 15 segundos
 
 interface ApiOptions {
@@ -12,63 +13,6 @@ interface ApiOptions {
 }
 
 class ApiServiceClass {
-  private refreshPromise: Promise<StoredTokens | null> | null = null;
-
-  private async getValidToken(): Promise<string | null> {
-    const tokens = await StorageService.getTokens();
-    if (!tokens) return null;
-
-    // Token still valid (with 60s buffer)
-    if (tokens.expires_at > Date.now() + 60000) {
-      return tokens.access_token;
-    }
-
-    // Token expired, refresh
-    return this.refreshToken(tokens.refresh_token);
-  }
-
-  private async refreshToken(refreshToken: string): Promise<string | null> {
-    // Prevent concurrent refresh calls
-    if (!this.refreshPromise) {
-      this.refreshPromise = this.doRefresh(refreshToken);
-    }
-
-    try {
-      const tokens = await this.refreshPromise;
-      return tokens?.access_token || null;
-    } finally {
-      this.refreshPromise = null;
-    }
-  }
-
-  private async doRefresh(refreshToken: string): Promise<StoredTokens | null> {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      });
-
-      if (!response.ok) {
-        await StorageService.clearAll();
-        window.dispatchEvent(new CustomEvent('auth:session-expired'));
-        return null;
-      }
-
-      const data = await response.json();
-      await StorageService.setTokens(data);
-      return {
-        access_token: data.access_token,
-        refresh_token: data.refresh_token,
-        expires_at: Date.now() + data.expires_in * 1000,
-      };
-    } catch {
-      await StorageService.clearAll();
-      window.dispatchEvent(new CustomEvent('auth:session-expired'));
-      return null;
-    }
-  }
-
   async request<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
     const { method = 'GET', body, headers = {}, skipAuth = false, timeout = DEFAULT_TIMEOUT_MS } = options;
 
@@ -78,11 +22,14 @@ class ApiServiceClass {
     };
 
     if (!skipAuth) {
-      const token = await this.getValidToken();
-      if (!token) {
-        throw new Error('No valid authentication token');
+      // Siempre enviar x-api-key
+      requestHeaders['x-api-key'] = API_KEY;
+
+      // También enviar Bearer token si hay uno disponible (para /auth/profile, etc.)
+      const tokens = await StorageService.getTokens();
+      if (tokens?.access_token) {
+        requestHeaders['Authorization'] = `Bearer ${tokens.access_token}`;
       }
-      requestHeaders['Authorization'] = `Bearer ${token}`;
     }
 
     const controller = new AbortController();

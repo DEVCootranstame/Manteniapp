@@ -146,39 +146,41 @@ const CrearEquipo: React.FC = () => {
 
     setLoading(true);
     try {
-      const datos_equipo: Record<string, any> = {
-        Codigo: form.codigo.trim(),
-        modelo: form.modelo.trim() || null,
-        serial: form.serial.trim() || null,
-        marca_id: form.marca_id ? Number(form.marca_id) : null,
-        tipoPc_id: form.tipoPc_id ? Number(form.tipoPc_id) : null,
-        estado: form.estado,
-        estado_inventario: form.estado_inventario,
-        garantia: form.garantia ? Number(form.garantia) : null,
-        fecha_garantia: form.fecha_garantia || null,
-        agencia_id: Number(form.agencia_id),
-        ubicacion_id: form.ubicacion_id ? Number(form.ubicacion_id) : null,
-        responsable_id: form.responsable_id ? Number(form.responsable_id) : null,
-        procesador: form.procesador.trim() || null,
-        ram: form.ram.trim() || null,
-        disco_duro: form.disco_duro.trim() || null,
-        serial_monitor: form.serial_monitor.trim() || null,
-        serial_teclado: form.serial_teclado.trim() || null,
-        serial_mouse: form.serial_mouse.trim() || null,
-        observaciones: form.observaciones.trim() || null,
-      };
+      const datos_equipo: Record<string, any> = {};
+      datos_equipo.Codigo = form.codigo.trim();
+      if (form.modelo.trim()) datos_equipo.modelo = form.modelo.trim();
+      if (form.serial.trim()) datos_equipo.serial = form.serial.trim();
+      if (form.marca_id) datos_equipo.marca_id = Number(form.marca_id);
+      if (form.tipoPc_id) datos_equipo.tipoPc_id = Number(form.tipoPc_id);
+      datos_equipo.estado = form.estado;
+      datos_equipo.estado_inventario = form.estado_inventario;
+      if (form.garantia) datos_equipo.garantia = Number(form.garantia);
+      if (form.fecha_garantia) datos_equipo.fecha_garantia = form.fecha_garantia;
+      datos_equipo.agencia_id = Number(form.agencia_id);
+      if (form.ubicacion_id) datos_equipo.ubicacion_id = Number(form.ubicacion_id);
+      if (form.responsable_id) datos_equipo.responsable_id = Number(form.responsable_id);
+      if (form.procesador.trim()) datos_equipo.procesador = form.procesador.trim();
+      if (form.ram.trim()) datos_equipo.ram = form.ram.trim();
+      if (form.disco_duro.trim()) datos_equipo.disco_duro = form.disco_duro.trim();
+      if (form.serial_monitor.trim()) datos_equipo.serial_monitor = form.serial_monitor.trim();
+      if (form.serial_teclado.trim()) datos_equipo.serial_teclado = form.serial_teclado.trim();
+      if (form.serial_mouse.trim()) datos_equipo.serial_mouse = form.serial_mouse.trim();
+      if (form.observaciones.trim()) datos_equipo.observaciones = form.observaciones.trim();
 
-      await SolicitudesService.createSolicitud({
-        tipo: 'crear_equipo',
+      const payload = {
+        tipo: 'crear_equipo' as const,
         agencia_id: Number(form.agencia_id),
         creado_por: user!.id,
         observaciones: form.observaciones.trim() || undefined,
         datos_equipo,
-      });
+      };
+      console.log('CREAR_EQUIPO payload:', JSON.stringify(payload));
+      await SolicitudesService.createSolicitud(payload);
 
       setToast({ show: true, message: 'Solicitud enviada. El equipo será creado al ser aprobada.', color: 'success' });
       setTimeout(() => history.goBack(), 1500);
     } catch (e: any) {
+      console.error('CREAR_EQUIPO error:', e.message, JSON.stringify(e));
       setToast({ show: true, message: e.message || 'Error al enviar solicitud', color: 'danger' });
     } finally {
       setLoading(false);
