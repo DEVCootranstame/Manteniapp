@@ -341,9 +341,14 @@
   text-transform: capitalize;
   padding: 2px 8px;
   border-radius: 20px;
-  background: rgba(16,185,129,0.1);
+  background: var(--estado-bg, rgba(16,185,129,0.1));
   color: var(--estado-color, #10B981);
   flex-shrink: 0;
+}
+
+.equipo-card--garantia {
+  border-color: rgba(124,58,237,0.2);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
 }
 
 .equipo-card__progress {

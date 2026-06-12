@@ -5,7 +5,7 @@ import {
   IonIcon, RefresherEventDetail,
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { desktopOutline, personOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline, addOutline } from 'ionicons/icons';
+import { desktopOutline, alertCircleOutline, ellipsisVertical, hardwareChipOutline, addOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { EquiposService, ComputadoresListItem } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
 import { useAgenciaFilter } from '../../context/AgenciaFilterContext';
@@ -54,12 +54,26 @@ const ListaEquipos: React.FC = () => {
     e.detail.complete();
   };
 
+  const normEstado = (estado: string | null) =>
+    (estado ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
   const getEstadoColor = (estado: string | null) => {
-    switch (estado?.toLowerCase()) {
+    switch (normEstado(estado)) {
       case 'activo': return '#10B981';
       case 'inactivo': return '#94A3B8';
       case 'baja': return '#EF4444';
+      case 'garantia': return '#7C3AED';
       default: return '#F97316';
+    }
+  };
+
+  const getEstadoBg = (estado: string | null) => {
+    switch (normEstado(estado)) {
+      case 'activo': return 'rgba(16,185,129,0.1)';
+      case 'inactivo': return 'rgba(148,163,184,0.1)';
+      case 'baja': return 'rgba(239,68,68,0.1)';
+      case 'garantia': return 'rgba(124,58,237,0.1)';
+      default: return 'rgba(249,115,22,0.1)';
     }
   };
 
@@ -127,12 +141,15 @@ const ListaEquipos: React.FC = () => {
             {equipos.map(equipo => (
               <div
                 key={equipo.id}
-                className="equipo-card"
+                className={`equipo-card${normEstado(equipo.estado) === 'garantia' ? ' equipo-card--garantia' : ''}`}
                 onClick={() => history.push(`/equipos/${equipo.id}`)}
               >
                 <div className="equipo-card__header">
-                  <div className="equipo-card__icon">
-                    <IonIcon icon={desktopOutline} />
+                  <div
+                    className="equipo-card__icon"
+                    style={normEstado(equipo.estado) === 'garantia' ? { background: 'linear-gradient(135deg,#FAF5FF,#EDE9FE)', color: '#7C3AED' } : {}}
+                  >
+                    <IonIcon icon={normEstado(equipo.estado) === 'garantia' ? shieldCheckmarkOutline : desktopOutline} />
                   </div>
                   <button className="equipo-card__menu">
                     <IonIcon icon={ellipsisVertical} />
@@ -146,7 +163,10 @@ const ListaEquipos: React.FC = () => {
                   <span className="equipo-card__agencia">{equipo.agencia_nombre}</span>
                 )}
                 <div className="equipo-card__footer">
-                  <span className="equipo-card__estado" style={{ '--estado-color': getEstadoColor(equipo.estado) } as any}>
+                  <span
+                    className="equipo-card__estado"
+                    style={{ '--estado-color': getEstadoColor(equipo.estado), '--estado-bg': getEstadoBg(equipo.estado) } as any}
+                  >
                     {equipo.estado || 'Pendiente'}
                   </span>
                 </div>
@@ -157,7 +177,7 @@ const ListaEquipos: React.FC = () => {
 
         {/* FAB para crear equipo (solo admin y gestor) */}
         {user && ['admin', 'gestor'].includes(user.role) && (
-          <button className="equipos-fab" onClick={() => history.push('/equipos/crear')}>
+          <button className="equipos-fab" onClick={() => history.push('/crear-equipo')}>
             <IonIcon icon={addOutline} />
           </button>
         )}

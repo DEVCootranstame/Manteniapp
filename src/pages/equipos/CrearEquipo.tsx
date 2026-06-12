@@ -18,6 +18,57 @@ import './CrearEquipo.css';
 const ESTADOS = ['Activo', 'Baja', 'Reparacion', 'Prestado'];
 const ESTADOS_INVENTARIO = ['Nuevo', 'Usado', 'Obsoleto'];
 
+/* ── Custom Select Dropdown (mismo estilo que agencia) ── */
+interface SelectOption { value: string; label: string; }
+const CustomSelect: React.FC<{
+  label: string;
+  options: SelectOption[];
+  value: string;
+  onChange: (val: string) => void;
+  placeholder?: string;
+}> = ({ label, options, value, onChange, placeholder = '-- Seleccionar --' }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    if (open) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const selected = options.find(o => o.value === value);
+
+  return (
+    <div className="crear-equipo-field" ref={ref}>
+      <label className="crear-equipo-field__label">{label}</label>
+      <button
+        className="crear-equipo-agencia-dropdown__btn"
+        type="button"
+        onClick={() => setOpen(v => !v)}
+      >
+        <span>{selected ? selected.label : placeholder}</span>
+        <IonIcon icon={chevronDownOutline} className={open ? 'crear-equipo-chevron--open' : ''} />
+      </button>
+      {open && (
+        <div className="crear-equipo-agencia-dropdown__list">
+          {options.map(o => (
+            <button
+              key={o.value}
+              type="button"
+              className={`crear-equipo-agencia-dropdown__option ${o.value === value ? 'crear-equipo-agencia-dropdown__option--active' : ''}`}
+              onClick={() => { onChange(o.value); setOpen(false); }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CrearEquipo: React.FC = () => {
   const history = useHistory();
   const { user } = useAuth();
@@ -245,51 +296,35 @@ const CrearEquipo: React.FC = () => {
           </div>
 
           <div className="crear-equipo-row">
-            <div className="crear-equipo-field">
-              <label className="crear-equipo-field__label">Marca</label>
-              <select
-                className="crear-equipo-field__select"
-                value={form.marca_id}
-                onChange={e => setField('marca_id', e.target.value)}
-              >
-                <option value="">-- Marca --</option>
-                {marcas.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
-              </select>
-            </div>
-            <div className="crear-equipo-field">
-              <label className="crear-equipo-field__label">Tipo PC</label>
-              <select
-                className="crear-equipo-field__select"
-                value={form.tipoPc_id}
-                onChange={e => setField('tipoPc_id', e.target.value)}
-              >
-                <option value="">-- Tipo --</option>
-                {tiposPc.map(t => <option key={t.id} value={t.id}>{t.nombre}</option>)}
-              </select>
-            </div>
+            <CustomSelect
+              label="Marca"
+              placeholder="-- Marca --"
+              value={form.marca_id}
+              onChange={v => setField('marca_id', v)}
+              options={marcas.map(m => ({ value: String(m.id), label: m.nombre }))}
+            />
+            <CustomSelect
+              label="Tipo PC"
+              placeholder="-- Tipo --"
+              value={form.tipoPc_id}
+              onChange={v => setField('tipoPc_id', v)}
+              options={tiposPc.map(t => ({ value: String(t.id), label: t.nombre }))}
+            />
           </div>
 
           <div className="crear-equipo-row">
-            <div className="crear-equipo-field">
-              <label className="crear-equipo-field__label">Estado</label>
-              <select
-                className="crear-equipo-field__select"
-                value={form.estado}
-                onChange={e => setField('estado', e.target.value)}
-              >
-                {ESTADOS.map(e => <option key={e} value={e}>{e}</option>)}
-              </select>
-            </div>
-            <div className="crear-equipo-field">
-              <label className="crear-equipo-field__label">Estado Inventario</label>
-              <select
-                className="crear-equipo-field__select"
-                value={form.estado_inventario}
-                onChange={e => setField('estado_inventario', e.target.value)}
-              >
-                {ESTADOS_INVENTARIO.map(e => <option key={e} value={e}>{e}</option>)}
-              </select>
-            </div>
+            <CustomSelect
+              label="Estado"
+              value={form.estado}
+              onChange={v => setField('estado', v)}
+              options={ESTADOS.map(e => ({ value: e, label: e }))}
+            />
+            <CustomSelect
+              label="Estado Inventario"
+              value={form.estado_inventario}
+              onChange={v => setField('estado_inventario', v)}
+              options={ESTADOS_INVENTARIO.map(e => ({ value: e, label: e }))}
+            />
           </div>
 
           <div className="crear-equipo-row">
@@ -352,17 +387,13 @@ const CrearEquipo: React.FC = () => {
             )}
           </div>
 
-          <div className="crear-equipo-field">
-            <label className="crear-equipo-field__label">Ubicación</label>
-            <select
-              className="crear-equipo-field__select"
-              value={form.ubicacion_id}
-              onChange={e => setField('ubicacion_id', e.target.value)}
-            >
-              <option value="">-- Ubicación --</option>
-              {ubicaciones.map(u => <option key={u.id} value={u.id}>{u.nombre}</option>)}
-            </select>
-          </div>
+          <CustomSelect
+            label="Ubicación"
+            placeholder="-- Ubicación --"
+            value={form.ubicacion_id}
+            onChange={v => setField('ubicacion_id', v)}
+            options={ubicaciones.map(u => ({ value: String(u.id), label: u.nombre }))}
+          />
 
           {/* Responsable search */}
           <div className="crear-equipo-field crear-equipo-responsable-search">

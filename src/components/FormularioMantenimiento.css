@@ -737,3 +737,90 @@
   color: var(--app-primary, #1B3A6B);
   font-weight: 600;
 }
+
+/* ====== MODO GARANTÍA ====== */
+.form-garantia-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  background: rgba(124,58,237,0.07);
+  border: 1.5px solid rgba(124,58,237,0.25);
+  animation: sectionAppear 0.3s ease backwards;
+}
+
+.form-garantia-banner__icon {
+  font-size: 34px;
+  color: #7C3AED;
+  flex-shrink: 0;
+}
+
+.form-garantia-banner__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7C3AED;
+  margin: 0 0 4px;
+}
+
+.form-garantia-banner__desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6D28D9;
+  margin: 0;
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.form-garantia-foto-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-garantia-foto-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  height: 140px;
+  border-radius: 16px;
+  border: 2px dashed rgba(124,58,237,0.4);
+  background: rgba(124,58,237,0.05);
+  color: #7C3AED;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.form-garantia-foto-btn:active {
+  background: rgba(124,58,237,0.12);
+  border-color: rgba(124,58,237,0.6);
+}
+
+.form-garantia-foto-btn ion-icon {
+  font-size: 36px;
+}
+
+.equipo-autocomplete__garantia-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #7C3AED;
+  background: rgba(124,58,237,0.09);
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.equipo-autocomplete__garantia-tag ion-icon {
+  font-size: 11px;
+}

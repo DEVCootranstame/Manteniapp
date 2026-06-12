@@ -12,7 +12,7 @@ import {
   IonButtons,
   IonBackButton,
 } from '@ionic/react';
-import { camera, close, save, bulb, locationOutline, constructOutline, documentTextOutline, cameraOutline, refreshOutline, warningOutline, chevronDownOutline, businessOutline } from 'ionicons/icons';
+import { camera, close, save, bulb, locationOutline, constructOutline, documentTextOutline, cameraOutline, refreshOutline, warningOutline, chevronDownOutline, businessOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Preferences } from '@capacitor/preferences';
 import { useHistory } from 'react-router-dom';
@@ -120,6 +120,8 @@ const FormularioMantenimiento: React.FC = () => {
   const [equipos, setEquipos] = useState<ComputadoresListItem[]>([]);
   const [loadingEquipos, setLoadingEquipos] = useState(false);
   const [equiposModoManual, setEquiposModoManual] = useState(false);
+  const [equipoEnGarantia, setEquipoEnGarantia] = useState(false);
+  const [fotoRevision, setFotoRevision] = useState<string | null>(null);
   const [proveedor, setProveedor] = useState('');
   const [mantenimientoRealizado, setMantenimientoRealizado] = useState('');
   const [observaciones, setObservaciones] = useState('');
@@ -136,15 +138,22 @@ const FormularioMantenimiento: React.FC = () => {
   const [sugerencias, setSugerencias] = useState<SugerenciaMantenimiento[]>([]);
   const [showSugerencias, setShowSugerencias] = useState(false);
 
+  const esGarantia = (estado: string | null | undefined): boolean =>
+    !!(estado?.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() === 'garantia');
+
   const cargarEquipos = useCallback(async (agId: string) => {
     if (!agId) {
       setEquipos([]);
       setEquiposModoManual(false);
+      setEquipoEnGarantia(false);
+      setFotoRevision(null);
       return;
     }
     setLoadingEquipos(true);
     setNombreEquipo('');
     setComputadorId(undefined);
+    setEquipoEnGarantia(false);
+    setFotoRevision(null);
     try {
       const lista = await EquiposService.getComputadores(parseInt(agId, 10));
       setEquipos(lista);
@@ -207,6 +216,13 @@ const FormularioMantenimiento: React.FC = () => {
     : [];
 
   const progreso = useMemo(() => {
+    if (equipoEnGarantia) {
+      let completados = 0;
+      if (agenciaId) completados++;
+      if (nombreEquipo.trim()) completados++;
+      if (fotoRevision) completados++;
+      return Math.round((completados / 3) * 100);
+    }
     let completados = 0;
     const total = 5;
     if (agenciaId) completados++;
@@ -215,7 +231,7 @@ const FormularioMantenimiento: React.FC = () => {
     if (proveedor.trim()) completados++;
     if (mantenimientoRealizado.trim()) completados++;
     return Math.round((completados / total) * 100);
-  }, [agenciaId, tipoMantenimientoId, nombreEquipo, proveedor, mantenimientoRealizado]);
+  }, [agenciaId, tipoMantenimientoId, nombreEquipo, proveedor, mantenimientoRealizado, equipoEnGarantia, fotoRevision]);
 
   const aplicarSugerencia = (texto: string) => {
     setMantenimientoRealizado((prev) => {
@@ -273,6 +289,9 @@ const FormularioMantenimiento: React.FC = () => {
   };
 
   const formularioValido = (): boolean => {
+    if (equipoEnGarantia) {
+      return agenciaId.length > 0 && nombreEquipo.trim().length > 0 && fotoRevision !== null;
+    }
     return (
       agenciaId.length > 0 &&
       tipoMantenimientoId.length > 0 &&
@@ -303,6 +322,8 @@ const FormularioMantenimiento: React.FC = () => {
     setComputadorId(undefined);
     setEquipos([]);
     setEquiposModoManual(false);
+    setEquipoEnGarantia(false);
+    setFotoRevision(null);
     setProveedor('');
     setMantenimientoRealizado('');
     setObservaciones('');
@@ -312,15 +333,21 @@ const FormularioMantenimiento: React.FC = () => {
 
   const guardarRegistro = async () => {
     if (!formularioValido()) {
-      setTouched({
-        agenciaId: true,
-        tipoMantenimientoId: true,
-        nombreEquipo: true,
-        proveedor: true,
-        mantenimientoRealizado: true,
-      });
-      setAlertHeader('Campos incompletos');
-      setAlertMessage('Por favor completa todos los campos obligatorios antes de guardar.');
+      if (equipoEnGarantia) {
+        setTouched({ agenciaId: true, nombreEquipo: true });
+        setAlertHeader(fotoRevision ? 'Campos incompletos' : 'Foto requerida');
+        setAlertMessage(fotoRevision ? 'Selecciona la agencia y el equipo.' : 'Debes tomar la foto de revisión antes de guardar.');
+      } else {
+        setTouched({
+          agenciaId: true,
+          tipoMantenimientoId: true,
+          nombreEquipo: true,
+          proveedor: true,
+          mantenimientoRealizado: true,
+        });
+        setAlertHeader('Campos incompletos');
+        setAlertMessage('Por favor completa todos los campos obligatorios antes de guardar.');
+      }
       setShowAlert(true);
       return;
     }
@@ -365,23 +392,37 @@ const FormularioMantenimiento: React.FC = () => {
     try {
       const { fecha, hora } = obtenerFechaHora();
 
-      // Construir array de fotos para compatibilidad y objeto categorizado
-      const fotosArray: string[] = [];
-      if (fotosCat.antes) fotosArray.push(fotosCat.antes);
-      if (fotosCat.durante) fotosArray.push(fotosCat.durante);
-      if (fotosCat.despues) fotosArray.push(fotosCat.despues);
+      let fotosArray: string[];
+      let fotosCategorized: typeof fotosCat;
+      let proveedorFinal: string;
+      let mantenimientoFinal: string;
+
+      if (equipoEnGarantia) {
+        fotosArray = fotoRevision ? [fotoRevision] : [];
+        fotosCategorized = { antes: fotoRevision, durante: null, despues: null };
+        proveedorFinal = 'N/A - Garantía';
+        mantenimientoFinal = 'Revisión de equipo en garantía';
+      } else {
+        fotosArray = [];
+        if (fotosCat.antes) fotosArray.push(fotosCat.antes);
+        if (fotosCat.durante) fotosArray.push(fotosCat.durante);
+        if (fotosCat.despues) fotosArray.push(fotosCat.despues);
+        fotosCategorized = { ...fotosCat };
+        proveedorFinal = proveedor.trim();
+        mantenimientoFinal = mantenimientoRealizado.trim();
+      }
 
       const nuevoRegistro: Mantenimiento = {
         id: generarId(),
         nombreEquipo: nombreEquipo.trim(),
         computadorId,
-        proveedor: proveedor.trim(),
-        mantenimientoRealizado: mantenimientoRealizado.trim(),
+        proveedor: proveedorFinal,
+        mantenimientoRealizado: mantenimientoFinal,
         observaciones: observaciones.trim(),
         fecha,
         hora,
         fotos: fotosArray,
-        fotosCategorized: { ...fotosCat },
+        fotosCategorized,
         sincronizado: false,
         agenciaId,
         tipoMantenimientoId,
@@ -470,8 +511,8 @@ const FormularioMantenimiento: React.FC = () => {
                 )}
               </div>
 
-              {/* Campo: Tipo de Mantenimiento */}
-              <div className="form-field">
+              {/* Campo: Tipo de Mantenimiento (oculto en garantía) */}
+              {!equipoEnGarantia && <div className="form-field">
                 <label className="form-field__label">
                   Tipo de Mantenimiento <span className="form-field__required">*</span>
                 </label>
@@ -491,7 +532,7 @@ const FormularioMantenimiento: React.FC = () => {
                 {touched.tipoMantenimientoId && tipoMantenimientoId === '' && (
                   <div className="form-field__error">Selecciona un tipo de mantenimiento</div>
                 )}
-              </div>
+              </div>}
             </div>
           </div>
 
@@ -554,6 +595,8 @@ const FormularioMantenimiento: React.FC = () => {
                         setNombreEquipo(val);
                         const eq = equipos.find(eq => eq.Codigo === val);
                         setComputadorId(eq?.id);
+                        setEquipoEnGarantia(esGarantia(eq?.estado));
+                        if (!eq) setFotoRevision(null);
                       }}
                       onBlur={() => marcarTocado('nombreEquipo')}
                       placeholder={agenciaId ? `Buscar equipo... (${equipos.length} disponibles)` : 'Primero selecciona una agencia'}
@@ -575,10 +618,17 @@ const FormularioMantenimiento: React.FC = () => {
                               onClick={() => {
                                 setNombreEquipo(eq.Codigo);
                                 setComputadorId(eq.id);
+                                setEquipoEnGarantia(esGarantia(eq.estado));
+                                setFotoRevision(null);
                               }}
                             >
                               <span className="equipo-autocomplete__code">{eq.Codigo}</span>
                               <span className="equipo-autocomplete__resp">{eq.Responsable || eq.responsable_nombre || 'Sin responsable'}</span>
+                              {esGarantia(eq.estado) && (
+                                <span className="equipo-autocomplete__garantia-tag">
+                                  <IonIcon icon={shieldCheckmarkOutline} /> Garantía
+                                </span>
+                              )}
                             </button>
                           ))}
                         </div>
@@ -595,7 +645,8 @@ const FormularioMantenimiento: React.FC = () => {
                 )}
               </div>
 
-              {/* Campo: Proveedor */}
+              {/* Campo: Proveedor (oculto en garantía) */}
+              {!equipoEnGarantia && (
               <div className="form-field">
                 <label className="form-field__label">
                   Proveedor <span className="form-field__required">*</span>
@@ -611,10 +662,88 @@ const FormularioMantenimiento: React.FC = () => {
                   <div className="form-field__error">Este campo es obligatorio</div>
                 )}
               </div>
+              )}
             </div>
           </div>
 
-          {/* ═══════ SECCIÓN 3: Detalles ═══════ */}
+          {/* ═══ Banner + foto de revisión (modo garantía) ═══ */}
+          {equipoEnGarantia && (
+            <>
+              <div className="form-garantia-banner">
+                <IonIcon icon={shieldCheckmarkOutline} className="form-garantia-banner__icon" />
+                <div>
+                  <p className="form-garantia-banner__title">Equipo en Garantía</p>
+                  <p className="form-garantia-banner__desc">Este equipo no debe intervenirse. Solo toma la foto de revisión y guarda el registro.</p>
+                </div>
+              </div>
+
+              <div className="form-section">
+                <div className="form-section__header">
+                  <div className="form-section__icon" style={{ background: 'linear-gradient(135deg,#FAF5FF,#EDE9FE)', color: '#7C3AED' }}>
+                    <IonIcon icon={cameraOutline} />
+                  </div>
+                  <div>
+                    <h3 className="form-section__title">Foto de Revisión</h3>
+                    <p className="form-section__subtitle">Evidencia del estado actual del equipo en garantía</p>
+                  </div>
+                </div>
+                <div className="form-section__body">
+                  <div className="form-garantia-foto-slot">
+                    {fotoRevision ? (
+                      <div className="form-photos__item" style={{ width: '100%', maxWidth: 280, margin: '0 auto' }}>
+                        <img
+                          className="form-photos__img"
+                          src={`data:image/jpeg;base64,${fotoRevision}`}
+                          alt="Foto de revisión"
+                          style={{ borderRadius: 12 }}
+                        />
+                        <button className="form-photos__delete-btn" onClick={() => setFotoRevision(null)}>
+                          <IonIcon icon={close} />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        className="form-garantia-foto-btn"
+                        onClick={async () => {
+                          try {
+                            const image = await Camera.getPhoto({
+                              quality: 60,
+                              allowEditing: false,
+                              resultType: CameraResultType.Base64,
+                              source: CameraSource.Camera,
+                              correctOrientation: true,
+                              width: 1024,
+                              height: 1024,
+                            });
+                            if (image.base64String) {
+                              setFotoRevision(image.base64String);
+                              setToastMessage('Foto de revisión capturada');
+                              setShowToast(true);
+                            }
+                          } catch (error: any) {
+                            if (!error?.message?.includes('cancel') && !error?.message?.includes('User cancelled')) {
+                              setAlertHeader('Error');
+                              setAlertMessage(`No se pudo tomar la foto: ${error?.message || 'Error desconocido'}`);
+                              setShowAlert(true);
+                            }
+                          }
+                        }}
+                      >
+                        <IonIcon icon={camera} />
+                        <span>Tomar foto de revisión</span>
+                      </button>
+                    )}
+                    {touched.nombreEquipo && !fotoRevision && (
+                      <div className="form-field__error" style={{ marginTop: 8 }}>La foto de revisión es obligatoria</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ═══════ SECCIONES 3 y 4: solo en modo normal ═══════ */}
+          {!equipoEnGarantia && (<>
           <div className="form-section">
             <div className="form-section__header">
               <div className="form-section__icon form-section__icon--orange">
@@ -761,6 +890,7 @@ const FormularioMantenimiento: React.FC = () => {
               </div>
             </div>
           </div>
+          </>)}
 
           {/* Botón guardar */}
           <button

@@ -6,7 +6,7 @@ import {
 import { useParams, useHistory } from 'react-router-dom';
 import {
   personOutline, desktopOutline, timeOutline, swapHorizontalOutline,
-  alertCircleOutline, arrowBackOutline,
+  alertCircleOutline, arrowBackOutline, shieldCheckmarkOutline,
 } from 'ionicons/icons';
 import { EquiposService, ComputadorDetalle } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
@@ -21,17 +21,23 @@ const DetalleEquipo: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    EquiposService.getComputador(Number(id))
+    const numId = Number(id);
+    if (isNaN(numId)) return;
+    EquiposService.getComputador(numId)
       .then(setEquipo)
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, [id]);
 
+  const normEstado = (estado: string | null) =>
+    (estado ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
   const getEstadoClass = (estado: string | null) => {
-    switch (estado?.toLowerCase()) {
+    switch (normEstado(estado)) {
       case 'activo': return 'detalle-estado-badge--activo';
       case 'inactivo': return 'detalle-estado-badge--inactivo';
       case 'baja': return 'detalle-estado-badge--baja';
+      case 'garantia': return 'detalle-estado-badge--garantia';
       default: return 'detalle-estado-badge--inactivo';
     }
   };
@@ -96,6 +102,17 @@ const DetalleEquipo: React.FC = () => {
             </span>
           </div>
         </div>
+
+        {/* Banner garantía */}
+        {normEstado(equipo.estado) === 'garantia' && (
+          <div className="detalle-garantia-banner">
+            <IonIcon icon={shieldCheckmarkOutline} />
+            <div>
+              <p className="detalle-garantia-banner__title">Equipo en Garantía</p>
+              <p className="detalle-garantia-banner__desc">No debe ser intervenido. Gestionar directamente con el proveedor.</p>
+            </div>
+          </div>
+        )}
 
         {/* Información del equipo */}
         <div className="detalle-section">

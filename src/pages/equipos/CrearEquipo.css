@@ -191,6 +191,11 @@
   text-align: left;
 }
 
+.crear-equipo-chevron--open {
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
 .crear-equipo-agencia-dropdown__list {
   background: white;
   border: 1.5px solid #E2E8F0;
