@@ -20,6 +20,8 @@ export interface Computador {
   ubicacion_id: number | null;
   tipoPc_id: number | null;
   estado: string;
+  garantia?: number;
+  fecha_garantia?: string | null;
   marca_id: number | null;
   modelo: string | null;
   serial: string | null;

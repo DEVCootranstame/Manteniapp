@@ -351,6 +351,23 @@
   background: linear-gradient(135deg, #FFFFFF 0%, #FAF5FF 100%);
 }
 
+.equipo-card__garantia-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #7C3AED;
+  background: rgba(124,58,237,0.1);
+  padding: 2px 6px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.equipo-card__garantia-badge ion-icon {
+  font-size: 10px;
+}
+
 .equipo-card__progress {
   flex: 1;
   height: 4px;

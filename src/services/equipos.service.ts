@@ -12,6 +12,8 @@ export interface ComputadoresListItem {
   responsable_id: number | null;
   agencia_id: number;
   estado: string | null;
+  garantia?: number;
+  fecha_garantia?: string | null;
   modelo: string | null;
   serial: string | null;
   responsable_nombre: string | null;

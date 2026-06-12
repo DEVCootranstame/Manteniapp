@@ -57,12 +57,18 @@ const ListaEquipos: React.FC = () => {
   const normEstado = (estado: string | null) =>
     (estado ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
+  const esEnGarantia = (eq: { garantia?: number; fecha_garantia?: string | null }) => {
+    if ((eq.garantia ?? 0) <= 0) return false;
+    if (!eq.fecha_garantia) return true;
+    return new Date(eq.fecha_garantia) >= new Date();
+  };
+
   const getEstadoColor = (estado: string | null) => {
     switch (normEstado(estado)) {
       case 'activo': return '#10B981';
       case 'inactivo': return '#94A3B8';
       case 'baja': return '#EF4444';
-      case 'garantia': return '#7C3AED';
+      case 'reparacion': return '#F59E0B';
       default: return '#F97316';
     }
   };
@@ -72,7 +78,7 @@ const ListaEquipos: React.FC = () => {
       case 'activo': return 'rgba(16,185,129,0.1)';
       case 'inactivo': return 'rgba(148,163,184,0.1)';
       case 'baja': return 'rgba(239,68,68,0.1)';
-      case 'garantia': return 'rgba(124,58,237,0.1)';
+      case 'reparacion': return 'rgba(245,158,11,0.1)';
       default: return 'rgba(249,115,22,0.1)';
     }
   };
@@ -141,15 +147,15 @@ const ListaEquipos: React.FC = () => {
             {equipos.map(equipo => (
               <div
                 key={equipo.id}
-                className={`equipo-card${normEstado(equipo.estado) === 'garantia' ? ' equipo-card--garantia' : ''}`}
+                className={`equipo-card${esEnGarantia(equipo) ? ' equipo-card--garantia' : ''}`}
                 onClick={() => history.push(`/equipos/${equipo.id}`)}
               >
                 <div className="equipo-card__header">
                   <div
                     className="equipo-card__icon"
-                    style={normEstado(equipo.estado) === 'garantia' ? { background: 'linear-gradient(135deg,#FAF5FF,#EDE9FE)', color: '#7C3AED' } : {}}
+                    style={esEnGarantia(equipo) ? { background: 'linear-gradient(135deg,#FAF5FF,#EDE9FE)', color: '#7C3AED' } : {}}
                   >
-                    <IonIcon icon={normEstado(equipo.estado) === 'garantia' ? shieldCheckmarkOutline : desktopOutline} />
+                    <IonIcon icon={esEnGarantia(equipo) ? shieldCheckmarkOutline : desktopOutline} />
                   </div>
                   <button className="equipo-card__menu">
                     <IonIcon icon={ellipsisVertical} />
@@ -169,6 +175,11 @@ const ListaEquipos: React.FC = () => {
                   >
                     {equipo.estado || 'Pendiente'}
                   </span>
+                  {esEnGarantia(equipo) && (
+                    <span className="equipo-card__garantia-badge">
+                      <IonIcon icon={shieldCheckmarkOutline} /> Garantía
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

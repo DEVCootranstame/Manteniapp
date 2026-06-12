@@ -29,15 +29,12 @@ const DetalleEquipo: React.FC = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const normEstado = (estado: string | null) =>
-    (estado ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-
   const getEstadoClass = (estado: string | null) => {
-    switch (normEstado(estado)) {
+    const e = (estado ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    switch (e) {
       case 'activo': return 'detalle-estado-badge--activo';
-      case 'inactivo': return 'detalle-estado-badge--inactivo';
       case 'baja': return 'detalle-estado-badge--baja';
-      case 'garantia': return 'detalle-estado-badge--garantia';
+      case 'reparacion': return 'detalle-estado-badge--reparacion';
       default: return 'detalle-estado-badge--inactivo';
     }
   };
@@ -104,12 +101,16 @@ const DetalleEquipo: React.FC = () => {
         </div>
 
         {/* Banner garantía */}
-        {normEstado(equipo.estado) === 'garantia' && (
+        {(equipo.garantia ?? 0) > 0 && (
           <div className="detalle-garantia-banner">
             <IonIcon icon={shieldCheckmarkOutline} />
             <div>
-              <p className="detalle-garantia-banner__title">Equipo en Garantía</p>
-              <p className="detalle-garantia-banner__desc">No debe ser intervenido. Gestionar directamente con el proveedor.</p>
+              <p className="detalle-garantia-banner__title">Equipo en Garantía — {equipo.garantia} meses</p>
+              <p className="detalle-garantia-banner__desc">
+                {equipo.fecha_garantia
+                  ? `Vence: ${new Date(equipo.fecha_garantia).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })}`
+                  : 'No debe ser intervenido. Gestionar directamente con el proveedor.'}
+              </p>
             </div>
           </div>
         )}
@@ -160,6 +161,20 @@ const DetalleEquipo: React.FC = () => {
               <div className="info-grid__item">
                 <span className="info-grid__label">Disco</span>
                 <span className="info-grid__value">{equipo.disco_duro}</span>
+              </div>
+            )}
+            {(equipo.garantia ?? 0) > 0 && (
+              <div className="info-grid__item">
+                <span className="info-grid__label">Garantía</span>
+                <span className="info-grid__value">{equipo.garantia} meses</span>
+              </div>
+            )}
+            {equipo.fecha_garantia && (
+              <div className="info-grid__item">
+                <span className="info-grid__label">Vence garantía</span>
+                <span className="info-grid__value" style={{ color: new Date(equipo.fecha_garantia) >= new Date() ? '#7C3AED' : '#EF4444' }}>
+                  {new Date(equipo.fecha_garantia).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
               </div>
             )}
           </div>

@@ -138,8 +138,17 @@ const FormularioMantenimiento: React.FC = () => {
   const [sugerencias, setSugerencias] = useState<SugerenciaMantenimiento[]>([]);
   const [showSugerencias, setShowSugerencias] = useState(false);
 
-  const esGarantia = (estado: string | null | undefined): boolean =>
-    !!(estado?.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase() === 'garantia');
+  const verificarGarantia = async (id: number) => {
+    try {
+      const detalle = await EquiposService.getComputador(id);
+      setEquipoEnGarantia((detalle.garantia ?? 0) > 0);
+    } catch {
+      setEquipoEnGarantia(false);
+    }
+  };
+
+  const esGarantiaLista = (eq: { garantia?: number; fecha_garantia?: string | null }): boolean =>
+    (eq.garantia ?? 0) > 0;
 
   const cargarEquipos = useCallback(async (agId: string) => {
     if (!agId) {
@@ -595,8 +604,16 @@ const FormularioMantenimiento: React.FC = () => {
                         setNombreEquipo(val);
                         const eq = equipos.find(eq => eq.Codigo === val);
                         setComputadorId(eq?.id);
-                        setEquipoEnGarantia(esGarantia(eq?.estado));
-                        if (!eq) setFotoRevision(null);
+                        if (eq) {
+                          if ((eq.garantia ?? 0) > 0) {
+                            setEquipoEnGarantia(true);
+                          } else {
+                            verificarGarantia(eq.id);
+                          }
+                        } else {
+                          setEquipoEnGarantia(false);
+                          setFotoRevision(null);
+                        }
                       }}
                       onBlur={() => marcarTocado('nombreEquipo')}
                       placeholder={agenciaId ? `Buscar equipo... (${equipos.length} disponibles)` : 'Primero selecciona una agencia'}
@@ -618,13 +635,17 @@ const FormularioMantenimiento: React.FC = () => {
                               onClick={() => {
                                 setNombreEquipo(eq.Codigo);
                                 setComputadorId(eq.id);
-                                setEquipoEnGarantia(esGarantia(eq.estado));
                                 setFotoRevision(null);
+                                if ((eq.garantia ?? 0) > 0) {
+                                  setEquipoEnGarantia(true);
+                                } else {
+                                  verificarGarantia(eq.id);
+                                }
                               }}
                             >
                               <span className="equipo-autocomplete__code">{eq.Codigo}</span>
                               <span className="equipo-autocomplete__resp">{eq.Responsable || eq.responsable_nombre || 'Sin responsable'}</span>
-                              {esGarantia(eq.estado) && (
+                              {esGarantiaLista(eq) && (
                                 <span className="equipo-autocomplete__garantia-tag">
                                   <IonIcon icon={shieldCheckmarkOutline} /> Garantía
                                 </span>

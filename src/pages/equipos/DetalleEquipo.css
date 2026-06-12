@@ -147,6 +147,11 @@
   color: #7C3AED;
 }
 
+.detalle-estado-badge--reparacion {
+  background: rgba(245,158,11,0.10);
+  color: #D97706;
+}
+
 /* == Banner Garantía == */
 .detalle-garantia-banner {
   margin: 8px 16px;
