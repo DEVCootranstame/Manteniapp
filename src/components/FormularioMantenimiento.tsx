@@ -229,8 +229,9 @@ const FormularioMantenimiento: React.FC = () => {
       let completados = 0;
       if (agenciaId) completados++;
       if (nombreEquipo.trim()) completados++;
+      if (proveedor.trim()) completados++;
       if (fotoRevision) completados++;
-      return Math.round((completados / 3) * 100);
+      return Math.round((completados / 4) * 100);
     }
     let completados = 0;
     const total = 5;
@@ -299,7 +300,7 @@ const FormularioMantenimiento: React.FC = () => {
 
   const formularioValido = (): boolean => {
     if (equipoEnGarantia) {
-      return agenciaId.length > 0 && nombreEquipo.trim().length > 0 && fotoRevision !== null;
+      return agenciaId.length > 0 && nombreEquipo.trim().length > 0 && proveedor.trim().length > 0 && fotoRevision !== null;
     }
     return (
       agenciaId.length > 0 &&
@@ -409,7 +410,7 @@ const FormularioMantenimiento: React.FC = () => {
       if (equipoEnGarantia) {
         fotosArray = fotoRevision ? [fotoRevision] : [];
         fotosCategorized = { antes: fotoRevision, durante: null, despues: null };
-        proveedorFinal = 'N/A - Garantía';
+        proveedorFinal = proveedor.trim();
         mantenimientoFinal = 'Revisión de equipo en garantía';
       } else {
         fotosArray = [];
@@ -666,8 +667,7 @@ const FormularioMantenimiento: React.FC = () => {
                 )}
               </div>
 
-              {/* Campo: Proveedor (oculto en garantía) */}
-              {!equipoEnGarantia && (
+              {/* Campo: Proveedor */}
               <div className="form-field">
                 <label className="form-field__label">
                   Proveedor <span className="form-field__required">*</span>
@@ -683,7 +683,6 @@ const FormularioMantenimiento: React.FC = () => {
                   <div className="form-field__error">Este campo es obligatorio</div>
                 )}
               </div>
-              )}
             </div>
           </div>
 

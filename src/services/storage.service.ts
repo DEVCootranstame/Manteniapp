@@ -6,7 +6,7 @@ const LAST_ACTIVITY_KEY = 'last_activity_ts';
 const BACKGROUND_TS_KEY = 'background_timestamp';
 
 const SESSION_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 horas
-const LOCK_AFTER_MS = 30 * 60 * 1000; // 30 minutos
+const LOCK_AFTER_MS = 120 * 60 * 1000; // 2 horas
 
 export interface StoredTokens {
   access_token: string;

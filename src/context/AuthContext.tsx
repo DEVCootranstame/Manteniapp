@@ -109,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         if (backgroundTimestamp.current) {
           const elapsed = Date.now() - backgroundTimestamp.current;
-          const LOCK_AFTER_MS = 30 * 60 * 1000; // 30 minutos
+          const LOCK_AFTER_MS = 120 * 60 * 1000; // 2 horas
           if (elapsed > LOCK_AFTER_MS && user) {
             StorageService.clearAll();
             setUser(null);
