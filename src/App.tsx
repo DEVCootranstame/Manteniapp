@@ -25,6 +25,7 @@ import RoleGuard from './guards/RoleGuard';
 import ListaEquipos from './pages/equipos/ListaEquipos';
 import DetalleEquipo from './pages/equipos/DetalleEquipo';
 import CambiarResponsable from './pages/equipos/CambiarResponsable';
+import DarDeBaja from './pages/equipos/DarDeBaja';
 import CrearEquipo from './pages/equipos/CrearEquipo';
 import ListaSolicitudes from './pages/solicitudes/ListaSolicitudes';
 import DetalleSolicitud from './pages/solicitudes/DetalleSolicitud';
@@ -181,6 +182,7 @@ const AppContent: React.FC = () => {
         <Route exact path="/crear-equipo" component={CrearEquipo} />
         <Route exact path="/equipos/:id" component={DetalleEquipo} />
         <Route exact path="/equipos/:id/cambiar-responsable" component={CambiarResponsable} />
+        <Route exact path="/equipos/:id/dar-de-baja" component={DarDeBaja} />
         <Route exact path="/solicitudes" component={ListaSolicitudes} />
         <Route exact path="/solicitudes/:id" component={DetalleSolicitud} />
         <Route exact path="/login" component={Login} />

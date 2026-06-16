@@ -334,6 +334,27 @@
   color: #64748B;
 }
 
+/* == Botón dar de baja == */
+.detalle-btn-baja {
+  width: 100%;
+  padding: 13px;
+  border-radius: 14px;
+  border: 2px solid #DC2626;
+  background: transparent;
+  color: #DC2626;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.detalle-btn-baja:active { background: rgba(220,38,38,0.08); }
+.detalle-btn-baja ion-icon { font-size: 18px; }
+
 /* == Error == */
 .error-container {
   display: flex;

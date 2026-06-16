@@ -6,7 +6,7 @@ import {
 import { useParams, useHistory } from 'react-router-dom';
 import {
   personOutline, desktopOutline, timeOutline, swapHorizontalOutline,
-  alertCircleOutline, arrowBackOutline, shieldCheckmarkOutline,
+  alertCircleOutline, arrowBackOutline, shieldCheckmarkOutline, trashBinOutline,
 } from 'ionicons/icons';
 import { EquiposService, ComputadorDetalle } from '../../services/equipos.service';
 import { useAuth } from '../../context/AuthContext';
@@ -227,6 +227,19 @@ const DetalleEquipo: React.FC = () => {
             </>
           )}
         </div>
+
+        {/* Dar de baja (solo admin/gestor, equipo no ya en baja) */}
+        {canManage && (equipo.estado ?? '').toLowerCase() !== 'baja' && (
+          <div style={{ padding: '0 16px 8px' }}>
+            <button
+              className="detalle-btn-baja"
+              onClick={() => history.push(`/equipos/${equipo.id}/dar-de-baja`)}
+            >
+              <IonIcon icon={trashBinOutline} />
+              Dar Equipo de Baja
+            </button>
+          </div>
+        )}
 
         {/* Historial */}
         {equipo.entregas && equipo.entregas.length > 0 && (

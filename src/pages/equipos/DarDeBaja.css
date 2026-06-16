@@ -1,0 +1,321 @@
+/* ======================================================
+   DarDeBaja.css
+   ====================================================== */
+
+.baja-content {
+  --background: #F4F6FA;
+  --padding-bottom: 100px;
+}
+
+/* == Header == */
+.baja-header {
+  margin: 16px 16px 8px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #7F1D1D 0%, #DC2626 100%);
+  box-shadow: 0 12px 32px rgba(220,38,38,0.35), 0 4px 12px rgba(15,23,42,0.15);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.baja-header__back {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  border-radius: 12px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.baja-header__back ion-icon { font-size: 20px; }
+
+.baja-header__info { flex: 1; }
+
+.baja-header__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 2px;
+}
+
+.baja-header__code {
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+  font-weight: 600;
+}
+
+.baja-header__icon-wrap {
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* == Loading == */
+.baja-loading {
+  padding: 40px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+/* == Form container == */
+.baja-form {
+  padding: 0 0 20px;
+}
+
+/* == Warning banner == */
+.baja-warning-banner {
+  margin: 8px 16px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(239,68,68,0.07);
+  border: 1px solid rgba(239,68,68,0.22);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.baja-warning-banner ion-icon {
+  font-size: 28px;
+  color: #DC2626;
+  flex-shrink: 0;
+}
+
+.baja-warning-banner__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #DC2626;
+  margin: 0 0 3px;
+}
+
+.baja-warning-banner__desc {
+  font-size: 12px;
+  color: #B91C1C;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* == Sections == */
+.baja-section {
+  margin: 8px 16px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #FFFFFF;
+  box-shadow: 0 2px 12px rgba(15,23,42,0.07), 0 1px 3px rgba(15,23,42,0.04);
+  border: 1px solid rgba(15,23,42,0.05);
+}
+
+.baja-section__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.baja-section__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #FEF2F2, #FECACA);
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.baja-section__icon--orange {
+  background: linear-gradient(135deg, #FFF7ED, #FED7AA);
+  color: #EA580C;
+}
+
+.baja-section__icon--purple {
+  background: linear-gradient(135deg, #FAF5FF, #EDE9FE);
+  color: #7C3AED;
+}
+
+.baja-section__title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 2px;
+}
+
+.baja-section__subtitle {
+  font-size: 11px;
+  color: #94A3B8;
+  margin: 0;
+}
+
+.baja-section__body { }
+
+/* == Fields == */
+.baja-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.baja-field__label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.baja-field__required { color: #EF4444; }
+
+.baja-field__error {
+  font-size: 11px;
+  color: #EF4444;
+  font-weight: 600;
+}
+
+.baja-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0F172A;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.baja-input:focus { border-color: #DC2626; }
+
+.baja-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 14px;
+  color: #0F172A;
+  box-sizing: border-box;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.baja-textarea:focus { border-color: #DC2626; }
+
+/* == Fotos == */
+.baja-fotos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.baja-foto-slot { }
+
+.baja-foto-slot__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 0 0 8px;
+}
+
+.baja-foto-item {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 300px;
+}
+
+.baja-foto-item__img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+  max-height: 200px;
+}
+
+.baja-foto-item__delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(239,68,68,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.baja-foto-add {
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px dashed #CBD5E1;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.baja-foto-add:active {
+  border-color: #DC2626;
+  color: #DC2626;
+}
+
+.baja-foto-add ion-icon { font-size: 20px; }
+
+/* == Submit button == */
+.baja-btn-submit {
+  margin: 16px 16px 0;
+  width: calc(100% - 32px);
+  padding: 15px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #7F1D1D 0%, #DC2626 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(220,38,38,0.40);
+  transition: transform 0.15s ease;
+}
+
+.baja-btn-submit:active { transform: scale(0.98); }
+.baja-btn-submit ion-icon { font-size: 20px; }
+
+/* Alert danger button override */
+.alert-btn-danger { color: #DC2626 !important; font-weight: 700 !important; }
