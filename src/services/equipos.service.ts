@@ -66,7 +66,6 @@ class EquiposServiceClass {
 
   async darDeBaja(id: number, payload: { fecha_baja: string; motivo_baja: string; fotos: string[] }): Promise<void> {
     await ApiService.patch(`/computadores/${id}`, {
-      estado: 'Baja',
       fecha_baja: payload.fecha_baja,
       motivo_baja: payload.motivo_baja,
       fotos_baja: payload.fotos,

@@ -12,7 +12,7 @@ import {
   RefresherEventDetail,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, construct, hardwareChipOutline } from 'ionicons/icons';
+import { add, cloudUpload, downloadOutline, filterOutline, closeOutline, construct, hardwareChipOutline, cameraOutline } from 'ionicons/icons';
 import { Preferences } from '@capacitor/preferences';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   const [tiposMantenimiento, setTiposMantenimiento] = useState<TipoMantenimiento[]>([]);
   const [filtroAgencia, setFiltroAgencia] = useState<string>('');
   const [filtroTipo, setFiltroTipo] = useState<string>('');
-  const [filtroEstado, setFiltroEstado] = useState<string>('pendientes');
+  const [filtroEstado, setFiltroEstado] = useState<string>('todos');
   const [showFiltros, setShowFiltros] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>('');
@@ -45,11 +45,6 @@ const Home: React.FC = () => {
   const [showToast, setShowToast] = useState<boolean>(false);
   
 
-  const cargarAgencias = useCallback(async () => {
-    const data = await AgenciasService.getAgenciasForUser(user);
-    setAgencias(data);
-  }, [user]);
-
   const cargarTiposMantenimiento = useCallback(async () => {
     const { value } = await Preferences.get({ key: TIPOS_MANTENIMIENTO_STORAGE_KEY });
     if (value) {
@@ -57,35 +52,103 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  const cargarRegistros = useCallback(async () => {
+  const cargarRegistros = useCallback(async (): Promise<Mantenimiento[]> => {
     try {
       const { value } = await Preferences.get({ key: STORAGE_KEY });
-      if (value) {
-        const datos: Mantenimiento[] = JSON.parse(value);
-        setRegistros(datos);
-        setFilteredRegistros(datos);
-      } else {
-        setRegistros([]);
-        setFilteredRegistros([]);
-      }
+      const datos: Mantenimiento[] = value ? JSON.parse(value) : [];
+      setRegistros(datos);
+      setFilteredRegistros(datos);
+      return datos;
     } catch (error) {
       console.error('Error al cargar registros:', error);
       setRegistros([]);
       setFilteredRegistros([]);
+      return [];
     }
   }, []);
+
+  const cargarDesdeSupabase = useCallback(async () => {
+    try {
+      const { data: remotos, error } = await supabase
+        .from('mantenimientos')
+        .select('id,nombre_equipo,proveedor,mantenimiento_realizado,observaciones,fecha,hora,foto_1_url,foto_2_url,foto_3_url,agencia_codigo,agencia_nombre')
+        .order('fecha', { ascending: false })
+        .limit(300);
+
+      if (error || !remotos || remotos.length === 0) return;
+
+      const { value } = await Preferences.get({ key: STORAGE_KEY });
+      const locales: Mantenimiento[] = value ? JSON.parse(value) : [];
+      const localMap = new Map(locales.map(r => [r.id, r]));
+
+      let nuevosCount = 0;
+      let actualizados = 0;
+
+      for (const remote of remotos) {
+        if (localMap.has(remote.id)) {
+          const local = localMap.get(remote.id)!;
+          if ((!local.foto_1_url && remote.foto_1_url) ||
+              (!local.foto_2_url && remote.foto_2_url) ||
+              (!local.foto_3_url && remote.foto_3_url)) {
+            localMap.set(remote.id, {
+              ...local,
+              foto_1_url: local.foto_1_url || remote.foto_1_url || null,
+              foto_2_url: local.foto_2_url || remote.foto_2_url || null,
+              foto_3_url: local.foto_3_url || remote.foto_3_url || null,
+            });
+            actualizados++;
+          }
+        } else {
+          localMap.set(remote.id, {
+            id: remote.id,
+            nombreEquipo: remote.nombre_equipo || '',
+            proveedor: remote.proveedor || '',
+            mantenimientoRealizado: remote.mantenimiento_realizado || '',
+            observaciones: remote.observaciones || '',
+            fecha: remote.fecha || '',
+            hora: remote.hora || '',
+            fotos: [],
+            fotosCategorized: { antes: null, durante: null, despues: null },
+            foto_1_url: remote.foto_1_url || null,
+            foto_2_url: remote.foto_2_url || null,
+            foto_3_url: remote.foto_3_url || null,
+            sincronizado: true,
+            agenciaId: remote.agencia_codigo || '',
+          });
+          nuevosCount++;
+        }
+      }
+
+      if (nuevosCount > 0 || actualizados > 0) {
+        const merged = Array.from(localMap.values())
+          .sort((a, b) => b.fecha.localeCompare(a.fecha));
+        await Preferences.set({ key: STORAGE_KEY, value: JSON.stringify(merged) });
+        setRegistros(merged);
+        mostrarToast(`${merged.length} registros (${nuevosCount} nuevos desde la nube)`);
+      }
+    } catch (e) {
+      console.error('Error cargando desde Supabase:', e);
+    }
+  }, []);
+
+  const cargarAgencias = useCallback(async () => {
+    const data = await AgenciasService.getAgenciasForUser(user);
+    setAgencias(data);
+  }, [user]);
 
   useIonViewWillEnter(() => {
     cargarRegistros();
     cargarAgencias();
     cargarTiposMantenimiento();
+    cargarDesdeSupabase();
   });
 
   useEffect(() => {
     cargarRegistros();
     cargarAgencias();
     cargarTiposMantenimiento();
-  }, [cargarRegistros, cargarAgencias]);
+    cargarDesdeSupabase();
+  }, [cargarRegistros, cargarAgencias, cargarDesdeSupabase]);
 
   useEffect(() => {
     let resultado = registros;
@@ -125,6 +188,7 @@ const Home: React.FC = () => {
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
     await cargarRegistros();
+    await cargarDesdeSupabase();
     event.detail.complete();
   };
 
@@ -174,13 +238,13 @@ const Home: React.FC = () => {
 
             const fileName = `${registro.id}_foto_${cat}_${Date.now()}.jpg`;
             const filePath = `mantenimientos/${fileName}`;
-            const arrayBuffer = decode(pureBase64);
+            const blob = new Blob([decode(pureBase64)], { type: 'image/jpeg' });
 
             const { error: uploadError } = await supabase.storage
               .from('fotos-mantenimiento')
-              .upload(filePath, arrayBuffer, {
+              .upload(filePath, blob, {
                 contentType: 'image/jpeg',
-                upsert: false,
+                upsert: true,
               });
 
             if (uploadError) {
@@ -204,13 +268,13 @@ const Home: React.FC = () => {
 
             const fileName = `${registro.id}_foto_${i + 1}_${Date.now()}.jpg`;
             const filePath = `mantenimientos/${fileName}`;
-            const arrayBuffer = decode(pureBase64);
+            const blob = new Blob([decode(pureBase64)], { type: 'image/jpeg' });
 
             const { error: uploadError } = await supabase.storage
               .from('fotos-mantenimiento')
-              .upload(filePath, arrayBuffer, {
+              .upload(filePath, blob, {
                 contentType: 'image/jpeg',
-                upsert: false,
+                upsert: true,
               });
 
             if (uploadError) {
@@ -261,7 +325,15 @@ const Home: React.FC = () => {
 
         const index = registrosActualizados.findIndex((r) => r.id === registro.id);
         if (index !== -1) {
-          registrosActualizados[index] = { ...registrosActualizados[index], sincronizado: true };
+          registrosActualizados[index] = {
+            ...registrosActualizados[index],
+            sincronizado: true,
+            fotos: [],
+            fotosCategorized: { antes: null, durante: null, despues: null },
+            foto_1_url: urlsFotos.antes || null,
+            foto_2_url: urlsFotos.durante || null,
+            foto_3_url: urlsFotos.despues || null,
+          };
         }
         exitosos++;
       } catch (error) {
@@ -310,7 +382,8 @@ const Home: React.FC = () => {
 
       const rows = registros.map((r) => {
         const fotoLabel = (cat: 'antes' | 'durante' | 'despues', fallbackIdx: number) => {
-          const tiene = r.fotosCategorized ? !!r.fotosCategorized[cat] : !!r.fotos[fallbackIdx];
+          const urlKey = cat === 'antes' ? 'foto_1_url' : cat === 'durante' ? 'foto_2_url' : 'foto_3_url';
+          const tiene = r.sincronizado ? !!r[urlKey] : (r.fotosCategorized ? !!r.fotosCategorized[cat] : !!r.fotos[fallbackIdx]);
           if (!tiene) return 'Sin foto';
           return r.sincronizado ? 'Sincronizada en Supabase' : 'Pendiente de sincronizar';
         };
@@ -559,37 +632,67 @@ const Home: React.FC = () => {
                 <span>🕐 {registro.hora}</span>
               </div>
 
-              {registro.fotos.length > 0 && (
-                <div className="home-card-photos home-card-photos--categorized">
-                  {registro.fotosCategorized ? (
-                    <>
-                      {(['antes', 'durante', 'despues'] as const).map((cat) => {
-                        const foto = registro.fotosCategorized![cat];
-                        if (!foto) return null;
-                        const labels = { antes: '🔴 Antes', durante: '🟡 Durante', despues: '🟢 Después' };
-                        return (
-                          <div key={cat} className="neo-photo home-card-photo home-card-photo--labeled">
-                            <img
-                              src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`}
-                              alt={labels[cat]}
-                            />
-                            <span className="home-card-photo__label">{labels[cat]}</span>
+              {(() => {
+                const urlFotos = [registro.foto_1_url, registro.foto_2_url, registro.foto_3_url].filter(Boolean) as string[];
+                const labels = { antes: '🔴 Antes', durante: '🟡 Durante', despues: '🟢 Después' };
+                const urlKeys = ['antes', 'durante', 'despues'] as const;
+
+                // Fotos sincronizadas: mostrar desde URLs de Supabase
+                if (registro.sincronizado && urlFotos.length > 0) {
+                  return (
+                    <div className="home-card-photos home-card-photos--categorized">
+                      {urlFotos.map((url, i) => (
+                        <div key={i} className="neo-photo home-card-photo home-card-photo--labeled">
+                          <img src={url} alt={`Foto ${i + 1}`} />
+                          <span className="home-card-photo__label">{labels[urlKeys[i]] ?? `Foto ${i + 1}`}</span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }
+
+                // Fotos pendientes: mostrar desde base64 local
+                if (registro.fotos.length > 0) {
+                  return (
+                    <div className="home-card-photos home-card-photos--categorized">
+                      {registro.fotosCategorized ? (
+                        urlKeys.map((cat) => {
+                          const foto = registro.fotosCategorized![cat];
+                          if (!foto) return null;
+                          return (
+                            <div key={cat} className="neo-photo home-card-photo home-card-photo--labeled">
+                              <img src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`} alt={labels[cat]} />
+                              <span className="home-card-photo__label">{labels[cat]}</span>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        registro.fotos.map((foto, index) => (
+                          <div key={index} className="neo-photo home-card-photo">
+                            <img src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`} alt={`Foto ${index + 1}`} />
                           </div>
-                        );
-                      })}
-                    </>
-                  ) : (
-                    registro.fotos.map((foto, index) => (
-                      <div key={index} className="neo-photo home-card-photo">
-                        <img
-                          src={foto.startsWith('data:') ? foto : `data:image/jpeg;base64,${foto}`}
-                          alt={`Foto ${index + 1}`}
-                        />
-                      </div>
-                    ))
-                  )}
-                </div>
+                        ))
+                      )}
+                    </div>
+                  );
+                }
+
+                return null;
+              })()}
+
+              {/* Botón agregar fotos: solo para sincronizados sin fotos en ningún formato */}
+              {registro.sincronizado && !registro.foto_1_url && !registro.foto_2_url && !registro.foto_3_url &&
+               registro.fotos.length === 0 &&
+               !registro.fotosCategorized?.antes && !registro.fotosCategorized?.durante && !registro.fotosCategorized?.despues && (
+                <button
+                  className="home-card-add-fotos"
+                  onClick={() => history.push(`/mantenimientos/${registro.id}/agregar-fotos`)}
+                >
+                  <IonIcon icon={cameraOutline} />
+                  Agregar fotos
+                </button>
               )}
+
             </div>
           ))
         )}

@@ -26,6 +26,7 @@ import ListaEquipos from './pages/equipos/ListaEquipos';
 import DetalleEquipo from './pages/equipos/DetalleEquipo';
 import CambiarResponsable from './pages/equipos/CambiarResponsable';
 import DarDeBaja from './pages/equipos/DarDeBaja';
+import AgregarFotos from './pages/mantenimientos/AgregarFotos';
 import CrearEquipo from './pages/equipos/CrearEquipo';
 import ListaSolicitudes from './pages/solicitudes/ListaSolicitudes';
 import DetalleSolicitud from './pages/solicitudes/DetalleSolicitud';
@@ -183,6 +184,7 @@ const AppContent: React.FC = () => {
         <Route exact path="/equipos/:id" component={DetalleEquipo} />
         <Route exact path="/equipos/:id/cambiar-responsable" component={CambiarResponsable} />
         <Route exact path="/equipos/:id/dar-de-baja" component={DarDeBaja} />
+        <Route exact path="/mantenimientos/:id/agregar-fotos" component={AgregarFotos} />
         <Route exact path="/solicitudes" component={ListaSolicitudes} />
         <Route exact path="/solicitudes/:id" component={DetalleSolicitud} />
         <Route exact path="/login" component={Login} />

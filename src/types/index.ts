@@ -32,6 +32,9 @@ export interface Mantenimiento {
   hora: string;
   fotos: string[];
   fotosCategorized?: FotosCategorized;
+  foto_1_url?: string | null;
+  foto_2_url?: string | null;
+  foto_3_url?: string | null;
   sincronizado: boolean;
   agenciaId?: string;
   ubicacionId?: string;

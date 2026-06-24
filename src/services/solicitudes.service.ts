@@ -2,7 +2,7 @@ import { ApiService } from './api.service';
 import { Solicitud } from '../types/solicitud.types';
 
 export interface CreateSolicitudDto {
-  tipo: 'cambio_responsable' | 'custodia_temporal' | 'creacion_responsable' | 'crear_equipo';
+  tipo: 'cambio_responsable' | 'custodia_temporal' | 'creacion_responsable' | 'crear_equipo' | 'baja';
   computador_id?: number;
   responsable_anterior_id?: number;
   responsable_nuevo_id?: number;

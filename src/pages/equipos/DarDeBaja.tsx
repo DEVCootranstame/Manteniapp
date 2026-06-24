@@ -3,15 +3,18 @@ import { IonPage, IonContent, IonIcon, IonLoading, IonAlert, IonToast } from '@i
 import { useParams, useHistory } from 'react-router-dom';
 import {
   arrowBackOutline, trashBinOutline, calendarOutline,
-  documentTextOutline, cameraOutline, camera, close, checkmarkCircleOutline,
+  documentTextOutline, cameraOutline, camera, close,
 } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { EquiposService, ComputadorDetalle } from '../../services/equipos.service';
+import { SolicitudesService } from '../../services/solicitudes.service';
+import { useAuth } from '../../context/AuthContext';
 import './DarDeBaja.css';
 
 const DarDeBaja: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
+  const { user } = useAuth();
 
   const [equipo, setEquipo] = useState<ComputadorDetalle | null>(null);
   const [loadingEquipo, setLoadingEquipo] = useState(true);
@@ -48,7 +51,7 @@ const DarDeBaja: React.FC = () => {
         quality: 60,
         allowEditing: false,
         resultType: CameraResultType.Base64,
-        source: CameraSource.Camera,
+        source: CameraSource.Prompt,
         correctOrientation: true,
         width: 1024,
         height: 1024,
@@ -86,19 +89,27 @@ const DarDeBaja: React.FC = () => {
   };
 
   const ejecutarBaja = async () => {
+    if (!equipo || !user) return;
     setEnviando(true);
     try {
-      await EquiposService.darDeBaja(Number(id), {
-        fecha_baja: fechaBaja,
-        motivo_baja: motivo.trim(),
-        fotos: fotos.filter(Boolean) as string[],
+      await SolicitudesService.createSolicitud({
+        tipo: 'baja',
+        computador_id: equipo.id,
+        agencia_id: equipo.agencia?.id ?? 0,
+        creado_por: user.id,
+        motivo_cambio: motivo.trim(),
+        datos_equipo: {
+          fecha_baja: fechaBaja,
+          motivo_baja: motivo.trim(),
+          fotos_baja: fotos.filter(Boolean),
+        },
       });
-      setToastMsg('Equipo dado de baja exitosamente');
+      setToastMsg('Solicitud de baja enviada. Pendiente de aprobación.');
       setShowToast(true);
-      setTimeout(() => history.replace('/equipos'), 1200);
+      setTimeout(() => history.replace('/solicitudes'), 1500);
     } catch (e: any) {
       setAlertHeader('Error al procesar');
-      setAlertMsg(e?.message || 'No se pudo dar de baja el equipo. Intenta de nuevo.');
+      setAlertMsg(e?.message || 'No se pudo enviar la solicitud. Intenta de nuevo.');
       setShowAlert(true);
     } finally {
       setEnviando(false);
@@ -117,7 +128,7 @@ const DarDeBaja: React.FC = () => {
             <IonIcon icon={arrowBackOutline} />
           </button>
           <div className="baja-header__info">
-            <h1 className="baja-header__title">Dar de Baja</h1>
+            <h1 className="baja-header__title">Solicitud de Baja</h1>
             {equipo && <p className="baja-header__code">{equipo.Codigo}</p>}
           </div>
           <div className="baja-header__icon-wrap">
@@ -134,8 +145,8 @@ const DarDeBaja: React.FC = () => {
             <div className="baja-warning-banner">
               <IonIcon icon={trashBinOutline} />
               <div>
-                <p className="baja-warning-banner__title">Esta acción es irreversible</p>
-                <p className="baja-warning-banner__desc">El equipo quedará marcado como Baja y no podrá recibir mantenimientos.</p>
+                <p className="baja-warning-banner__title">Requiere aprobación</p>
+                <p className="baja-warning-banner__desc">Se creará una solicitud de baja que debe ser aprobada por un administrador.</p>
               </div>
             </div>
 
@@ -249,22 +260,22 @@ const DarDeBaja: React.FC = () => {
             {/* Botón */}
             <button className="baja-btn-submit" onClick={confirmar}>
               <IonIcon icon={trashBinOutline} />
-              Dar de Baja
+              Enviar Solicitud de Baja
             </button>
 
           </div>
         )}
 
-        <IonLoading isOpen={enviando} message="Procesando baja..." />
+        <IonLoading isOpen={enviando} message="Enviando solicitud..." />
 
         <IonAlert
           isOpen={showConfirm}
           onDidDismiss={() => setShowConfirm(false)}
-          header="¿Confirmar baja?"
-          message={`El equipo ${equipo?.Codigo} quedará en estado Baja. Esta acción no se puede deshacer.`}
+          header="¿Enviar solicitud de baja?"
+          message={`Se enviará una solicitud para dar de baja el equipo ${equipo?.Codigo}. Quedará pendiente de aprobación.`}
           buttons={[
             { text: 'Cancelar', role: 'cancel' },
-            { text: 'Confirmar baja', handler: ejecutarBaja, cssClass: 'alert-btn-danger' },
+            { text: 'Enviar solicitud', handler: ejecutarBaja, cssClass: 'alert-btn-danger' },
           ]}
         />
 
@@ -280,7 +291,7 @@ const DarDeBaja: React.FC = () => {
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMsg}
-          duration={2000}
+          duration={2500}
           position="bottom"
           color="dark"
         />
